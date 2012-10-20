@@ -24,6 +24,8 @@
 #include "utils/XBMCTinyXML.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/ISerializable.h"
+#include "Util.h"
+#include "settings/Settings.h"
 
 class TiXmlElement;
 class CAddonCallbacksAddon;
@@ -94,6 +96,9 @@ private:
 
 typedef std::vector<class AddonProps> VECADDONPROPS;
 
+  
+
+  
 class CAddon : public IAddon
 {
 public:
@@ -119,6 +124,9 @@ public:
    \sa LoadSettings, LoadUserSettings, HasSettings, HasUserSettings, GetSetting, UpdateSetting
    */
   virtual void SaveSettings();
+  
+  virtual bool GetAddonBool(int setting) const;
+  virtual int TranslateAddonBool(const CStdString &setting);
 
   /*! \brief Update a user-configured setting with a new value
    \param key the id of the setting to update
@@ -136,6 +144,7 @@ public:
   virtual CStdString GetSetting(const CStdString& key);
 
   TiXmlElement* GetSettingsXML();
+  const TiXmlElement* GetSettingsXML() const;
   virtual CStdString GetString(uint32_t id);
 
   // properties
@@ -179,6 +188,7 @@ protected:
   CAddon(const CAddon&, const AddonPtr&);
   const AddonPtr Parent() const { return m_parent; }
   virtual void BuildLibName(const cp_extension_t *ext = NULL);
+  
 
   /*! \brief Load the default settings and override these with any previously configured user settings
    \param bForce force the load of settings even if they are already loaded (reload)

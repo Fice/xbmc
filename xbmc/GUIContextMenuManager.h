@@ -30,11 +30,11 @@
 #include <list>
 #include <boost/noncopyable.hpp>
 
+
 class GUIContextMenuManager : boost::noncopyable
 {
 public:
   static GUIContextMenuManager& Get();
-  
   
   
   bool RegisterContextItem(ContextItemPtr cm);

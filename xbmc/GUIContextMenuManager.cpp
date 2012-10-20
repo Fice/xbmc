@@ -56,6 +56,7 @@ GUIContextMenuManager::GUIContextMenuManager()
   }
 }
 
+
 bool GUIContextMenuManager::RegisterContextItem(ContextItemPtr cm) 
 {
   ContextItemPtr item = GetContextItemByID(cm->getMsgID());

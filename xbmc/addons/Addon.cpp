@@ -34,6 +34,7 @@
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
+#include "Util.h"
 #include "URL.h"
 #include <vector>
 #include <string.h>
@@ -519,6 +520,16 @@ void CAddon::SaveSettings(void)
   CAddonMgr::Get().ReloadSettings(ID());//push the settings changes to the running addon instance
   g_pythonParser.OnSettingsChanged(ID());
 }
+  
+bool CAddon::GetAddonBool(int setting) const
+{
+  return CAddonMgr::Get().GetAddonBool(setting); 
+}
+  
+int CAddon::TranslateAddonBool(const CStdString &settingName)
+{
+  return CAddonMgr::Get().TranslateAddonBool(*this, settingName);
+}
 
 CStdString CAddon::GetSetting(const CStdString& key)
 {
@@ -536,6 +547,9 @@ void CAddon::UpdateSetting(const CStdString& key, const CStdString& value)
   LoadSettings();
   if (key.empty()) return;
   m_settings[key] = value;
+  
+    //update bools
+  CAddonMgr::Get().UpdateBoolState(ID(), key, (0==strcmpi(value, "true")));
 }
 
 bool CAddon::SettingsFromXML(const CXBMCTinyXML &doc, bool loadDefaults /*=false */)
@@ -585,6 +599,11 @@ void CAddon::SettingsToXML(CXBMCTinyXML &doc) const
 }
 
 TiXmlElement* CAddon::GetSettingsXML()
+{
+  return m_addonXmlDoc.RootElement();
+}
+  
+const TiXmlElement* CAddon::GetSettingsXML() const
 {
   return m_addonXmlDoc.RootElement();
 }

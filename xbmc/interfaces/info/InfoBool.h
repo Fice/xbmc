@@ -23,6 +23,7 @@
 #include <vector>
 #include <map>
 #include "utils/StdString.h"
+#include "addons/IAddon.h"
 
 class CGUIListItem;
 
@@ -35,9 +36,10 @@ namespace INFO
 class InfoBool
 {
 public:
-  InfoBool(const CStdString &expression, int context)
+  InfoBool(const CStdString &expression, int context, ADDON::IAddon* const contextAddon)
     : m_value(false),
       m_context(context),
+      m_contextAddon(contextAddon),
       m_expression(expression),
       m_lastUpdate(0)
   {
@@ -65,7 +67,8 @@ public:
   bool operator==(const InfoBool &right) const
   {
     return (m_context == right.m_context && 
-            m_expression.CompareNoCase(right.m_expression) == 0);
+            m_expression.CompareNoCase(right.m_expression) == 0 &&
+            m_contextAddon == right.m_contextAddon);
   }
 
   /*! \brief Update the value of this info bool
@@ -77,7 +80,8 @@ protected:
 
   bool m_value;                ///< current value
   int m_context;               ///< contextual information to go with the condition
-
+  ADDON::IAddon* const m_contextAddon;
+  
 private:
   CStdString m_expression;     ///< original expression
   unsigned int m_lastUpdate;   ///< last update time (to determine dirty status)
@@ -88,7 +92,7 @@ private:
 class InfoSingle : public InfoBool
 {
 public:
-  InfoSingle(const CStdString &condition, int context);
+  InfoSingle(const CStdString &condition, int context, ADDON::IAddon* const contextAddon);
   virtual ~InfoSingle() {};
 
   virtual void Update(const CGUIListItem *item);
@@ -101,7 +105,7 @@ private:
 class InfoExpression : public InfoBool
 {
 public:
-  InfoExpression(const CStdString &expression, int context);
+  InfoExpression(const CStdString &expression, int context, ADDON::IAddon* const contextAddon);
   virtual ~InfoExpression() {};
 
   virtual void Update(const CGUIListItem *item);
