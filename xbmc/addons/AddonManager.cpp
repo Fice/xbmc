@@ -46,9 +46,11 @@
 #include "Repository.h"
 #include "Skin.h"
 #include "Service.h"
+#include "ContextItemAddon.h"
 #include "pvr/PVRManager.h"
 #include "pvr/addons/PVRClients.h"
 #include "Util.h"
+#include "GUIDialogContextMenu.h"
 
 using namespace std;
 using namespace PVR;
@@ -165,6 +167,8 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
       return AddonPtr(new CAddonLibrary(props));
     case ADDON_REPOSITORY:
       return AddonPtr(new CRepository(props));
+    case ADDON_CONTEXT:
+      return AddonPtr(new CContextItemAddon(props));
     default:
       break;
   }
@@ -204,6 +208,7 @@ bool CAddonMgr::CheckUserDirs(const cp_cfg_element_t *settings)
 CAddonMgr::CAddonMgr()
 {
   m_cpluff = NULL;
+  m_iCurrentContextId = CONTEXT_BUTTON_FIRST_CONTEXT_PLUGIN;
 }
 
 CAddonMgr::~CAddonMgr()
@@ -565,6 +570,16 @@ void CAddonMgr::RemoveAddon(const CStdString& ID)
     NotifyObservers(ObservableMessageAddons);
   }
 }
+  
+unsigned int CAddonMgr::GetMsgIdForContextAddon(CStdString AddonID) {
+  CSingleLock lock(m_critSection);
+  unsigned int& id = m_contextMsgAssign[AddonID];
+  
+  if (id==0)
+    id = m_iCurrentContextId++;
+
+  return id;
+}
 
 const char *CAddonMgr::GetTranslatedString(const cp_cfg_element_t *root, const char *tag)
 {
@@ -624,6 +639,8 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
       return AddonPtr(new CPVRClient(addonProps));
     case ADDON_REPOSITORY:
       return AddonPtr(new CRepository(addonProps));
+    case ADDON_CONTEXT:
+      return AddonPtr(new CContextItemAddon(addonProps));
     default:
       break;
   }

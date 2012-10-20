@@ -10680,7 +10680,11 @@ msgctxt "#24023"
 msgid "Add-on disabled"
 msgstr ""
 
-#empty strings from id 24024 to 24026
+msgctxt "#24024"
+msgid "Context Item"
+msgstr ""
+
+#empty strings from id 24025 to 24026
 
 #: xbmc/addons/addon.cpp
 msgctxt "#24027"

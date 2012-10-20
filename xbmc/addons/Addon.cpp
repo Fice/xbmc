@@ -76,6 +76,7 @@ static const TypeMapping types[] =
    {"xbmc.python.lyrics",                ADDON_SCRIPT_LYRICS,       24013, "DefaultAddonLyrics.png" },
    {"xbmc.python.library",               ADDON_SCRIPT_LIBRARY,      24014, "" },
    {"xbmc.python.module",                ADDON_SCRIPT_MODULE,           0, "" },
+   {"xbmc.context",                      ADDON_CONTEXT,             24024, "" }, //TODO: Context: add default image
    {"xbmc.gui.skin",                     ADDON_SKIN,                  166, "DefaultAddonSkin.png" },
    {"xbmc.gui.webinterface",             ADDON_WEB_INTERFACE,         199, "DefaultAddonWebSkin.png" },
    {"xbmc.addon.repository",             ADDON_REPOSITORY,          24011, "DefaultAddonRepository.png" },
@@ -360,6 +361,7 @@ void CAddon::BuildLibName(const cp_extension_t *extension)
     case ADDON_SCRIPT_SUBTITLES:
     case ADDON_PLUGIN:
     case ADDON_SERVICE:
+    case ADDON_CONTEXT:
       ext = ADDON_PYTHON_EXT;
       break;
     default:
@@ -391,6 +393,7 @@ void CAddon::BuildLibName(const cp_extension_t *extension)
       case ADDON_PVRDLL:
       case ADDON_PLUGIN:
       case ADDON_SERVICE:
+      case ADDON_CONTEXT:
         {
           CStdString temp = CAddonMgr::Get().GetExtValue(extension->configuration, "@library");
           m_strLibName = temp;
