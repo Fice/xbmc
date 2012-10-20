@@ -87,13 +87,23 @@ public:
   CStdString value;
 };
 
-class CSkinBool
+class CVisibilityBool
 {
 public:
-  CSkinBool() : value(false) {};
+  CVisibilityBool() : name(), value(false) {};
+  CVisibilityBool(const CStdString& name, bool value) : name(name), value(value) {};
   CStdString name;
   bool value;
+  
+  template<class COMPARE_FUNCTION = std::equal_to<CStdString> >
+  struct NameCompare : public std::binary_function<CVisibilityBool, CStdString, bool>
+  {
+    bool operator()(const CVisibilityBool settingBool, const CStdString name) const { return COMPARE_FUNCTION()(settingBool.name,name); }
+  };
 };
+typedef CVisibilityBool CSkinBool;
+typedef CVisibilityBool CAddonBool;
+
 
 class CGUISettings;
 class TiXmlElement;

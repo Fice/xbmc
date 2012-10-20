@@ -33,6 +33,7 @@
 #include "XBDateTime.h"
 #include "utils/Observer.h"
 #include "interfaces/info/SkinVariable.h"
+#include "addons/IAddon.h"
 
 #include <list>
 #include <map>
@@ -370,6 +371,8 @@ namespace INFO
 #define SKIN_HAS_THEME              606
 #define SKIN_ASPECT_RATIO           607
 
+#define ADDON_BOOL                  635
+
 #define SYSTEM_TOTAL_MEMORY         644
 #define SYSTEM_CPU_USAGE            645
 #define SYSTEM_USED_MEMORY_PERCENT  646
@@ -690,11 +693,12 @@ public:
 
    \param expression the boolean condition or expression
    \param context the context window
+   \param contextAddon the addon that wants to register this addon. If NULL the expressions: addon.hassetting, addon.getsetting are not available
    \return an identifier used to reference this expression
 
    \sa GetBoolValue
    */
-  unsigned int Register(const CStdString &expression, int context = 0);
+  unsigned int Register(const CStdString &expression, int context = 0, ADDON::IAddon* const contextAddon=NULL);
 
   /*! \brief Get a previously registered boolean expression's value
    Checks the cache and evaluates the boolean expression if required.
@@ -710,7 +714,7 @@ public:
    */
   bool EvaluateBool(const CStdString &expression, int context = 0);
 
-  int TranslateString(const CStdString &strCondition);
+  int TranslateString(const CStdString &strCondition, ADDON::IAddon* const contextAddon=NULL);
 
   /*! \brief Get integer value of info.
    \param value int reference to pass value of given info
@@ -721,7 +725,7 @@ public:
    \sa GetItemInt, GetMultiInfoInt
    */
   bool GetInt(int &value, int info, int contextWindow = 0, const CGUIListItem *item = NULL) const;
-  CStdString GetLabel(int info, int contextWindow = 0, CStdString *fallback = NULL);
+  CStdString GetLabel(int info, int contextWindow = 0, CStdString *fallback = NULL, const ADDON::IAddon* const contextAddon = NULL);
 
   CStdString GetImage(int info, int contextWindow, CStdString *fallback = NULL);
 
@@ -806,7 +810,7 @@ public:
   void ResetLibraryBools();
   CStdString LocalizeTime(const CDateTime &time, TIME_FORMAT format) const;
 
-  int TranslateSingleString(const CStdString &strCondition);
+  int TranslateSingleString(const CStdString &strCondition, ADDON::IAddon* const contextAddon);
 
   int RegisterSkinVariableString(const INFO::CSkinVariableString* info);
   int TranslateSkinVariableString(const CStdString& name, int context);
@@ -816,7 +820,7 @@ public:
   bool ConditionsChangedValues(const std::map<int, bool>& map);
 protected:
   friend class INFO::InfoSingle;
-  bool GetBool(int condition, int contextWindow = 0, const CGUIListItem *item=NULL);
+  bool GetBool(int condition, int contextWindow = 0, const CGUIListItem *item = NULL, const ADDON::IAddon* const contextAddon = NULL);
 
   // routines for window retrieval
   bool CheckWindowCondition(CGUIWindow *window, int condition) const;
@@ -837,9 +841,9 @@ protected:
     std::vector<CStdString> params;
   };
 
-  bool GetMultiInfoBool(const GUIInfo &info, int contextWindow = 0, const CGUIListItem *item = NULL);
+  bool GetMultiInfoBool(const GUIInfo &info, int contextWindow = 0, const CGUIListItem *item = NULL, const ADDON::IAddon* const contextAddon = NULL);
   bool GetMultiInfoInt(int &value, const GUIInfo &info, int contextWindow = 0) const;
-  CStdString GetMultiInfoLabel(const GUIInfo &info, int contextWindow = 0, CStdString *fallback = NULL);
+  CStdString GetMultiInfoLabel(const GUIInfo &info, int contextWindow = 0, CStdString *fallback = NULL, const ADDON::IAddon* const contextAddon = NULL);
   int TranslateListItem(const Property &info);
   int TranslateMusicPlayerString(const CStdString &info) const;
   TIME_FORMAT TranslateTimeFormat(const CStdString &format);

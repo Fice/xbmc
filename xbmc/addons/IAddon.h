@@ -113,6 +113,8 @@ namespace ADDON
     virtual bool MeetsVersion(const AddonVersion &version) const =0;
     virtual bool ReloadSettings() =0;
 
+    virtual bool GetAddonBool(int setting) const =0;
+    virtual int TranslateAddonBool(const CStdString &setting) =0;
   protected:
     virtual const AddonPtr Parent() const =0;
     virtual bool LoadSettings(bool bForce = false) =0;

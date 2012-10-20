@@ -719,6 +719,93 @@ const cp_extension_t *CAddonMgr::GetExtension(const cp_plugin_info_t *props, con
   return NULL;
 }
 
+int CAddonMgr::TranslateAddonBool(CAddon& addon, const CStdString &settingName)
+{
+  
+    //Check if Bool is already present
+  CIMAPBOOLS result = FindAddonBool(addon.ID(), settingName);
+  if(result!=m_addonBools.end())
+    return result->first;
+  
+  if(!addon.LoadSettings())
+    return 0;
+  
+    //We havent found it in our list... so check if there is a setting
+    //with that name, that is of type 'bool'
+  const TiXmlElement *root = addon.GetSettingsXML(); //TODO: move stuff in an IsSettingType(Type, Setting);
+  const TiXmlElement *category = NULL;
+  if(root)
+    category = root->FirstChildElement("category");
+  if (!category)
+    category = root;
+  
+  while(category) {
+    const TiXmlElement *setting = category->FirstChildElement("setting");
+    while(setting) 
+    {  
+      const char *id = setting->Attribute("id");
+      const char *type = setting->Attribute("type");
+      
+      if (id && type && 0 == strcmpi(type, "bool") && 0 == strcmpi(id,settingName.c_str()))
+      {  //Now we know that the requested setting exists and that it is a boolean!
+         //so we can go ahead and create our Bool class
+        int new_id = m_addonBools.size();
+        
+          //Load the setting values, if not already present
+        addon.LoadUserSettings();
+        
+          //get the current value
+        bool value = (0 == strcmpi(addon.GetSetting(settingName), "true"));
+        
+        
+        MAPBOOLS::value_type pair(new_id,
+                                  CAddonBool(addon.ID() + "." + settingName, value));
+        m_addonBools.insert(pair);
+        return new_id;
+      }          
+      setting = setting->NextSiblingElement("setting");
+    }
+    
+    category = category->NextSiblingElement("category");
+  }
+  
+  return 0;  
+}      
+
+bool CAddonMgr::GetAddonBool(int setting) const
+{
+  CIMAPBOOLS it = m_addonBools.find(setting);
+  if (it != m_addonBools.end())
+    return (*it).second.value;
+  
+    // default is to return false
+  return false;
+}
+        
+        
+IMAPBOOLS CAddonMgr::FindAddonBool(const CStdString& addonName, const CStdString & settingName) 
+{
+      
+      
+  //Find the pair in the map where the value's name is equal to settingName
+  return find_if(m_addonBools.begin(), 
+                 m_addonBools.end(), 
+                 std::bind2nd(map_value_finder<MAPBOOLS, 
+                              CAddonBool::NameCompare<> >(), 
+                              addonName + "." + settingName));
+}
+
+void CAddonMgr::UpdateBoolState(const CStdString &addonID, const CStdString &settingName, bool value)
+{       
+    //Check if we have a bool to update
+  IMAPBOOLS it = FindAddonBool(addonID, settingName);
+  if(it!=m_addonBools.end()) 
+  {
+      //Great, so let's update
+    it->second.value = value;
+  }
+}
+        
 CStdString CAddonMgr::GetExtValue(cp_cfg_element_t *base, const char *path)
 {
   const char *value = NULL;
@@ -874,6 +961,8 @@ void CAddonMgr::StopServices(const bool onlylogin)
     }
   }
 }
+        
+
 
 int cp_to_clog(cp_log_severity_t lvl)
 {

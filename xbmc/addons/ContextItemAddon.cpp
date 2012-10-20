@@ -72,7 +72,7 @@ CContextItemAddon::~CContextItemAddon()
     //either implement this unregister function
     //g_infoManager.Unregister(m_VisibleId); 
     //or make sure that the IAddon* member variable of the CInfoBool class isn't used
-    //after this item is destroyed (e.g. use shared_ptr!)
+    //after this item is destroyed (e.g. use shared_ptr/weak_ptr!)
 }
 
 CStdString CContextItemAddon::getLabel() const 

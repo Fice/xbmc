@@ -26,19 +26,19 @@
 using namespace std;
 using namespace INFO;
 
-InfoSingle::InfoSingle(const CStdString &expression, int context)
-: InfoBool(expression, context)
+InfoSingle::InfoSingle(const CStdString &expression, int context, ADDON::IAddon* const contextAddon)
+: InfoBool(expression, context, contextAddon)
 {
-  m_condition = g_infoManager.TranslateSingleString(expression);
+  m_condition = g_infoManager.TranslateSingleString(expression, contextAddon);
 }
 
 void InfoSingle::Update(const CGUIListItem *item)
 {
-  m_value = g_infoManager.GetBool(m_condition, m_context, item);
+  m_value = g_infoManager.GetBool(m_condition, m_context, item, m_contextAddon);
 }
 
-InfoExpression::InfoExpression(const CStdString &expression, int context)
-: InfoBool(expression, context)
+InfoExpression::InfoExpression(const CStdString &expression, int context, ADDON::IAddon* const contextAddon)
+: InfoBool(expression, context, contextAddon)
 {
   Parse(expression);
 }
@@ -81,7 +81,7 @@ void InfoExpression::Parse(const CStdString &expression)
       // cleanup any operand, translate and put into our expression list
       if (!operand.IsEmpty())
       {
-        unsigned int info = g_infoManager.Register(operand, m_context);
+        unsigned int info = g_infoManager.Register(operand, m_context, m_contextAddon);
         if (info)
         {
           m_postfix.push_back(m_operands.size());
@@ -127,7 +127,7 @@ void InfoExpression::Parse(const CStdString &expression)
 
   if (!operand.empty())
   {
-    unsigned int info = g_infoManager.Register(operand, m_context);
+    unsigned int info = g_infoManager.Register(operand, m_context, m_contextAddon);
     if (info)
     {
       m_postfix.push_back(m_operands.size());

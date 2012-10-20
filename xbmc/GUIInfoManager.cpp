@@ -144,11 +144,11 @@ bool CGUIInfoManager::OnMessage(CGUIMessage &message)
 /// efficient retrieval of data. Can handle combined strings on the form
 /// Player.Caching + VideoPlayer.IsFullscreen (Logical and)
 /// Player.HasVideo | Player.HasAudio (Logical or)
-int CGUIInfoManager::TranslateString(const CStdString &condition)
+int CGUIInfoManager::TranslateString(const CStdString &condition, ADDON::IAddon* const contextAddon)
 {
   // translate $LOCALIZE as required
   CStdString strCondition(CGUIInfoLabel::ReplaceLocalize(condition));
-  return TranslateSingleString(strCondition);
+  return TranslateSingleString(strCondition, contextAddon);
 }
 
 typedef struct
@@ -719,7 +719,7 @@ void CGUIInfoManager::SplitInfoString(const CStdString &infoString, vector<Prope
 
 /// \brief Translates a string as given by the skin into an int that we use for more
 /// efficient retrieval of data.
-int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
+int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, ADDON::IAddon* const contextAddon)
 {
   // trim whitespaces
   CStdString strTest = strCondition;
@@ -740,11 +740,11 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     else if (cat.name == "true" || cat.name == "yes" || cat.name == "on")
       return SYSTEM_ALWAYS_TRUE;
     if (cat.name == "isempty" && cat.num_params() == 1)
-      return AddMultiInfo(GUIInfo(STRING_IS_EMPTY, TranslateSingleString(cat.param())));
+      return AddMultiInfo(GUIInfo(STRING_IS_EMPTY, TranslateSingleString(cat.param(), contextAddon)));
     else if (cat.name == "stringcompare" && cat.num_params() == 2)
     {
-      int info = TranslateSingleString(cat.param(0));
-      int info2 = TranslateSingleString(cat.param(1));
+      int info = TranslateSingleString(cat.param(0), contextAddon);
+      int info2 = TranslateSingleString(cat.param(1), contextAddon);
       if (info2 > 0)
         return AddMultiInfo(GUIInfo(STRING_COMPARE, info, -info2));
       // pipe our original string through the localize parsing then make it lowercase (picks up $LBRACKET etc.)
@@ -754,13 +754,13 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
     }
     else if (cat.name == "integergreaterthan" && cat.num_params() == 2)
     {
-      int info = TranslateSingleString(cat.param(0));
+      int info = TranslateSingleString(cat.param(0), contextAddon);
       int compareInt = atoi(cat.param(1).c_str());
       return AddMultiInfo(GUIInfo(INTEGER_GREATER_THAN, info, compareInt));
     }
     else if (cat.name == "substring" && cat.num_params() >= 2)
     {
-      int info = TranslateSingleString(cat.param(0));
+      int info = TranslateSingleString(cat.param(0), contextAddon);
       CStdString label = CGUIInfoLabel::GetLabel(cat.param(1)).ToLower();
       int compareString = ConditionalStringParameter(label);
       if (cat.num_params() > 2)
@@ -876,7 +876,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
         }
         else if (prop.name == "addontitle")
         {
-          int infoLabel = TranslateSingleString(param);
+          int infoLabel = TranslateSingleString(param, contextAddon);
           if (infoLabel > 0)
             return AddMultiInfo(GUIInfo(SYSTEM_ADDON_TITLE, infoLabel, 0));
           CStdString label = CGUIInfoLabel::GetLabel(param).ToLower();
@@ -884,7 +884,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
         }
         else if (prop.name == "addonicon")
         {
-          int infoLabel = TranslateSingleString(param);
+          int infoLabel = TranslateSingleString(param, contextAddon);
           if (infoLabel > 0)
             return AddMultiInfo(GUIInfo(SYSTEM_ADDON_ICON, infoLabel, 0));
           CStdString label = CGUIInfoLabel::GetLabel(param).ToLower();
@@ -1081,6 +1081,12 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
           return AddMultiInfo(GUIInfo(SKIN_HAS_THEME, ConditionalStringParameter(prop.param(0))));
       }
     }
+    else if (cat.name == "addon" && contextAddon)
+    {
+       if (prop.name == "hassetting") {
+        return AddMultiInfo(GUIInfo(ADDON_BOOL, contextAddon->TranslateAddonBool(prop.param(0))));
+      }
+    }
     else if (cat.name == "window")
     {
       if (prop.name == "property" && prop.num_params() == 1)
@@ -1225,14 +1231,14 @@ TIME_FORMAT CGUIInfoManager::TranslateTimeFormat(const CStdString &format)
   return TIME_FORMAT_GUESS;
 }
 
-CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, CStdString *fallback)
+CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, CStdString *fallback, const ADDON::IAddon* const contextAddon)
 {
   if (info >= CONDITIONAL_LABEL_START && info <= CONDITIONAL_LABEL_END)
     return GetSkinVariableString(info, false);
 
   CStdString strLabel;
   if (info >= MULTI_INFO_START && info <= MULTI_INFO_END)
-    return GetMultiInfoLabel(m_multiInfo[info - MULTI_INFO_START], contextWindow);
+    return GetMultiInfoLabel(m_multiInfo[info - MULTI_INFO_START], contextWindow, NULL, contextAddon);
 
   if (info >= SLIDE_INFO_START && info <= SLIDE_INFO_END)
     return GetPictureLabel(info);
@@ -1590,7 +1596,7 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, CStdString *fa
   case CONTAINER_NUM_PAGES:
   case CONTAINER_NUM_ITEMS:
   case CONTAINER_CURRENT_PAGE:
-    return GetMultiInfoLabel(GUIInfo(info), contextWindow);
+    return GetMultiInfoLabel(GUIInfo(info), contextWindow, NULL, contextAddon);
     break;
   case CONTAINER_SHOWPLOT:
     {
@@ -1979,7 +1985,7 @@ bool CGUIInfoManager::GetInt(int &value, int info, int contextWindow, const CGUI
   return false;
 }
 
-unsigned int CGUIInfoManager::Register(const CStdString &expression, int context)
+unsigned int CGUIInfoManager::Register(const CStdString &expression, int context, ADDON::IAddon* const contextAddon)
 {
   CStdString condition(CGUIInfoLabel::ReplaceLocalize(expression));
   condition.TrimLeft(" \t\r\n");
@@ -1990,7 +1996,7 @@ unsigned int CGUIInfoManager::Register(const CStdString &expression, int context
 
   CSingleLock lock(m_critInfo);
   // do we have the boolean expression already registered?
-  InfoBool test(condition, context);
+  InfoBool test(condition, context, contextAddon);
   for (unsigned int i = 0; i < m_bools.size(); ++i)
   {
     if (*m_bools[i] == test)
@@ -1998,9 +2004,9 @@ unsigned int CGUIInfoManager::Register(const CStdString &expression, int context
   }
 
   if (condition.find_first_of("|+[]!") != condition.npos)
-    m_bools.push_back(new InfoExpression(condition, context));
+    m_bools.push_back(new InfoExpression(condition, context, contextAddon));
   else
-    m_bools.push_back(new InfoSingle(condition, context));
+    m_bools.push_back(new InfoSingle(condition, context, contextAddon));
 
   return m_bools.size();
 }
@@ -2032,7 +2038,7 @@ bool CGUIInfoManager::EvaluateBool(const CStdString &expression, int contextWind
 
  Advantage is that we know this at creation time I think, so could perhaps signal it in IsDirty()?
  */
-bool CGUIInfoManager::GetBoolValue(unsigned int expression, const CGUIListItem *item)
+bool CGUIInfoManager::GetBoolValue(unsigned int expression, const CGUIListItem * const item)
 {
   if (expression && --expression < m_bools.size())
     return m_bools[expression]->Get(m_updateTime, item);
@@ -2041,7 +2047,7 @@ bool CGUIInfoManager::GetBoolValue(unsigned int expression, const CGUIListItem *
 
 // checks the condition and returns it as necessary.  Currently used
 // for toggle button controls and visibility of images.
-bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListItem *item)
+bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListItem *item, const ADDON::IAddon* const contextAddon)
 {
   bool bReturn = false;
   int condition = abs(condition1);
@@ -2148,7 +2154,7 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
     bReturn = m_playerShowCodec;
   else if (condition >= MULTI_INFO_START && condition <= MULTI_INFO_END)
   {
-    return GetMultiInfoBool(m_multiInfo[condition - MULTI_INFO_START], contextWindow, item);
+    return GetMultiInfoBool(m_multiInfo[condition - MULTI_INFO_START], contextWindow, item, contextAddon);
   }
   else if (condition == SYSTEM_HASLOCKS)
     bReturn = g_settings.GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE;
@@ -2476,7 +2482,7 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
 }
 
 /// \brief Examines the multi information sent and returns true or false accordingly.
-bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, const CGUIListItem *item)
+bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, const CGUIListItem *item, const ADDON::IAddon* const contextAddon)
 {
   bool bReturn = false;
   int condition = abs(info.m_info);
@@ -2530,6 +2536,12 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
           theme.ToLower();
           URIUtils::RemoveExtension(theme);
           bReturn = theme.Equals(m_stringParameters[info.GetData1()]);
+        }
+        break;
+      case ADDON_BOOL:
+        {
+          if(contextAddon)
+            bReturn = contextAddon->GetAddonBool(info.GetData1());
         }
         break;
       case STRING_IS_EMPTY:
@@ -2910,7 +2922,7 @@ bool CGUIInfoManager::GetMultiInfoInt(int &value, const GUIInfo &info, int conte
 }
 
 /// \brief Examines the multi information sent and returns the string as appropriate
-CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWindow, CStdString *fallback)
+CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWindow, CStdString *fallback, const ADDON::IAddon* const contextAddon)
 {
   if (info.m_info == SKIN_STRING)
   {
@@ -2919,6 +2931,12 @@ CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWi
   else if (info.m_info == SKIN_BOOL)
   {
     bool bInfo = g_settings.GetSkinBool(info.GetData1());
+    if (bInfo)
+      return g_localizeStrings.Get(20122);
+  }
+  else if (info.m_info == ADDON_BOOL && contextAddon)
+  {
+    bool bInfo = contextAddon->GetAddonBool(info.GetData1());
     if (bInfo)
       return g_localizeStrings.Get(20122);
   }
@@ -3100,7 +3118,7 @@ CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWi
     // in the future.
     AddonPtr addon;
     if (info.GetData2() == 0)
-      CAddonMgr::Get().GetAddon(const_cast<CGUIInfoManager*>(this)->GetLabel(info.GetData1(), contextWindow),addon,ADDON_UNKNOWN,false);
+      CAddonMgr::Get().GetAddon(const_cast<CGUIInfoManager*>(this)->GetLabel(info.GetData1(), contextWindow, NULL, contextAddon),addon,ADDON_UNKNOWN,false);
     else
       CAddonMgr::Get().GetAddon(m_stringParameters[info.GetData1()],addon,ADDON_UNKNOWN,false);
     if (addon && info.m_info == SYSTEM_ADDON_TITLE)

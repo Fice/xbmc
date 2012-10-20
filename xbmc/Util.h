@@ -69,6 +69,22 @@ Outputlterator copy_if( Inputlterator begin, Inputlterator end,
   return destBegin;
 }  
 
+
+template<class T, class Predicate = std::equal_to<typename T::value_type> >
+struct map_value_finder 
+    : public std::binary_function<typename T::value_type, 
+                                  typename Predicate::second_argument_type, 
+                                  bool>
+{
+public:
+  bool operator() (const typename T::value_type pair, 
+                   const typename Predicate::second_argument_type i) const
+  {
+    return Predicate()(pair.second, i);
+  }
+};
+
+
 class CUtil
 {
 public:
