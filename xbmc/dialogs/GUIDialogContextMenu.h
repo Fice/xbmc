@@ -21,6 +21,7 @@
  */
 
 #include "guilib/GUIDialog.h"
+#include "GUIContextMenuManager.h"
 
 class CMediaSource;
 
@@ -126,16 +127,9 @@ enum CONTEXT_BUTTON { CONTEXT_BUTTON_CANCELLED = 0,
                       CONTEXT_BUTTON_RECORD_ITEM,
                       CONTEXT_BUTTON_TAGS_ADD_ITEMS,
                       CONTEXT_BUTTON_TAGS_REMOVE_ITEMS,
-                      CONTEXT_BUTTON_USER1,
-                      CONTEXT_BUTTON_USER2,
-                      CONTEXT_BUTTON_USER3,
-                      CONTEXT_BUTTON_USER4,
-                      CONTEXT_BUTTON_USER5,
-                      CONTEXT_BUTTON_USER6,
-                      CONTEXT_BUTTON_USER7,
-                      CONTEXT_BUTTON_USER8,
-                      CONTEXT_BUTTON_USER9,
-                      CONTEXT_BUTTON_USER10
+                      CONTEXT_BUTTON_FIRST_CONTEXT_PLUGIN //NOTE: this has to be the last in this enum,
+                                      //because this one, and the ones higher will be used by context plugins
+
                     };
 
 class CContextButtons : public std::vector< std::pair<unsigned int, CStdString> >
@@ -143,6 +137,12 @@ class CContextButtons : public std::vector< std::pair<unsigned int, CStdString> 
 public:
   void Add(unsigned int, const CStdString &label);
   void Add(unsigned int, int label);
+};
+
+class ConvertFromContextItem 
+{
+public:
+  std::pair<unsigned int, CStdString> operator()(ContextItemPtr& input);
 };
 
 class CGUIDialogContextMenu :

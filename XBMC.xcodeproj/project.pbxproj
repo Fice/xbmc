@@ -25,6 +25,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		0E04BF8E1632C82B002700F6 /* ContextItemAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E04BF8C1632C82A002700F6 /* ContextItemAddon.cpp */; };
+		0E04BF901632C85B002700F6 /* GUIContextMenuManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E04BF8F1632C85B002700F6 /* GUIContextMenuManager.cpp */; };
+		0E04BF941632C875002700F6 /* IGUIContextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E04BF921632C875002700F6 /* IGUIContextItem.cpp */; };
 		183FDF8A11AF0B0500B81E9C /* PluginSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 183FDF8811AF0B0500B81E9C /* PluginSource.cpp */; };
 		18404DA61396C31B00863BBA /* SlingboxLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18404DA51396C31B00863BBA /* SlingboxLib.a */; };
 		1840B74D13993D8A007C848B /* JSONVariantParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1840B74B13993D8A007C848B /* JSONVariantParser.cpp */; };
@@ -1064,6 +1067,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0E04BF8C1632C82A002700F6 /* ContextItemAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContextItemAddon.cpp; sourceTree = "<group>"; };
+		0E04BF8D1632C82B002700F6 /* ContextItemAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContextItemAddon.h; sourceTree = "<group>"; };
+		0E04BF8F1632C85B002700F6 /* GUIContextMenuManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIContextMenuManager.cpp; sourceTree = "<group>"; };
+		0E04BF911632C862002700F6 /* GUIContextMenuManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIContextMenuManager.h; sourceTree = "<group>"; };
+		0E04BF921632C875002700F6 /* IGUIContextItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IGUIContextItem.cpp; sourceTree = "<group>"; };
+		0E04BF931632C875002700F6 /* IGUIContextItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IGUIContextItem.h; sourceTree = "<group>"; };
 		18308CB41303370800AA309E /* stat_utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stat_utf8.h; sourceTree = "<group>"; };
 		18308CB51303370800AA309E /* stdio_utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdio_utf8.h; sourceTree = "<group>"; };
 		183FDF8811AF0B0500B81E9C /* PluginSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PluginSource.cpp; sourceTree = "<group>"; };
@@ -3388,6 +3397,8 @@
 				F52BFFD9115D5574004B1D66 /* AddonStatusHandler.h */,
 				18B700DF13A6A5750009C1AF /* AddonVersion.cpp */,
 				18B700E013A6A5750009C1AF /* AddonVersion.h */,
+				0E04BF8C1632C82A002700F6 /* ContextItemAddon.cpp */,
+				0E04BF8D1632C82B002700F6 /* ContextItemAddon.h */,
 				18B49FF61152BFA5001AF8A6 /* DllAddon.h */,
 				18B7C38612942090009E7A26 /* GUIDialogAddonInfo.cpp */,
 				18B7C38712942090009E7A26 /* GUIDialogAddonInfo.h */,
@@ -4787,6 +4798,8 @@
 				E38E16910D25F9FA00618676 /* Favourites.h */,
 				E38E16920D25F9FA00618676 /* FileItem.cpp */,
 				E38E16930D25F9FA00618676 /* FileItem.h */,
+				0E04BF8F1632C85B002700F6 /* GUIContextMenuManager.cpp */,
+				0E04BF911632C862002700F6 /* GUIContextMenuManager.h */,
 				E38E1E3E0D25F9FD00618676 /* GUIInfoManager.cpp */,
 				E38E1E3F0D25F9FD00618676 /* GUIInfoManager.h */,
 				E38E17EE0D25F9FA00618676 /* GUILargeTextureManager.cpp */,
@@ -4794,6 +4807,8 @@
 				E38E17F20D25F9FA00618676 /* GUIPassword.cpp */,
 				E38E17F30D25F9FA00618676 /* GUIPassword.h */,
 				E38E17F60D25F9FA00618676 /* GUIUserMessages.h */,
+				0E04BF921632C875002700F6 /* IGUIContextItem.cpp */,
+				0E04BF931632C875002700F6 /* IGUIContextItem.h */,
 				E38E184F0D25F9FA00618676 /* IProgressCallback.h */,
 				E38E18580D25F9FA00618676 /* LangInfo.cpp */,
 				E38E18590D25F9FA00618676 /* LangInfo.h */,
@@ -7742,6 +7757,9 @@
 				F56352BF16E5403400D21BAD /* GUIWindowTestPattern.cpp in Sources */,
 				F56352C816E5436900D21BAD /* AppParamParser.cpp in Sources */,
 				F56353BF16E9BB3500D21BAD /* BitstreamConverter.cpp in Sources */,
+				0E04BF8E1632C82B002700F6 /* ContextItemAddon.cpp in Sources */,
+				0E04BF901632C85B002700F6 /* GUIContextMenuManager.cpp in Sources */,
+				0E04BF941632C875002700F6 /* IGUIContextItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
