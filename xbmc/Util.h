@@ -53,6 +53,22 @@ struct sortstringbyname
   }
 };
 
+/** Taken from: Efficte STL - 50 Specific Ways to improve your use of the standard template library
+ * Item: 37
+ **/
+template< typename Inputlterator, typename Outputlterator, typename Predicate>
+Outputlterator copy_if( Inputlterator begin, Inputlterator end,
+                       Outputlterator destBegin, Predicate p) 
+{
+  while (begin != end) 
+  {
+    if (p(*begin)) 
+      *destBegin++ = *begin;
+    ++begin;
+  }
+  return destBegin;
+}  
+
 class CUtil
 {
 public:
