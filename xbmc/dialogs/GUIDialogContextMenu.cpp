@@ -385,10 +385,6 @@ void CGUIDialogContextMenu::GetContextButtons(const CStdString &type, const CFil
   }
   if (share && !g_passwordManager.bMasterUser && item->m_iHasLock == 1)
     buttons.Add(CONTEXT_BUTTON_REACTIVATE_LOCK, 12353);
-  
-  std::list<ContextItemPtr> additional_context_items;
-  GUIContextMenuManager::Get().GetVisibleContextItems(0, &*item, additional_context_items);
-  std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(buttons), ConvertFromContextItem());  
 }
 
 bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileItemPtr item, CONTEXT_BUTTON button)
@@ -650,10 +646,7 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
   default:
     break;
   }
-  ContextItemPtr context_item = GUIContextMenuManager::Get().GetContextItemByID(button);
-  if (context_item==0)
-    return false;
-  return (*context_item)(&*item); //execute our context item logic
+  return false;
 }
 
 CMediaSource *CGUIDialogContextMenu::GetShare(const CStdString &type, const CFileItem *item)
