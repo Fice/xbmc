@@ -540,6 +540,10 @@ void CGUIWindowMusicPlayList::GetContextButtons(int itemNumber, CContextButtons 
     buttons.Add(CONTEXT_BUTTON_EDIT_PARTYMODE, 21439);
     buttons.Add(CONTEXT_BUTTON_CANCEL_PARTYMODE, 588);      // cancel party mode
   }
+  
+  std::list<ContextItemPtr> additional_context_items;
+  GUIContextMenuManager::Get().GetVisibleContextItems(0, &*(m_vecItems->Get(itemNumber)), additional_context_items);
+  std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(buttons), ConvertFromContextItem());  
 }
 
 bool CGUIWindowMusicPlayList::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
