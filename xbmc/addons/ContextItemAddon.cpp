@@ -80,21 +80,23 @@ CStdString CContextItemAddon::getLabel() const
   return m_label;
 }
   
-bool CContextItemAddon::isVisible(const CGUIListItem *item) const 
+bool CContextItemAddon::isVisible(const CFileItemPtr item) const 
 { 
   if(!Enabled())
     return false;
   if(!m_VisibleId)
     return m_bTrueOnNullId;
-  return g_infoManager.GetBoolValue(m_VisibleId, item);
+  return g_infoManager.GetBoolValue(m_VisibleId, &*item);
 } 
   
     //TODO: handle non-python addons
-bool CContextItemAddon::execute()
+bool CContextItemAddon::execute(const CFileItemPtr item)
 {
-
+  vector<CStdString> args;
+  args.push_back(item->GetPath());
+    
 #ifdef HAS_PYTHON
-  return  (g_pythonParser.evalFile(LibPath(), this->shared_from_this()) != -1);
+  return  (g_pythonParser.evalFile(LibPath(), args, this->shared_from_this()) != -1);
 #endif
   return false;
 }

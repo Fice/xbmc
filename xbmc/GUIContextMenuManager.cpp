@@ -24,8 +24,11 @@
 #include "addons/ContextItemAddon.h"
 #include "Util.h"
 #include "List.h"
-#include "IAddon.h"
+#include "addons/IAddon.h"
 #include <functional>
+#include <boost/mem_fn.hpp>
+
+#include <boost/bind.hpp>
 
 
 GUIContextMenuManager& GUIContextMenuManager::Get() 
@@ -73,10 +76,8 @@ bool GUIContextMenuManager::RegisterContextItem(ContextItemPtr cm)
 
 bool GUIContextMenuManager::UnregisterContextItem(ContextItemPtr cm) 
 {
-  contextIter it = remove_if(m_vecContextMenus.begin(), 
-                             m_vecContextMenus.end(), 
-                             std::bind2nd(IGUIContextItem::IDFinder(), cm->getMsgID())
-                            );
+  contextIter it = GetContextItemIterator(cm->getMsgID());
+  
   if(it!=m_vecContextMenus.end())
   {
     m_vecContextMenus.erase(it, m_vecContextMenus.end());
@@ -85,19 +86,23 @@ bool GUIContextMenuManager::UnregisterContextItem(ContextItemPtr cm)
   return false;
 }
 
+GUIContextMenuManager::contextIter GUIContextMenuManager::GetContextItemIterator(const unsigned int ID)
+{
+  return find_if(m_vecContextMenus.begin(), 
+                 m_vecContextMenus.end(), 
+                 std::bind2nd(IGUIContextItem::IDFinder(), ID)
+                 );
+}
 
 ContextItemPtr GUIContextMenuManager::GetContextItemByID(const unsigned int ID) 
 {
-  contextIter it = find_if(m_vecContextMenus.begin(), 
-                           m_vecContextMenus.end(), 
-                           std::bind2nd(IGUIContextItem::IDFinder(), ID)
-                          );
+  contextIter it = GetContextItemIterator(ID);
   if(it==m_vecContextMenus.end())
     return ContextItemPtr();
   return *it;
 }
 
-void GUIContextMenuManager::GetVisibleContextItems(int context/*TODO: */, const CGUIListItem * const item, std::list<ContextItemPtr> &visible)
+void GUIContextMenuManager::GetVisibleContextItems(int context/*TODO: */, const CFileItemPtr item, std::list<ContextItemPtr> &visible)
 {  
   copy_if (m_vecContextMenus.begin(), 
            m_vecContextMenus.end(), 

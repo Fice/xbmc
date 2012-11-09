@@ -132,7 +132,7 @@ void CGUIDialogFavourites::OnPopupMenu(int item)
   CFileItemPtr itemPtr = m_favourites->Get(item);
   
   std::list<ContextItemPtr> additional_context_items;
-  GUIContextMenuManager::Get().GetVisibleContextItems(0, &*itemPtr, additional_context_items);
+  GUIContextMenuManager::Get().GetVisibleContextItems(0, itemPtr, additional_context_items);
   std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(choices), ConvertFromContextItem());      
   
   int button = CGUIDialogContextMenu::ShowAndGetChoice(choices);
@@ -153,7 +153,7 @@ void CGUIDialogFavourites::OnPopupMenu(int item)
   
   ContextItemPtr context_item = GUIContextMenuManager::Get().GetContextItemByID(button);
   if(context_item!=0)
-    (*context_item)(&*itemPtr); //execute our context item logic
+    (*context_item)(itemPtr); //execute our context item logic
 }
 
 void CGUIDialogFavourites::OnMoveItem(int item, int amount)

@@ -114,7 +114,9 @@ namespace ADDON
     virtual bool ReloadSettings() =0;
 
     virtual bool GetAddonBool(int setting) const =0;
+    virtual CStdString GetAddonSettingString(int setting) const=0;
     virtual int TranslateAddonBool(const CStdString &setting) =0;
+    virtual int TranslateAddonSettingString(const CStdString &setting) =0;
   protected:
     virtual const AddonPtr Parent() const =0;
     virtual bool LoadSettings(bool bForce = false) =0;

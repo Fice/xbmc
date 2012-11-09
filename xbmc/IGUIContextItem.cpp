@@ -23,7 +23,7 @@
 
 
 
-bool IGUIContextItem::ContextVisiblePredicate::operator()(const ContextItemPtr& item, const CGUIListItem *listItem) const
+bool IGUIContextItem::ContextVisiblePredicate::operator()(const ContextItemPtr& item, const CFileItemPtr listItem) const
 { 
   return item->isVisible(listItem); 
 }

@@ -126,7 +126,9 @@ public:
   virtual void SaveSettings();
   
   virtual bool GetAddonBool(int setting) const;
+  virtual CStdString GetAddonSettingString(int setting) const;
   virtual int TranslateAddonBool(const CStdString &setting);
+  virtual int TranslateAddonSettingString(const CStdString &setting);
 
   /*! \brief Update a user-configured setting with a new value
    \param key the id of the setting to update

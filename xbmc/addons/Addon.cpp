@@ -525,10 +525,18 @@ bool CAddon::GetAddonBool(int setting) const
 {
   return CAddonMgr::Get().GetAddonBool(setting); 
 }
+CStdString CAddon::GetAddonSettingString(int setting) const
+{
+  return CAddonMgr::Get().GetAddonSettingString(setting);
+}
   
 int CAddon::TranslateAddonBool(const CStdString &settingName)
 {
   return CAddonMgr::Get().TranslateAddonBool(*this, settingName);
+}
+int CAddon::TranslateAddonSettingString(const CStdString &setting)
+{
+  return CAddonMgr::Get().TranslateAddonSettingString(*this, setting);
 }
 
 CStdString CAddon::GetSetting(const CStdString& key)

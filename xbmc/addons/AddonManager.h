@@ -38,6 +38,9 @@ namespace ADDON
   typedef std::map<TYPE, VECADDONS> MAPADDONS;
   typedef std::map<TYPE, VECADDONS>::iterator IMAPADDONS;
   typedef std::vector<cp_cfg_element_t*> ELEMENTS;
+  typedef std::map<int, CAddonString> MAPSTRING;
+  typedef MAPSTRING::iterator        IMAPSTRING;
+  typedef MAPSTRING::const_iterator  CIMAPSTRING;
   typedef std::map<int, CAddonBool> MAPBOOLS;
   typedef MAPBOOLS::iterator        IMAPBOOLS;
   typedef MAPBOOLS::const_iterator  CIMAPBOOLS;
@@ -121,7 +124,9 @@ namespace ADDON
     unsigned int GetMsgIdForContextAddon(CStdString AddonID);
     
     int TranslateAddonBool(CAddon &addon, const CStdString &settingName);
+    int TranslateAddonSettingString(CAddon& addon, const CStdString &settingName);
     bool GetAddonBool(int setting) const;
+    CStdString GetAddonSettingString(int setting) const;
     void UpdateBoolState(const CStdString &addonID, const CStdString &settingName, bool value);
 
     /* libcpluff */
@@ -183,6 +188,7 @@ namespace ADDON
                     std::map<CStdString, AddonPtr>& unresolved);
     
     IMAPBOOLS FindAddonBool(const CStdString &addonID, const CStdString & settingName); 
+    IMAPSTRING FindAddonSettingString(const CStdString &addonID, const CStdString & settingName);
 
     /* libcpluff */
     const cp_cfg_element_t *GetExtElement(cp_cfg_element_t *base, const char *path);
@@ -222,6 +228,7 @@ namespace ADDON
     CAddonDatabase m_database;
     
     MAPBOOLS m_addonBools;
+    MAPSTRING m_addonStrings;
   };
 
 }; /* namespace ADDON */

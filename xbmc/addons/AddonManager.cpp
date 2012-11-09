@@ -51,7 +51,7 @@
 #include "pvr/PVRManager.h"
 #include "pvr/addons/PVRClients.h"
 #include "Util.h"
-#include "GUIDialogContextMenu.h"
+#include "../dialogs/GUIDialogContextMenu.h"
 
 using namespace std;
 using namespace PVR;
@@ -740,7 +740,7 @@ int CAddonMgr::TranslateAddonBool(CAddon& addon, const CStdString &settingName)
   
     //We havent found it in our list... so check if there is a setting
     //with that name, that is of type 'bool'
-  const TiXmlElement *root = addon.GetSettingsXML(); //TODO: move stuff in an IsSettingType(Type, Setting);
+  const TiXmlElement *root = addon.GetSettingsXML(); 
   const TiXmlElement *category = NULL;
   if(root)
     category = root->FirstChildElement("category");
@@ -780,6 +780,69 @@ int CAddonMgr::TranslateAddonBool(CAddon& addon, const CStdString &settingName)
   return 0;  
 }      
 
+int CAddonMgr::TranslateAddonSettingString(CAddon& addon, const CStdString &settingName)
+{
+    //Check if already present
+  CIMAPSTRING result = FindAddonSettingString(addon.ID(), settingName);
+  if(result!=m_addonStrings.end())
+    return result->first;
+  
+  if(!addon.LoadSettings())
+    return 0;
+  
+  
+    //We havent found it in our list... so check if there is a setting
+    //with that name, that is of type 'bool'
+  const TiXmlElement *root = addon.GetSettingsXML(); 
+  const TiXmlElement *category = NULL;
+  if(root)
+    category = root->FirstChildElement("category");
+  if (!category)
+    category = root;
+  
+  while(category) {
+    const TiXmlElement *setting = category->FirstChildElement("setting");
+    while(setting) 
+    {  
+      const char *id = setting->Attribute("id");
+      
+      if (0 == strcmpi(id,settingName.c_str()))
+      {  //Now we know that the requested setting exists
+         //so we can go ahead and create our String class
+        int new_id = m_addonStrings.size();
+        
+          //Load the setting values, if not already present
+        addon.LoadUserSettings();
+        
+          //get the current value
+        CStdString value = addon.GetSetting(settingName);
+        
+        
+        MAPSTRING::value_type pair(new_id,
+                                   CAddonString(addon.ID() + "." + settingName, value));
+        m_addonStrings.insert(pair);
+        return new_id;
+      }          
+      setting = setting->NextSiblingElement("setting");
+    }
+    
+    category = category->NextSiblingElement("category");
+  }
+  
+  
+  return 0; //No setting found with that name
+}
+  
+CStdString CAddonMgr::GetAddonSettingString(int setting) const
+{
+  CIMAPSTRING it = m_addonStrings.find(setting);
+  if (it != m_addonStrings.end())
+    return (*it).second.value;
+    
+  // default is to return false
+  return "";
+}
+  
 bool CAddonMgr::GetAddonBool(int setting) const
 {
   CIMAPBOOLS it = m_addonBools.find(setting);
@@ -791,15 +854,23 @@ bool CAddonMgr::GetAddonBool(int setting) const
 }
         
         
-IMAPBOOLS CAddonMgr::FindAddonBool(const CStdString& addonName, const CStdString & settingName) 
+IMAPBOOLS CAddonMgr::FindAddonBool(const CStdString& addonName, const CStdString & settingName)
 {
-      
-      
   //Find the pair in the map where the value's name is equal to settingName
   return find_if(m_addonBools.begin(), 
                  m_addonBools.end(), 
                  std::bind2nd(map_value_finder<MAPBOOLS, 
-                              CAddonBool::NameCompare<> >(), 
+                                               NameFinder<CAddonBool> >(), 
+                              addonName + "." + settingName));
+}
+ 
+IMAPSTRING CAddonMgr::FindAddonSettingString(const CStdString& addonName, const CStdString& settingName)
+{
+    //Find the pair in the map where the value's name is equal to settingName
+  return find_if(m_addonStrings.begin(), 
+                 m_addonStrings.end(), 
+                 std::bind2nd(map_value_finder<MAPSTRING, 
+                                                NameFinder<CAddonString> >(), 
                               addonName + "." + settingName));
 }
 
