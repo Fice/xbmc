@@ -372,6 +372,7 @@ namespace INFO
 #define SKIN_ASPECT_RATIO           607
 
 #define ADDON_BOOL                  635
+#define ADDON_STRING                636
 
 #define SYSTEM_TOTAL_MEMORY         644
 #define SYSTEM_CPU_USAGE            645

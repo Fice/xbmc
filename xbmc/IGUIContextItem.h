@@ -26,7 +26,7 @@
 
 #include "boost/shared_ptr.hpp"
 #include "utils/StringUtils.h"
-#include "guilib/GUIListItem.h"
+#include "FileItem.h"
 #include <functional>
 
 class IGUIContextItem;
@@ -36,18 +36,21 @@ class IGUIContextItem
 {
 public:
   virtual unsigned int getMsgID() const =0;
+  bool isMsgID(const unsigned int Id) {
+    return getMsgID()==Id;
+  }
   virtual CStdString getLabel() const =0;
-  virtual bool isVisible(const CGUIListItem *item) const=0;
+  virtual bool isVisible(const CFileItemPtr item) const=0;
   virtual ~IGUIContextItem() {}
-  bool operator()(const CGUIListItem *item) {
+  bool operator()(const CFileItemPtr item) {
     if(!isVisible(item))
       return false;
-    return execute();
+    return execute(item);
   }
   
-  struct ContextVisiblePredicate : std::binary_function<ContextItemPtr, const CGUIListItem* const, bool>
+  struct ContextVisiblePredicate : std::binary_function<ContextItemPtr, const CFileItemPtr, bool>
   {
-    bool operator()(const ContextItemPtr& item, const CGUIListItem * const listItem) const;
+    bool operator()(const ContextItemPtr& item, const CFileItemPtr listItem) const;
   };
   
   struct IDFinder : std::binary_function<ContextItemPtr, unsigned int, bool>
@@ -57,7 +60,7 @@ public:
   
   
 protected:
-  virtual bool execute()=0;
+  virtual bool execute(const CFileItemPtr item)=0;
   
 };
 

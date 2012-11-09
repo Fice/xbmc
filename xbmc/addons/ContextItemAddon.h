@@ -20,7 +20,7 @@
  */
 #include "Addon.h"
 #include "../IGUIContextItem.h"
-#include "GUIListItem.h"
+#include "../guilib/GUIListItem.h"
 
 namespace ADDON
 {
@@ -39,9 +39,11 @@ namespace ADDON
     
     virtual unsigned int getMsgID() const { return m_id; }
     virtual CStdString getLabel() const;
-    virtual bool isVisible(const CGUIListItem *item) const;
+    virtual bool isVisible(const CFileItemPtr item) const;
+    
+    
   protected:
-    virtual bool execute();
+    virtual bool execute(const CFileItemPtr itemPath);
     unsigned int m_VisibleId;
     unsigned int m_id;
     CStdString m_label;

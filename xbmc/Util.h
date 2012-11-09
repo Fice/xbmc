@@ -69,6 +69,12 @@ Outputlterator copy_if( Inputlterator begin, Inputlterator end,
   return destBegin;
 }  
 
+template<class TYPE, class COMPARE_FUNCTION = std::equal_to<CStdString> >
+struct NameFinder : public std::binary_function<TYPE, CStdString, bool>
+{
+  bool operator()(const TYPE settingBool, const CStdString name) const { return COMPARE_FUNCTION()(settingBool.name,name); }
+};
+
 
 template<class T, class Predicate = std::equal_to<typename T::value_type> >
 struct map_value_finder 

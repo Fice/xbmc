@@ -1083,8 +1083,11 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, ADDON
     }
     else if (cat.name == "addon" && contextAddon)
     {
-       if (prop.name == "hassetting") {
+      if (prop.name == "hassetting") {
         return AddMultiInfo(GUIInfo(ADDON_BOOL, contextAddon->TranslateAddonBool(prop.param(0))));
+      }
+      if (prop.name == "getstringsetting") {
+        return AddMultiInfo(GUIInfo(ADDON_STRING, contextAddon->TranslateAddonSettingString(prop.param(0))));
       }
     }
     else if (cat.name == "window")
@@ -2939,6 +2942,10 @@ CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWi
     bool bInfo = contextAddon->GetAddonBool(info.GetData1());
     if (bInfo)
       return g_localizeStrings.Get(20122);
+  }
+  else if(info.m_info == ADDON_STRING)
+  {
+    return contextAddon->GetAddonSettingString(info.GetData1());
   }
   if (info.m_info >= LISTITEM_START && info.m_info <= LISTITEM_END)
   {

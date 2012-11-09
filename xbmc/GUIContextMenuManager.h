@@ -40,12 +40,14 @@ public:
   bool RegisterContextItem(ContextItemPtr cm);
   bool UnregisterContextItem(ContextItemPtr cm);
   ContextItemPtr GetContextItemByID(const unsigned int ID);
-  void GetVisibleContextItems(int context, const CGUIListItem *item, std::list<ContextItemPtr> &visible);
+  void GetVisibleContextItems(int context, const CFileItemPtr item, std::list<ContextItemPtr> &visible);
 protected:
   GUIContextMenuManager();
   
   typedef std::vector<ContextItemPtr>::iterator contextIter;
   std::vector<ContextItemPtr> m_vecContextMenus;
+  
+  contextIter GetContextItemIterator(const unsigned int ID);
 };
 
 

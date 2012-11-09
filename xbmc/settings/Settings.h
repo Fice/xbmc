@@ -80,12 +80,17 @@
    like special://masterprofile/ */
 #define PROFILES_FILE "special://masterprofile/profiles.xml"
 
-class CSkinString
+class CVisibilityString
 {
 public:
+  CVisibilityString(const CStdString& name, const CStdString& value) : name(name), value(value) {}
+  CVisibilityString() : name(), value() {}
   CStdString name;
   CStdString value;
 };
+
+typedef CVisibilityString CSkinString;
+typedef CVisibilityString CAddonString;
 
 class CVisibilityBool
 {
@@ -95,14 +100,11 @@ public:
   CStdString name;
   bool value;
   
-  template<class COMPARE_FUNCTION = std::equal_to<CStdString> >
-  struct NameCompare : public std::binary_function<CVisibilityBool, CStdString, bool>
-  {
-    bool operator()(const CVisibilityBool settingBool, const CStdString name) const { return COMPARE_FUNCTION()(settingBool.name,name); }
-  };
 };
 typedef CVisibilityBool CSkinBool;
 typedef CVisibilityBool CAddonBool;
+
+
 
 
 class CGUISettings;

@@ -428,7 +428,7 @@ void CGUIWindowVideoPlaylist::GetContextButtons(int itemNumber, CContextButtons 
   }
   
   std::list<ContextItemPtr> additional_context_items;
-  GUIContextMenuManager::Get().GetVisibleContextItems(0, &*(m_vecItems->Get(itemNumber)), additional_context_items);
+  GUIContextMenuManager::Get().GetVisibleContextItems(0, m_vecItems->Get(itemNumber), additional_context_items);
   std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(buttons), ConvertFromContextItem());  
 }
 
