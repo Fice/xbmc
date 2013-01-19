@@ -25,9 +25,6 @@
 namespace ADDON
 {
 
-    //TODO. listen to language changes, because we than have to reload the label!
-  
-    //TODO: handle other addon types than python once that's possible!
   class CContextItemAddon : public CAddon, public IGUIContextItem
   {
   public:

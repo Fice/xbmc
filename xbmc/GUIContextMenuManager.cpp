@@ -23,7 +23,6 @@
 #include "addons/AddonManager.h"
 #include "addons/ContextItemAddon.h"
 #include "Util.h"
-#include "List.h"
 #include "addons/IAddon.h"
 #include <functional>
 #include <boost/mem_fn.hpp>
