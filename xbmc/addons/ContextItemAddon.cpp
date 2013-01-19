@@ -25,6 +25,7 @@
 #include "interfaces/python/XBPython.h"
 #endif
 #include <boost/lexical_cast.hpp>
+#include <stdexcept>
 
 using namespace std;
 
@@ -37,11 +38,23 @@ CContextItemAddon::CContextItemAddon(const cp_extension_t *ext)
 
   m_id = CAddonMgr::Get().GetMsgIdForContextAddon(ID());
   
-  m_label = CAddonMgr::Get().GetTranslatedString(ext->configuration, "label");
-  if(m_label.empty())
+  CStdString labelStr = CAddonMgr::Get().GetExtValue(ext->configuration, "@label");
+  if(labelStr.empty())
   {
     m_label = Name();
     CLog::Log(LOGDEBUG, "ADDON: %s - failed to load label attribute, falling back to addon name %s.", ID().c_str(), Name().c_str());
+  } else {
+    if(StringUtils::IsNaturalNumber(labelStr)) {
+      int id = boost::lexical_cast<int>(labelStr);
+      m_label = GetString(id);
+      if(m_label.empty()) {
+        CLog::Log(LOGDEBUG, "ADDON: %s - label id %i not found using addon name %s", ID().c_str(), id, Name().c_str());
+        m_label = Name();
+      }
+    } else {
+      m_label = labelStr;
+    }
+    
   }
   
   CStdString visible = CAddonMgr::Get().GetExtValue(ext->configuration, "@visible");
@@ -75,7 +88,7 @@ CContextItemAddon::~CContextItemAddon()
     //after this item is destroyed (e.g. use shared_ptr/weak_ptr!)
 }
 
-CStdString CContextItemAddon::getLabel() const 
+CStdString CContextItemAddon::getLabel()
 {
   return m_label;
 }

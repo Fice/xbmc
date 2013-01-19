@@ -73,7 +73,9 @@ void CContextButtons::Add(unsigned int button, int label)
 
 std::pair<unsigned int, CStdString> ConvertFromContextItem::operator()(ContextItemPtr& input)
 {
-  return std::pair<unsigned int, CStdString>(input->getMsgID(), input->getLabel());
+  CStdString label = input->getLabel();
+  unsigned int id= input->getMsgID();
+  return std::pair<unsigned int, CStdString>(id, label);
 }
 
 CGUIDialogContextMenu::CGUIDialogContextMenu(void)
