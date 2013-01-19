@@ -39,7 +39,7 @@ public:
   bool isMsgID(const unsigned int Id) {
     return getMsgID()==Id;
   }
-  virtual CStdString getLabel() const =0;
+  virtual CStdString getLabel() =0;
   virtual bool isVisible(const CFileItemPtr item) const=0;
   virtual ~IGUIContextItem() {}
   bool operator()(const CFileItemPtr item) {

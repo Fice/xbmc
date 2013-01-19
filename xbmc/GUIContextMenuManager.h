@@ -26,7 +26,7 @@
  *
  */
 #include "IGUIContextItem.h"
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
 #include <list>
 #include <boost/noncopyable.hpp>
 

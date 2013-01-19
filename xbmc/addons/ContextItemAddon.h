@@ -35,14 +35,14 @@ namespace ADDON
     virtual ~CContextItemAddon();
     
     virtual unsigned int getMsgID() const { return m_id; }
-    virtual CStdString getLabel() const;
+    virtual CStdString getLabel();
     virtual bool isVisible(const CFileItemPtr item) const;
     
     
   protected:
     virtual bool execute(const CFileItemPtr itemPath);
-    unsigned int m_VisibleId;
     unsigned int m_id;
+    unsigned int m_VisibleId;
     CStdString m_label;
     bool m_bTrueOnNullId;
   };
