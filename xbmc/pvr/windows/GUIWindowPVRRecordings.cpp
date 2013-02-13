@@ -156,6 +156,11 @@ void CGUIWindowPVRRecordings::GetContextButtons(int itemNumber, CContextButtons 
 //  else
 //    buttons.Add(CONTEXT_BUTTON_SORTASC, 585);        /* Sort up or down */
 //}
+  
+  
+  std::list<ContextItemPtr> additional_context_items;
+  GUIContextMenuManager::Get().GetVisibleContextItems(0, pItem, additional_context_items);
+  std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(buttons), ConvertFromContextItem()); 
 }
 
 bool CGUIWindowPVRRecordings::OnAction(const CAction &action)

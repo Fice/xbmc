@@ -546,6 +546,11 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
   }
 
   CGUIWindowMusicBase::GetNonContextButtons(buttons);
+  
+  
+  std::list<ContextItemPtr> additional_context_items;
+  GUIContextMenuManager::Get().GetVisibleContextItems(0, item, additional_context_items);
+  std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(buttons), ConvertFromContextItem()); 
 }
 
 bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
