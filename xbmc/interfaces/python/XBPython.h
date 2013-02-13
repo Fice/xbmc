@@ -26,7 +26,6 @@
 #include "threads/CriticalSection.h"
 #include "interfaces/IAnnouncer.h"
 #include "addons/IAddon.h"
-
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
@@ -96,6 +95,7 @@ public:
   int GetPythonScriptId(int scriptPosition);
   int evalFile(const CStdString &src, ADDON::AddonPtr addon);
   int evalFile(const CStdString &src, const std::vector<CStdString> &argv, ADDON::AddonPtr addon);
+  int evalFile(const CStdString &src, PyObject* sysObject, char* sysName, ADDON::AddonPtr addon);
   int evalString(const CStdString &src, const std::vector<CStdString> &argv);
 
   bool isRunning(int scriptId);

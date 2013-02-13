@@ -82,6 +82,7 @@ XBPyThread::XBPyThread(XBPython *pExecuter, int id) : CThread("XBPyThread")
   m_source      = NULL;
   m_argc        = 0;
   m_type        = 0;
+  m_sysParameterPtr = NULL;
 }
 
 XBPyThread::~XBPyThread()
@@ -146,6 +147,12 @@ int XBPyThread::setArgv(const std::vector<CStdString> &argv)
     strcpy(m_argv[i], argv[i].c_str());
   }
   return 0;
+}
+
+void XBPyThread::setSysParameter(char* sysName, PyObject* sysObject)
+{
+  m_sysParameterPtr = sysObject;
+  m_sysParameterName = sysName; 
 }
 
 #define GC_SCRIPT \
@@ -245,6 +252,11 @@ void XBPyThread::Process()
   // set current directory and python's path.
   if (m_argv != NULL)
     PySys_SetArgv(m_argc, m_argv);
+  
+  if (m_sysParameterPtr != NULL) {
+      if(0!=PySys_SetObject(m_sysParameterName, m_sysParameterPtr))
+        CLog::Log(LOGDEBUG, "setSysParameter failed!");
+  }
 
   CLog::Log(LOGDEBUG, "%s - Setting the Python path to %s", __FUNCTION__, path.c_str());
 
