@@ -211,13 +211,19 @@ bool CGUIWindowPVRCommon::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     return false;
   CFileItemPtr pItem = m_parent->m_vecItems->Get(itemNumber);
 
-  return (OnContextButtonSortAsc(pItem.get(), button) ||
+  if (OnContextButtonSortAsc(pItem.get(), button) ||
       OnContextButtonSortBy(pItem.get(), button) ||
       OnContextButtonSortByChannel(pItem.get(), button) ||
       OnContextButtonSortByName(pItem.get(), button) ||
       OnContextButtonSortByDate(pItem.get(), button) ||
       OnContextButtonFind(pItem.get(), button) ||
-      OnContextButtonMenuHooks(pItem.get(), button));
+      OnContextButtonMenuHooks(pItem.get(), button))
+    return true;
+  
+  ContextItemPtr context_item = GUIContextMenuManager::Get().GetContextItemByID(button);
+  if(context_item==0)
+    return false;
+  return (*context_item)(pItem); //execute our context item logic
 }
 
 bool CGUIWindowPVRCommon::OnContextButtonSortByDate(CFileItem *item, CONTEXT_BUTTON button)
