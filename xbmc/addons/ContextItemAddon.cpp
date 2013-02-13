@@ -23,11 +23,20 @@
 #include "utils/log.h"
 #ifdef HAS_PYTHON
 #include "interfaces/python/XBPython.h"
+#include "interfaces/legacy/ListItem.h"
+#include "interfaces/python/swig.h"
 #endif
 #include <boost/lexical_cast.hpp>
 #include <stdexcept>
 
 using namespace std;
+
+
+namespace PythonBindings
+{
+  extern PyTypeObject PyXBMCAddon_xbmcgui_ListItem_Type;
+  extern TypeInfo TyXBMCAddon_xbmcgui_ListItem_Type;
+}
 
 namespace ADDON
 {
@@ -109,7 +118,16 @@ bool CContextItemAddon::execute(const CFileItemPtr item)
   args.push_back(item->GetPath());
     
 #ifdef HAS_PYTHON
-  return  (g_pythonParser.evalFile(LibPath(), args, this->shared_from_this()) != -1);
+  XBMCAddon::xbmcgui::ListItem* arg = new XBMCAddon::xbmcgui::ListItem(item);
+  
+  PyObject *py_arg = makePythonInstance(arg, 
+                                        &PythonBindings::PyXBMCAddon_xbmcgui_ListItem_Type, 
+                                        &PythonBindings::TyXBMCAddon_xbmcgui_ListItem_Type, 
+                                        true); //TODO: i have no idea if this is supposed to work
+  
+  return  (g_pythonParser.evalFile(LibPath(), py_arg, "item", this->shared_from_this()) != -1);
+  
+    //TODO: check if arg and py_arg gets deleted when script is done... no need for a memory leak
 #endif
   return false;
 }
