@@ -25,6 +25,7 @@
 #include "threads/Thread.h"
 #include "threads/Event.h"
 #include "addons/IAddon.h"
+#include <Python.h>
 
 class XBPython;
 
@@ -35,6 +36,7 @@ public:
   virtual ~XBPyThread();
   int evalFile(const CStdString &src);
   int evalString(const CStdString &src);
+  void setSysParameter(char* sysName, PyObject* sysObject);
   int setArgv(const std::vector<CStdString> &argv);
   bool isStopping();
   void stop();
@@ -46,6 +48,9 @@ protected:
   CEvent stoppedEvent;
   void *m_threadState;
 
+  PyObject*  m_sysParameterPtr;
+  char* m_sysParameterName;
+  
   char m_type;
   char *m_source;
   char **m_argv;
