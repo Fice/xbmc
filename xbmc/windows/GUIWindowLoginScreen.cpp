@@ -217,9 +217,11 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
 {
   if ( iItem < 0 || iItem >= m_vecItems->Size() ) return false;
 
-  bool bSelect = m_vecItems->Get(iItem)->IsSelected();
+  
+  CFileItemPtr pItem = m_vecItems->Get(iItem);
+  bool bSelect = pItem->IsSelected();
   // mark the item
-  m_vecItems->Get(iItem)->Select(true);
+  pItem->Select(true);
 
   CContextButtons choices;
   choices.Add(1, 20067);
@@ -227,6 +229,11 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
     choices.Add(2, 117); */
   if (iItem == 0 && g_passwordManager.iMasterLockRetriesLeft == 0)
     choices.Add(3, 12334);
+  
+  
+  std::list<ContextItemPtr> additional_context_items;
+  GUIContextMenuManager::Get().GetVisibleContextItems(0, pItem, additional_context_items);
+  std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(choices), ConvertFromContextItem());
 
   int choice = CGUIDialogContextMenu::ShowAndGetChoice(choices);
   if (choice == 3)
@@ -252,6 +259,12 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
     Update();
     m_viewControl.SetSelectedItem(0);
   }
+  
+  ContextItemPtr context_item = GUIContextMenuManager::Get().GetContextItemByID(choice);
+  if(context_item==0)
+    return false;
+  return (*context_item)(pItem); //execute our context item logic
+  
   //NOTE: this can potentially (de)select the wrong item if the filelisting has changed because of an action above.
   if (iItem < (int)g_settings.GetNumProfiles())
     m_vecItems->Get(iItem)->Select(bSelect);
