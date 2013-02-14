@@ -111,9 +111,6 @@ bool CContextItemAddon::isVisible(const CFileItemPtr item) const
     //TODO: handle non-python addons
 bool CContextItemAddon::execute(const CFileItemPtr item)
 {
-  vector<CStdString> args;
-  args.push_back(item->GetPath());
-    
 #ifdef HAS_PYTHON
   XBMCAddon::xbmcgui::ListItem* arg = new XBMCAddon::xbmcgui::ListItem(item);
   
