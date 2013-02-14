@@ -56,6 +56,7 @@ CContextItemAddon::CContextItemAddon(const cp_extension_t *ext)
     if(StringUtils::IsNaturalNumber(labelStr)) {
       int id = boost::lexical_cast<int>(labelStr);
       m_label = GetString(id);
+      ClearStrings();
       if(m_label.empty()) {
         CLog::Log(LOGDEBUG, "ADDON: %s - label id %i not found using addon name %s", ID().c_str(), id, Name().c_str());
         m_label = Name();
