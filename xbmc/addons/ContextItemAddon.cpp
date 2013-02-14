@@ -125,7 +125,7 @@ bool CContextItemAddon::execute(const CFileItemPtr item)
                                         &PythonBindings::TyXBMCAddon_xbmcgui_ListItem_Type, 
                                         true); //TODO: i have no idea if this is supposed to work
   
-  return  (g_pythonParser.evalFile(LibPath(), py_arg, "item", this->shared_from_this()) != -1);
+  return (g_pythonParser.evalFile(LibPath(), py_arg, (char*)"item", this->shared_from_this()) != -1);
   
     //TODO: check if arg and py_arg gets deleted when script is done... no need for a memory leak
 #endif
