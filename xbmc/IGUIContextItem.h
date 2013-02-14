@@ -67,7 +67,15 @@ protected:
 typedef boost::shared_ptr<IGUIContextItem> ContextItemPtr;
 
 
-
+template<unsigned int ID, unsigned int LABEL, typename PREDICATE, typename FUNCTION>
+class CoreContextItem : public IGUIContextItem
+{
+  virtual CStdString getLabel() { return g_localizeStrings.Get(LABEL); }
+  virtual unsigned int getMsgID() const { return ID; }
+  virtual bool isVisible(const CFileItemPtr item) const { return PREDICATE(item); }
+protected:
+  virtual bool execute(const CFileItemPtr item) { return FUNCTION(item); }
+};
 
 
 

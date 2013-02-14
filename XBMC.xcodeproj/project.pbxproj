@@ -1074,6 +1074,7 @@
 		0E04BF911632C862002700F6 /* GUIContextMenuManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIContextMenuManager.h; sourceTree = "<group>"; };
 		0E04BF921632C875002700F6 /* IGUIContextItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IGUIContextItem.cpp; sourceTree = "<group>"; };
 		0E04BF931632C875002700F6 /* IGUIContextItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IGUIContextItem.h; sourceTree = "<group>"; };
+		0E3F0E6516CD27FD00A71B9F /* FavouriteItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FavouriteItems.h; path = contextitems/FavouriteItems.h; sourceTree = "<group>"; };
 		18308CB41303370800AA309E /* stat_utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stat_utf8.h; sourceTree = "<group>"; };
 		18308CB51303370800AA309E /* stdio_utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdio_utf8.h; sourceTree = "<group>"; };
 		183FDF8811AF0B0500B81E9C /* PluginSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PluginSource.cpp; sourceTree = "<group>"; };
@@ -3376,6 +3377,14 @@
 			name = "System Libs and Frameworks";
 			sourceTree = "<group>";
 		};
+		0E3F0E5816CD25CD00A71B9F /* contextitems */ = {
+			isa = PBXGroup;
+			children = (
+				0E3F0E6516CD27FD00A71B9F /* FavouriteItems.h */,
+			);
+			name = contextitems;
+			sourceTree = "<group>";
+		};
 		18B49FF01152BEEB001AF8A6 /* addons */ = {
 			isa = PBXGroup;
 			children = (
@@ -4732,6 +4741,7 @@
 				18B49FF01152BEEB001AF8A6 /* addons */,
 				E38E147F0D25F9F900618676 /* cdrip */,
 				EC720A91155091CA00FFD782 /* commons */,
+				0E3F0E5816CD25CD00A71B9F /* contextitems */,
 				E38E149A0D25F9F900618676 /* cores */,
 				4313773012D647BB00680C15 /* dbwrappers */,
 				C84828E7156CFD5E005A996F /* epg */,
