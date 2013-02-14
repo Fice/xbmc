@@ -67,6 +67,24 @@ JSONRPC_STATUS CGUIOperations::ActivateWindow(const CStdString &method, ITranspo
   return ACK;
 }
 
+  //There's probably more involved to get this working, nevertheless ;)
+JSONRPC_STATUS CGUIOperations::GetContextMenu(const CStdString& method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result)
+{
+  std::list<ContextItemPtr> context_items;
+  GUIContextMenuManager::Get().GetVisibleContextItems(0, pItem, context_items);
+    //now serialize the content of context_items and return it!
+}
+
+JSONRPC_STATUS CGUIOperations::ExecuteContextMenu(const CStdString& method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result)
+{
+  int button; // = retrieve context item id from parameters
+  ContextItemPtr context_item = GUIContextMenuManager::Get().GetContextItemByID(button);
+  if(context_item==0)
+    return false;
+  return (*context_item)(m_vecItems->Get(itemNumber)); //execute our context item logic
+}
+
+
 JSONRPC_STATUS CGUIOperations::ShowNotification(const CStdString &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result)
 {
   string image = parameterObject["image"].asString();
