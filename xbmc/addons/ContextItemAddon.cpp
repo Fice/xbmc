@@ -83,10 +83,7 @@ CContextItemAddon::CContextItemAddon(const cp_extension_t *ext)
 
 CContextItemAddon::CContextItemAddon(const AddonProps &props)
   : CAddon(props), m_bTrueOnNullId(false)
-{
-    //TODO: find out how to get the visible and label values!
-
-}
+{ }
   
 CContextItemAddon::~CContextItemAddon() 
 { 
@@ -123,7 +120,7 @@ bool CContextItemAddon::execute(const CFileItemPtr item)
   PyObject *py_arg = makePythonInstance(arg, 
                                         &PythonBindings::PyXBMCAddon_xbmcgui_ListItem_Type, 
                                         &PythonBindings::TyXBMCAddon_xbmcgui_ListItem_Type, 
-                                        true); //TODO: i have no idea if this is supposed to work
+                                        true);
   
   return (g_pythonParser.evalFile(LibPath(), py_arg, (char*)"item", this->shared_from_this()) != -1);
   
