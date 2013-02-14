@@ -96,6 +96,8 @@ public:
   int evalFile(const CStdString &src, ADDON::AddonPtr addon);
   int evalFile(const CStdString &src, const std::vector<CStdString> &argv, ADDON::AddonPtr addon);
   int evalFile(const CStdString &src, PyObject* sysObject, char* sysName, ADDON::AddonPtr addon);
+  int evalFile(const CStdString &src, const std::vector<CStdString> &argv, PyObject* sysObject, char* sysName, ADDON::AddonPtr addon);
+
   int evalString(const CStdString &src, const std::vector<CStdString> &argv);
 
   bool isRunning(int scriptId);

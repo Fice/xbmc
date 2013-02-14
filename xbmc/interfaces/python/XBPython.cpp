@@ -677,48 +677,22 @@ bool XBPython::StopScript(const CStdString &path)
 int XBPython::evalFile(const CStdString &src, ADDON::AddonPtr addon)
 {
   std::vector<CStdString> argv;
-  return evalFile(src, argv, addon);
+  return evalFile(src, argv, NULL, NULL, addon);
 }
-
 
 int XBPython::evalFile(const CStdString &src, PyObject* sysObject, char* sysName, ADDON::AddonPtr addon)
 {
-  
-  CSingleExit ex(g_graphicsContext);
-    // return if file doesn't exist
-  if (!XFILE::CFile::Exists(src))
-  {
-    CLog::Log(LOGERROR, "Python script \"%s\" does not exist", CSpecialProtocol::TranslatePath(src).c_str());
-    return -1;
-  }
-  
-    // check if locked
-  if (g_settings.GetCurrentProfile().programsLocked() && !g_passwordManager.IsMasterLockUnlocked(true))
-    return -1;
-  
-  CSingleLock lock(m_critSection);
-  Initialize();
-  
-  if (!m_bInitialized) return -1;
-  
-  m_nextid++;
-  boost::shared_ptr<XBPyThread> pyThread = boost::shared_ptr<XBPyThread>(new XBPyThread(this, m_nextid));
-  pyThread->setSysParameter(sysName, sysObject);
-  pyThread->setAddon(addon);
-  pyThread->evalFile(src);
-  PyElem inf;
-  inf.id        = m_nextid;
-  inf.bDone     = false;
-  inf.strFile   = src;
-  inf.pyThread  = pyThread;
-  
-  m_vecPyList.push_back(inf);
-  
-  return m_nextid;
+  std::vector<CStdString> argv;
+  return evalFile(src, argv, sysObject, sysName, addon);
+}
+
+int XBPython::evalFile(const CStdString &src, const std::vector<CStdString> &argv, ADDON::AddonPtr addon)
+{
+  return evalFile(src, argv, NULL, NULL, addon);
 }
 
 // execute script, returns -1 if script doesn't exist
-int XBPython::evalFile(const CStdString &src, const std::vector<CStdString> &argv, ADDON::AddonPtr addon)
+int XBPython::evalFile(const CStdString &src, const std::vector<CStdString> &argv, PyObject* sysObject, char* sysName, ADDON::AddonPtr addon)
 {
   CSingleExit ex(g_graphicsContext);
   // return if file doesn't exist
@@ -740,6 +714,7 @@ int XBPython::evalFile(const CStdString &src, const std::vector<CStdString> &arg
   m_nextid++;
   boost::shared_ptr<XBPyThread> pyThread = boost::shared_ptr<XBPyThread>(new XBPyThread(this, m_nextid));
   pyThread->setArgv(argv);
+  pyThread->setSysParameter(sysName, sysObject);
   pyThread->setAddon(addon);
   pyThread->evalFile(src);
   PyElem inf;
