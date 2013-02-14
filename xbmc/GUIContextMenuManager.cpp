@@ -22,6 +22,7 @@
 #include "addons/Addon.h"
 #include "addons/AddonManager.h"
 #include "addons/ContextItemAddon.h"
+#include "contextitems/FavoriteContextItems.h"
 #include "Util.h"
 #include "addons/IAddon.h"
 #include <functional>
@@ -39,8 +40,12 @@ GUIContextMenuManager& GUIContextMenuManager::Get()
 GUIContextMenuManager::GUIContextMenuManager() 
 : m_vecContextMenus()
 {
+  ////////////
+  //Core Context Items
+  ////////////
   
-    //Add core context items
+    //general stuff
+  m_vecContextMenus.push_back(CMAddRemoveFavorite());
   
   
   

@@ -1565,40 +1565,11 @@ void CGUIMediaWindow::GetContextButtons(int itemNumber, CContextButtons &buttons
 
   if (item->GetProperty("pluginreplacecontextitems").asBoolean())
     return;
-
-  // TODO: FAVOURITES Conditions on masterlock and localisation
-  if (!item->IsParentFolder() && !item->GetPath().Equals("add") && !item->GetPath().Equals("newplaylist://") &&
-      !item->GetPath().Left(19).Equals("newsmartplaylist://") && !item->GetPath().Left(9).Equals("newtag://"))
-  {
-    if (CFavourites::IsFavourite(item.get(), GetID()))
-      buttons.Add(CONTEXT_BUTTON_ADD_FAVOURITE, 14077);     // Remove Favourite
-    else
-      buttons.Add(CONTEXT_BUTTON_ADD_FAVOURITE, 14076);     // Add To Favourites;
-  }
 }
 
 bool CGUIMediaWindow::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 {
-  switch (button)
-  {
-  case CONTEXT_BUTTON_ADD_FAVOURITE:
-    {
-      CFileItemPtr item = m_vecItems->Get(itemNumber);
-      CFavourites::AddOrRemove(item.get(), GetID());
-      return true;
-    }
-  case CONTEXT_BUTTON_PLUGIN_SETTINGS:
-    {
-      CURL plugin(m_vecItems->Get(itemNumber)->GetPath());
-      ADDON::AddonPtr addon;
-      if (CAddonMgr::Get().GetAddon(plugin.GetHostName(), addon))
-        if (CGUIDialogAddonSettings::ShowAndGetInput(addon))
-          Refresh();
-      return true;
-    }
-  default:
-    break;
-  }
+
   ContextItemPtr context_item = GUIContextMenuManager::Get().GetContextItemByID(button);
   if(context_item==0)
     return false;
