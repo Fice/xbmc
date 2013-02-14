@@ -43,7 +43,6 @@ protected:
   void OnClick(int item);
   void OnPopupMenu(int item);
   void OnMoveItem(int item, int amount);
-  void OnDelete(int item);
   void OnRename(int item);
   void OnSetThumb(int item);
   void UpdateList();

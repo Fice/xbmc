@@ -125,7 +125,6 @@ void CGUIDialogFavourites::OnPopupMenu(int item)
     choices.Add(1, 13332);
     choices.Add(2, 13333);
   }
-  choices.Add(3, 15015);
   choices.Add(4, 118);
   choices.Add(5, 20019);
   
@@ -144,8 +143,6 @@ void CGUIDialogFavourites::OnPopupMenu(int item)
     OnMoveItem(item, -1);
   else if (button == 2)
     OnMoveItem(item, 1);
-  else if (button == 3)
-    OnDelete(item);
   else if (button == 4)
     OnRename(item);
   else if (button == 5)
@@ -172,18 +169,6 @@ void CGUIDialogFavourites::OnMoveItem(int item, int amount)
   UpdateList();
 }
 
-void CGUIDialogFavourites::OnDelete(int item)
-{
-  if (item < 0 || item >= m_favourites->Size())
-    return;
-  m_favourites->Remove(item);
-  CFavourites::Save(*m_favourites);
-
-  CGUIMessage message(GUI_MSG_ITEM_SELECT, GetID(), FAVOURITES_LIST, item < m_favourites->Size() ? item : item - 1);
-  OnMessage(message);
-
-  UpdateList();
-}
 
 void CGUIDialogFavourites::OnRename(int item)
 {

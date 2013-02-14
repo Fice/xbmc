@@ -46,7 +46,7 @@ public:
 protected:
   virtual bool execute(const CFileItemPtr item) { 
     CFavourites::AddOrRemove(item.get(), 0); 
-    
+    g_windowManager.SendMessage(GUI_MSG_REFRESH_LIST ,0 , WINDOW_DIALOG_FAVOURITES);
     return true;
   }
   
