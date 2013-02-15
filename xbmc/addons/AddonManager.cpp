@@ -169,6 +169,8 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
     case ADDON_REPOSITORY:
       return AddonPtr(new CRepository(props));
     case ADDON_CONTEXT:
+      if(String(props->identifier).startsWith("contextitem.core"))
+        return CoreContextItemFactory::Create(props); //This on will return stuff like CMAddOrRemoveFavorite
       return AddonPtr(new CContextItemAddon(props));
     default:
       break;

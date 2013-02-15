@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <category label="128">
+      <setting label="Default Action" type="labelenum" values="Choose|Resume|Play" id="biogsource" default="Choose"/>
+  </category>
+</settings>
