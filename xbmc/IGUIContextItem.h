@@ -66,6 +66,37 @@ protected:
 
 typedef boost::shared_ptr<IGUIContextItem> ContextItemPtr;
 
+class CMNestedContextItem
+{
+public:
+  
+protected:
+    //At least one sub item visible!
+    //TODO: Perhabs we could optimize this: if only one submenu visible, show that one directly!
+  virtual bool isVisible(const CFileItemPtr item) const
+  {
+    std::vector<ContextItemPtr>::iterator = find_if (sub_context_items.begin(), 
+             sub_context_items.end(), 
+             std::bind2nd(IGUIContextItem::ContextVisiblePredicate(), item)
+             );
+    return iterator != sub_context_items.end();
+  }
+  
+  virtual bool execute(const CFileItemPtr item) {
+      //Get the visible ones
+    std::vector<ContextItemPtr> visible;
+    copy_if (sub_context_items.begin(), 
+             sub_context_items.end(), 
+             back_inserter(visible), 
+             std::bind2nd(IGUIContextItem::ContextVisiblePredicate(), item)
+             );
+    
+      //TODO: logic to actually open the context menu
+  }
+  
+  std::vector<ContextItemPtr> sub_context_items;
+}
+
 
 
 

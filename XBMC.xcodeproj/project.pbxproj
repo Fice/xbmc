@@ -1074,6 +1074,7 @@
 		0E04BF911632C862002700F6 /* GUIContextMenuManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIContextMenuManager.h; sourceTree = "<group>"; };
 		0E04BF921632C875002700F6 /* IGUIContextItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IGUIContextItem.cpp; sourceTree = "<group>"; };
 		0E04BF931632C875002700F6 /* IGUIContextItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IGUIContextItem.h; sourceTree = "<group>"; };
+		0E50EDE116CE7FA30074CC59 /* ManageContextItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ManageContextItems.h; path = contextitems/ManageContextItems.h; sourceTree = "<group>"; };
 		0E5EF36A16CD9CAF000A0264 /* FavoriteContextItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FavoriteContextItems.h; path = contextitems/FavoriteContextItems.h; sourceTree = "<group>"; };
 		18308CB41303370800AA309E /* stat_utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stat_utf8.h; sourceTree = "<group>"; };
 		18308CB51303370800AA309E /* stdio_utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdio_utf8.h; sourceTree = "<group>"; };
@@ -3380,6 +3381,7 @@
 		0E5EF36716CD9C91000A0264 /* contextitems */ = {
 			isa = PBXGroup;
 			children = (
+				0E50EDE116CE7FA30074CC59 /* ManageContextItems.h */,
 				0E5EF36A16CD9CAF000A0264 /* FavoriteContextItems.h */,
 			);
 			name = contextitems;
