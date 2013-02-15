@@ -45,8 +45,10 @@ GUIContextMenuManager::GUIContextMenuManager()
   ////////////
   
     //general stuff
+  /** addinf of those things is now done via the addon manager
+      that way we automatically respect if the core items are activated/deactivated
   m_vecContextMenus.push_back(CMAddRemoveFavorite());
-  
+  **/
   
   
     //Add context items from addons

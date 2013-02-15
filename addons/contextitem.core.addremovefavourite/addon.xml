@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="contextitem.core.addremovefavourite"
+       name="Add or Remove from Favourites"
+       version="1.0.0"
+       provider-name="Xbmc">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension point="xbmc.context" visible="false" label="Add or Remove from " library="addon.py">
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary>Adds or Removes a item from Favorites</summary>
+    <description>Core context menu that adds or removes an item from the favorites
+    </description>
+  </extension>
+</addon>
