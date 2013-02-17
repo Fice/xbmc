@@ -152,7 +152,9 @@ JsonRpcMethodMap CJSONServiceDescription::m_methodMaps[] = {
   { "GUI.ActivateWindow",                           CGUIOperations::ActivateWindow },
   { "GUI.ShowNotification",                         CGUIOperations::ShowNotification },
   { "GUI.SetFullscreen",                            CGUIOperations::SetFullscreen },
-
+  { "GUI.GetContextMenuItems",                      CGUIOperations::GetContextMenuItems },
+  { "GUI.ExecuteContextMenu",                       CGUIOperations::ExecuteContextMenu },
+  
 // PVR operations
   { "PVR.GetProperties",                            CPVROperations::GetProperties },
   { "PVR.GetChannelGroups",                         CPVROperations::GetChannelGroups },

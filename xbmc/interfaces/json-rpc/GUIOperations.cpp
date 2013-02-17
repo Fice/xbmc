@@ -28,6 +28,8 @@
 #include "addons/AddonManager.h"
 #include "settings/GUISettings.h"
 #include "utils/Variant.h"
+#include "GUIContextMenuManager.h"
+#include "windows/GUIMediaWindow.h"
 
 using namespace std;
 using namespace JSONRPC;
@@ -123,5 +125,75 @@ JSONRPC_STATUS CGUIOperations::GetPropertyValue(const CStdString &property, CVar
   else
     return InvalidParams;
 
+  return OK;
+}
+
+JSONRPC_STATUS CGUIOperations::GetContextMenuItems(const CStdString &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result)
+{
+  CGUIWindow *window = g_windowManager.GetWindow(g_windowManager.GetFocusedWindow());
+  CContextButtons buttons;
+  if (window->IsMediaWindow())
+  {
+      //Old way
+    ((CGUIMediaWindow *)window)->GetContextButtons(buttons);
+  }
+  
+  for(CContextButtons::iterator it=buttons.begin(); it!=buttons.end(); ++it)
+  {
+    CVariant currentButton;
+    
+  }
+  
+  /*
+   const CVariant &filter = parameterObject["filter"];
+  if (filter.isMember("artistid"))
+    artistID = (int)filter["artistid"].asInteger();
+  else if (filter.isMember("artist"))
+    musicUrl.AddOption("artist", filter["artist"].asString());
+  else if (filter.isMember("genreid"))
+    genreID = (int)filter["genreid"].asInteger();
+  else if (filter.isMember("genre"))
+    musicUrl.AddOption("genre", filter["genre"].asString());
+  else if (filter.isMember("albumid"))
+    albumID = (int)filter["albumid"].asInteger();
+  else if (filter.isMember("album"))
+    musicUrl.AddOption("album", filter["album"].asString());
+  else if (filter.isObject())
+  {
+    CStdString xsp;
+    if (!GetXspFiltering("songs", filter, xsp))
+      return InvalidParams;
+    
+    musicUrl.AddOption("xsp", xsp);
+  }
+  
+  SortDescription sorting;
+  ParseLimits(parameterObject, sorting.limitStart, sorting.limitEnd);
+  if (!ParseSorting(parameterObject, sorting.sortBy, sorting.sortOrder, sorting.sortAttributes))
+    return InvalidParams;
+  
+  CFileItemList items;
+  if (!musicdatabase.GetSongsNav(musicUrl.ToString(), items, genreID, artistID, albumID, sorting))
+    return InternalError;
+  
+  JSONRPC_STATUS ret = GetAdditionalSongDetails(parameterObject, items, musicdatabase);
+  if (ret != OK)
+    return ret;
+  
+  int size = items.Size();
+  if (items.HasProperty("total") && items.GetProperty("total").asInteger() > size)
+    size = (int)items.GetProperty("total").asInteger();
+  HandleFileItemList("songid", true, "songs", items, parameterObject, result, size, false);
+  */
+  return OK;
+}
+
+
+JSONRPC_STATUS CGUIOperations::ExecuteContextMenu(const CStdString &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result)
+{
+    //retrieve context id from parameters:
+  int contextId;
+  
+  
   return OK;
 }

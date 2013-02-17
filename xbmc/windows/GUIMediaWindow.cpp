@@ -1553,6 +1553,10 @@ bool CGUIMediaWindow::OnPopupMenu(int iItem)
   }
   return false;
 }
+void CGUIMediaWindow::GetContextButtons(CContextButtons button)
+{
+  GetContextButtons(m_viewControl.GetSelectedItem(), button);
+}
 
 void CGUIMediaWindow::GetContextButtons(int itemNumber, CContextButtons &buttons)
 {
