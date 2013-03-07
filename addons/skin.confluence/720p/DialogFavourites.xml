@@ -100,10 +100,43 @@
 						<font>font12_title</font>
 						<align>left</align>
 						<aligny>center</aligny>
+						<visible>!listitem.isdragged</visible>
 						<selectedcolor>selected</selectedcolor>
 						<info>ListItem.Label</info>
 					</control>
+					<control type="label">
+					    <posx>10</posx>
+						<posy>0</posy>
+						<width>350</width>
+						<height>40</height>
+						<font>font12_title</font>
+						<align>left</align>
+						<aligny>center</aligny>
+						<visible>listitem.isdragged</visible>
+						<selectedcolor>selected</selectedcolor>
+						<label>$INFO[ListItem.Label] ... dragging </label>
+				    </control>
 				</focusedlayout>
+				<draghint height="40">
+				    <control type="image">
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>450</width>
+						<height>16</height>
+						<texture>CalibrateSubtitles.png</texture>
+					</control>
+					<control type="label">
+					    <posx>390r</posx>
+						<posy>10</posy>
+						<width>350</width>
+						<height>40</height>
+						
+						<font>font12_title</font>
+						<align>left</align>
+						<aligny>center</aligny>
+					    <label>Insert here</label>
+				    </control>
+				</draghint>
 			</control>
 			<control type="label">
 				<description>Page label</description>
