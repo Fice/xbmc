@@ -3040,6 +3040,24 @@ bool CFileItem::LoadMusicTag()
   return false;
 }
 
+void CFileItemList::Move(int position, int move)
+{
+  int newPosition = position + move;
+  if(newPosition < 0 ||
+     (unsigned)newPosition >= m_items.size() ||
+     position < 0 ||
+     (unsigned)position >= m_items.size() ||
+     move == 0)
+    return;
+  int direction = (move>0) ? 1 : -1;
+  
+  for(; move!=0; move-=direction) 
+  {
+    std::swap(m_items[position], m_items[position+direction]);
+    position+=direction;
+  }
+}
+
 void CFileItemList::Swap(unsigned int item1, unsigned int item2)
 {
   if (item1 != item2 && item1 < m_items.size() && item2 < m_items.size())
