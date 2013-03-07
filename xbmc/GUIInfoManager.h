@@ -34,6 +34,9 @@
 #include "utils/Observer.h"
 #include "interfaces/info/SkinVariable.h"
 #include "cores/IPlayer.h"
+#include "FileItem.h"
+#include "guilib/GUIControl.h"
+#include "utils/log.h"
 
 #include <list>
 #include <map>
@@ -635,7 +638,8 @@ namespace INFO
 #define LISTITEM_VOTES              (LISTITEM_START + 139)
 
 #define LISTITEM_PROPERTY_START     (LISTITEM_START + 200)
-#define LISTITEM_PROPERTY_END       (LISTITEM_PROPERTY_START + 1000)
+#define LISTITEM__PROPERTY_SIZE     1000
+#define LISTITEM_PROPERTY_END       (LISTITEM_PROPERTY_START + LISTITEM__PROPERTY_SIZE)
 #define LISTITEM_END                (LISTITEM_PROPERTY_END)
 
 #define MUSICPLAYER_PROPERTY_OFFSET 800 // 100 id's reserved for musicplayer props.
@@ -643,6 +647,9 @@ namespace INFO
 
 #define CONDITIONAL_LABEL_START       LISTITEM_END + 1 // 36001
 #define CONDITIONAL_LABEL_END         37000
+
+#define DRAGGING_ITEM_BEGIN         (CONDITIONAL_LABEL_END + 1) //37001
+#define DRAGGING_ITEM_END           (DRAGGING_ITEM_BEGIN + LISTITEM__PROPERTY_SIZE)
 
 // the multiple information vector
 #define MULTI_INFO_START              40000
@@ -789,6 +796,23 @@ public:
   void ToggleShowCodec() { m_playerShowCodec = !m_playerShowCodec; };
   bool ToggleShowInfo() { m_playerShowInfo = !m_playerShowInfo; return m_playerShowInfo; };
   bool m_performingSeek;
+  
+  void DraggingStart(const std::vector<CStdString>& dragable, CFileItemPtr draggedFileItem) 
+  { 
+    m_draggableType.clear();
+    m_draggableType.reserve(dragable.size());
+    copy(dragable.begin(), dragable.end(), back_inserter(m_draggableType));
+    m_draggedFileItem = draggedFileItem;
+    m_isDragging = true; 
+  }
+  void DraggingStop() { m_isDragging = false; m_draggedFileItem = CFileItemPtr(); m_draggableType.clear(); }
+  void DragHover(CGUIControl* hoveredObject) {
+    ASSERT(m_isDragging);
+    CLog::Log(LOGNOTICE, "hovered object while dragging: %i", hoveredObject->GetID());
+    
+  }
+  CFileItemPtr GetDraggedFileItem() { return m_draggedFileItem; }
+
 
   std::string GetSystemHeatInfo(int info);
   CTemperature GetGPUTemperature();
@@ -937,6 +961,10 @@ protected:
   int m_libraryHasTVShows;
   int m_libraryHasMusicVideos;
   int m_libraryHasMovieSets;
+  
+  bool m_isDragging;
+  CFileItemPtr m_draggedFileItem;
+  std::vector<CStdString> m_draggableType;
 
   SPlayerVideoStreamInfo m_videoInfo;
   SPlayerAudioStreamInfo m_audioInfo;

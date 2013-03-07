@@ -32,6 +32,7 @@
 #include "utils/MathUtils.h"
 #include "utils/XBMCTinyXML.h"
 #include "input/MouseStat.h"
+#include "utils/Variant.h"
 
 using namespace std;
 
@@ -268,9 +269,7 @@ void CGUIBaseContainer::Render()
       else
         RenderItem(focusedPos, origin.y, focusedItem.get(), true);
     }
-
-    
-    
+  
     g_graphicsContext.RestoreClipRegion();
   }
   

@@ -115,6 +115,7 @@ CGUIInfoManager::CGUIInfoManager(void) :
   m_fps = 0.0f;
   m_AVInfoValid = false;
   ResetLibraryBools();
+  m_isDragging = false;
 }
 
 CGUIInfoManager::~CGUIInfoManager(void)
@@ -565,7 +566,8 @@ const infomap listitem_labels[]= {{ "thumb",            LISTITEM_THUMB },
                                   { "progress",         LISTITEM_PROGRESS },
                                   { "dateadded",        LISTITEM_DATE_ADDED },
                                   { "dbtype",           LISTITEM_DBTYPE },
-                                  { "dbid",             LISTITEM_DBID }};
+                                  { "dbid",             LISTITEM_DBID },
+                                  { "isdragged",        LISTITEM_ISDRAGGED }};
 
 const infomap visualisation[] =  {{ "locked",           VISUALISATION_LOCKED },
                                   { "preset",           VISUALISATION_PRESET },
@@ -652,6 +654,7 @@ const infomap slideshow[] =      {{ "ispaused",         SLIDESHOW_ISPAUSED },
                                   { "isactive",         SLIDESHOW_ISACTIVE },
                                   { "isvideo",          SLIDESHOW_ISVIDEO },
                                   { "israndom",         SLIDESHOW_ISRANDOM }};
+
 
 const int picture_slide_map[]  = {/* LISTITEM_PICTURE_RESOLUTION => */ SLIDE_RESOLUTION,
                                   /* LISTITEM_PICTURE_LONGDATE   => */ SLIDE_EXIF_LONG_DATE,
@@ -1165,6 +1168,17 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
   }
   else if (info.size() == 3)
   {
+    if (info[0].name == "dragndrop" && info[1].name == "item")
+    {
+      int ret = TranslateListItem(info[2]);
+      
+      if(ret == 0)
+        return 0;
+      
+      ret = (ret - LISTITEM_START);
+      ret += DRAGGING_ITEM_BEGIN;
+      return ret;
+    }
     if (info[0].name == "system" && info[1].name == "platform")
     { // TODO: replace with a single system.platform
       CStdString platform = info[2].name;
@@ -1283,6 +1297,14 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, CStdString *fa
       strLabel = GetItemLabel(item.get(), info, fallback);
     }
 
+    return strLabel;
+  }
+
+  if (info >= DRAGGING_ITEM_BEGIN && info <= DRAGGING_ITEM_END)
+  {
+    int listitemInfo = info - DRAGGING_ITEM_BEGIN + LISTITEM_START;
+    if(m_draggedFileItem)
+      strLabel = GetItemLabel(&*m_draggedFileItem, listitemInfo, fallback);
     return strLabel;
   }
 
@@ -4967,6 +4989,11 @@ bool CGUIInfoManager::GetItemBool(const CGUIListItem *item, int condition) const
       {
         return pItem->HasEPGInfoTag();
       }
+    }
+    else if (condition == LISTITEM_ISDRAGGED)
+    {
+      CVariant isDragged = pItem->HasProperty(ITEM_IS_DRAGGED_FLAG);
+      return isDragged.asBoolean();
     }
     else if (condition == LISTITEM_ISENCRYPTED)
     {
