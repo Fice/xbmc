@@ -29,6 +29,7 @@
 #include "FileItem.h"
 #include "guilib/LocalizeStrings.h"
 #include "storage/MediaManager.h"
+#include "utils/log.h"
 
 using namespace XFILE;
 
@@ -68,6 +69,10 @@ bool CGUIDialogFavourites::OnMessage(CGUIMessage &message)
         return false;
       return true;
     }
+  }
+  else if (message.GetMessage() == GUI_MSG_IN_LIST_DRAGGED)
+  {
+    OnMoveItem(message.GetParam1(), message.GetParam2());
   }
   else if (message.GetMessage() == GUI_MSG_WINDOW_DEINIT)
   {
@@ -148,12 +153,15 @@ void CGUIDialogFavourites::OnPopupMenu(int item)
 
 void CGUIDialogFavourites::OnMoveItem(int item, int amount)
 {
-  if (item < 0 || item >= m_favourites->Size() || m_favourites->Size() <= 1 || 0 == amount) return;
+  if (item < 0 || 
+      item >= m_favourites->Size() ||
+      0 == amount) 
+    return;
 
   int nextItem = (item + amount) % m_favourites->Size();
   if (nextItem < 0) nextItem += m_favourites->Size();
-
-  m_favourites->Swap(item, nextItem);
+  
+  m_favourites->Move(item, nextItem-item);
   CFavourites::Save(*m_favourites);
 
   CGUIMessage message(GUI_MSG_ITEM_SELECT, GetID(), FAVOURITES_LIST, nextItem);
@@ -229,6 +237,21 @@ void CGUIDialogFavourites::UpdateList()
   int currentItem = GetSelectedItem();
   CGUIMessage message(GUI_MSG_LABEL_BIND, GetID(), FAVOURITES_LIST, currentItem >= 0 ? currentItem : 0, 0, m_favourites);
   OnMessage(message);
+}
+
+void CGUIDialogFavourites::OnWindowLoaded()
+{ 
+  // mark our list as orderable
+  try {
+    CGUIControl* pControl = (CGUIControl *)GetControl(FAVOURITES_LIST);
+    CGUIBaseContainer* pContainer = dynamic_cast<CGUIBaseContainer*>(pControl);
+    pContainer->SetReorderable();
+  } 
+  catch(...) 
+  {
+    CLog::Log(LOGNOTICE, "No in-list drag&drop available in Favourites, because the control with id %i is not a container", FAVOURITES_LIST);
+  }
+  CGUIWindow::OnWindowLoaded();
 }
 
 CFileItemPtr CGUIDialogFavourites::GetCurrentListItem(int offset)
