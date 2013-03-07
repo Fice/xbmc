@@ -72,6 +72,8 @@ CGUIBaseContainer::CGUIBaseContainer(int parentID, int controlID, float posX, fl
   m_cacheItems = preloadItems;
   m_scrollItemsPerFrame = 0.0f;
   m_type = VIEW_TYPE_NONE;
+  m_draggedObject = -1;
+  m_draggedScrollDirection = 0;
 }
 
 CGUIBaseContainer::~CGUIBaseContainer(void)
@@ -93,6 +95,11 @@ void CGUIBaseContainer::Process(unsigned int currentTime, CDirtyRegionList &dirt
 
   if (m_bInvalidated)
     UpdateLayout();
+  
+  if(m_draggedScrollDirection && !m_scroller.IsScrolling())
+  {
+    Scroll(m_draggedScrollDirection);
+  }
 
   if (!m_layout || !m_focusedLayout) return;
 
@@ -261,8 +268,13 @@ void CGUIBaseContainer::Render()
         RenderItem(focusedPos, origin.y, focusedItem.get(), true);
     }
 
+    
+    
     g_graphicsContext.RestoreClipRegion();
   }
+  
+  CGUITexture::DrawQuad(m_dragHint_, 0x4c00ff00);
+
 
   CGUIControl::Render();
 }
@@ -660,7 +672,8 @@ CGUIListItemLayout *CGUIBaseContainer::GetFocusedLayout() const
 bool CGUIBaseContainer::OnMouseOver(const CPoint &point)
 {
   // select the item under the pointer
-  SelectItemFromPoint(point - CPoint(m_posX, m_posY));
+  if(m_draggedObject==-1) //only if we are not dragging anything
+    SelectItemFromPoint(point - CPoint(m_posX, m_posY));
   return CGUIControl::OnMouseOver(point);
 }
 
@@ -721,7 +734,220 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
     ScrollToOffset(toOffset);
     return EVENT_RESULT_HANDLED;
   }
+  else if (event.m_id == ACTION_MOUSE_DRAG && CanDrag()) {
+    if (event.m_state == 1)
+    { // grab exclusive access
+      CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, GetID(), GetParentID());
+      SendWindowMessage(msg);
+      
+      int selected = GetSelectedItem();
+      if (selected >= 0 && selected < (int)m_items.size())
+      {
+        m_draggedObject = selected;
+        m_items[selected]->SetProperty(ITEM_IS_DRAGGED_FLAG, CVariant(true));
+      
+        //show the drag handle
+        
+        //show the drag hint
+      }
+    }
+    else if (event.m_state == 2)
+    {
+      CPoint insertPoint;
+      int newPosition = calculateDragInsertPosition(point, insertPoint);
+      
+      if(newPosition>-2)
+      { //it seems, the user wants to drop the item on our list
+        
+          //enable visual clues, in case they are currently not visible
+        m_items[m_draggedObject]->SetProperty(ITEM_IS_DRAGGED_FLAG, CVariant(true));
+        
+        if (newPosition < m_draggedObject)
+          newPosition++;
+        
+        if(newPosition!=m_draggedObject)
+        {
+          if (m_orientation == VERTICAL)
+          {
+            
+            m_dragHint_.SetRect(GetXPosition(), insertPoint.y-(height/2), GetXPosition()+GetWidth(), insertPoint.y+(height/2));
+          }
+          else
+          {
+            m_dragHint_.SetRect(insertPoint.x, GetYPosition(), insertPoint.x+10, GetYPosition()+GetHeight());
+          }
+        }
+        else
+        {
+          m_dragHint_.SetRect(0,0,0,0);
+        }
+
+        
+        
+          //do we need to scroll?
+        if (newPosition == m_offset) //are we hovering the first element?
+        { //then move up
+          m_draggedScrollDirection = -1;
+        }
+        else if (newPosition == m_offset + m_itemsPerPage - 1) //Are we hovering the last element?
+        { //then move down
+          m_draggedScrollDirection = 1;
+        }
+        else 
+        { //stop scrolling
+          m_draggedScrollDirection = 0;
+        }
+
+      }
+      else 
+      { //We are not currently dropping the item on this list,
+        //so we disable the visual clues
+        m_items[m_draggedObject]->SetProperty(ITEM_IS_DRAGGED_FLAG, CVariant(false));
+        
+        //and also stop scrolling
+        m_draggedScrollDirection = 0;
+        
+        m_dragHint_.SetRect(0,0,0,0); //Disable drag hint
+      }
+
+    }
+    else if (event.m_state == 3)
+    { // release exclusive access
+      CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, 0, GetParentID());
+      SendWindowMessage(msg);
+      
+      m_draggedScrollDirection = 0;
+      
+        //remove "in dragging" flag of current item
+      m_items[m_draggedObject]->ClearProperty(ITEM_IS_DRAGGED_FLAG); 
+      CPoint insertPoint;
+      int newPosition = calculateDragInsertPosition(point, insertPoint);
+        //Valid positions from -1 (move item to the beginning of the list) to list.size
+      if(newPosition>-2)  //make sure the item was droppen on our list
+      {
+        if(newPosition < m_draggedObject)
+          newPosition++;
+        
+        CLog::Log(LOGERROR, "newPosition: %i, oldPosition: %i", newPosition, m_draggedObject);
+        if(newPosition!=m_draggedObject)
+        {
+          CGUIMessage msg2(GUI_MSG_IN_LIST_DRAGGED, 0, 
+                           GetParentID(), 
+                           m_draggedObject, 
+                           newPosition-m_draggedObject);
+          SendWindowMessage(msg2);
+        }
+      }
+        
+        //remove drag handle
+      
+        //remove drag hint
+      m_dragHint_.SetRect(0,0,0,0);
+      
+      
+      m_draggedObject = -1;
+    }
+  }
   return EVENT_RESULT_UNHANDLED;
+}
+
+void CGUIBaseContainer::SetReorderable(bool reorderable)
+{
+  string dragableType = "in_list_dragging";
+  int id = GetID();
+  if(id)
+    dragableType += id;
+  
+  std::vector<CGUIListItemLayout>::iterator it;
+  
+  if(reorderable)
+  { 
+    for(it = m_focusedLayouts.begin(); it!=m_focusedLayouts.end(); ++it)
+    {
+      it->AddDragable(dragableType);
+      it->AddDropable(dragableType);
+    }    
+  } 
+  else {
+    for(it = m_focusedLayouts.begin(); it!=m_focusedLayouts.end(); ++it)
+    {
+      it->RemoveDragable(dragableType);
+      it->RemoveDropable(dragableType);
+    }  
+  }
+
+}
+
+bool CGUIBaseContainer::CanDrag() const
+{
+  if(m_focusedLayout)
+  {
+    return !m_focusedLayout->GetDragable().empty();
+  }
+  return false;
+}
+
+
+int CGUIBaseContainer::calculateDragInsertPosition(const CPoint& point, CPoint& hintPosition)
+{  
+  if(!HitTest(point))
+    return -2;  
+  
+  int offset = (int)floorf(m_scroller.GetValue() / m_layout->Size(m_orientation));
+  
+  
+  CPoint origin = CPoint(m_posX, m_posY) + m_renderOffset;
+  float pos = (m_orientation == VERTICAL) ? origin.y : origin.x;
+  float end = (m_orientation == VERTICAL) ? m_posY + m_height : m_posX + m_width;
+    // we offset our draw position to take into account scrolling and whether or not our focused
+    // item is offscreen "above" the list.
+  float drawOffset = (offset) * m_layout->Size(m_orientation) - m_scroller.GetValue();
+  if (GetOffset() + GetCursor() < offset)
+    drawOffset += m_focusedLayout->Size(m_orientation) - m_layout->Size(m_orientation);
+  pos += drawOffset;
+  end += m_layout->Size(m_orientation);
+  
+  int current = offset;
+  while (pos < end && m_items.size())
+  {
+    int itemNo = CorrectOffset(current, 0);
+    if (itemNo >= (int)m_items.size())
+      break;
+    bool focused = (current == GetOffset() + GetCursor());
+    const CGUIListItemLayout& current_layout(focused ? *m_focusedLayout : *m_layout);
+    if (itemNo >= 0)
+    {
+      CGUIListItemPtr item = m_items[itemNo];
+      
+      float orientationPos = pos+current_layout.Size(m_orientation);
+      if (m_orientation == VERTICAL && pos<point.y && orientationPos>point.y)
+      { //we have our element!
+        if(point.y<pos+(current_layout.Size(m_orientation)/2)) //is the mouse in the left side?
+        {
+          hintPosition.y = pos;
+          return --itemNo;
+          
+        }
+        hintPosition.y = orientationPos;
+        return itemNo;
+      }
+      else if (m_orientation == HORIZONTAL && pos<point.x && orientationPos>point.x)
+      { //We have our element!
+        if(point.x<pos+(current_layout.Size(m_orientation)/2)) //is the mouse in the top part
+        {
+          hintPosition.x = pos;
+          return --itemNo;
+        }
+        hintPosition.x = orientationPos;
+        return itemNo;
+      }
+    }
+      // increment our position
+    pos += current_layout.Size(m_orientation);
+    current++;
+  }
+  
+  return -2; //not dropped on our list
 }
 
 bool CGUIBaseContainer::OnClick(int actionID)

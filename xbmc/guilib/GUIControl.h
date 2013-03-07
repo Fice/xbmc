@@ -240,6 +240,21 @@ public:
   void SetParentControl(CGUIControl *control) { m_parentControl = control; };
   CGUIControl *GetParentControl(void) const { return m_parentControl; };
   virtual void SaveStates(std::vector<CControlState> &states);
+  
+  bool IsDropable(const std::vector<CStdString>& dragable) const;
+  void SetDragable(const std::vector<std::string>& dragable) 
+  {
+    m_dragable.clear();
+    m_dragable.reserve(dragable.size());
+    copy(dragable.begin(),dragable.end(),back_inserter(m_dragable));
+  }
+  void SetDropable(const std::vector<std::string>& dropable) 
+  {
+    m_dropable.clear();
+    m_dropable.reserve(dropable.size());
+    copy(dropable.begin(),dropable.end(),back_inserter(m_dropable));
+  }
+  
 
   enum GUICONTROLTYPES {
     GUICONTROL_UNKNOWN,
@@ -350,6 +365,9 @@ protected:
   bool m_enabled;
 
   bool m_pushedUpdates;
+  
+  std::vector<CStdString> m_dropable; //What kind of items are droppable on this one?
+  std::vector<CStdString> m_dragable;
 
   // animation effects
   std::vector<CAnimation> m_animations;

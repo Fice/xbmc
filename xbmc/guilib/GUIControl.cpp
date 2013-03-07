@@ -946,6 +946,13 @@ void CGUIControl::SaveStates(vector<CControlState> &states)
   // empty for now - do nothing with the majority of controls
 }
 
+
+bool CGUIControl::IsDropable(const std::vector<CStdString>& dragable) const
+{
+  std::vector<CStdString>::const_iterator it = find_first_of(m_dropable.begin(), m_dropable.end(), dragable.begin(), dragable.end());
+  return it!= m_dropable.end();
+}
+
 void CGUIControl::SetHitRect(const CRect &rect)
 {
   m_hitRect = rect;

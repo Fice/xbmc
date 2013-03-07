@@ -25,6 +25,7 @@
 #include "GUIListLabel.h"
 #include "GUIImage.h"
 #include "utils/XBMCTinyXML.h"
+#include "utils/XMLUtils.h"
 
 using namespace std;
 
@@ -40,7 +41,7 @@ CGUIListItemLayout::CGUIListItemLayout()
 }
 
 CGUIListItemLayout::CGUIListItemLayout(const CGUIListItemLayout &from)
-: m_group(from.m_group), m_isPlaying(from.m_isPlaying)
+: m_group(from.m_group), m_dragable(from.m_dragable), m_dropable(from.m_dropable), m_isPlaying(from.m_isPlaying)
 {
   m_width = from.m_width;
   m_height = from.m_height;
@@ -183,6 +184,18 @@ void CGUIListItemLayout::LoadLayout(TiXmlElement *layout, int context, bool focu
   // ensure width and height are valid
   m_width = std::max(1.0f, m_width);
   m_height = std::max(1.0f, m_height);
+  
+  if(focused)
+  {
+    std::vector<std::string> dropable;
+    std::vector<std::string> dragable;
+  
+    XMLUtils::GetStringArray(layout, "dragable", dragable, false, "");
+    XMLUtils::GetStringArray(layout, "dropable", dropable, false, "");
+  
+    SetDragable(dragable);
+    SetDropable(dropable);
+  }
 }
 
 //#ifdef PRE_SKIN_VERSION_9_10_COMPATIBILITY

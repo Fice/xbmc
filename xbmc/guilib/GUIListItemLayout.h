@@ -59,6 +59,28 @@ public:
   virtual void DumpTextureUse();
 #endif
   bool CheckCondition();
+  
+  void AddDragable(const CStdString& str) { m_dragable.push_back(str); }
+  void AddDropable(const CStdString& str) { m_dropable.push_back(str); }
+  
+  const std::vector<CStdString>& GetDragable() const { return m_dragable; }
+  const std::vector<CStdString>& GetDropable() const { return m_dropable; }
+  
+  void SetDragable(const std::vector<std::string>& dragable) 
+  {
+    m_dragable.clear();
+    m_dragable.reserve(m_dragable.size());
+    copy(dragable.begin(), dragable.end(), back_inserter(m_dragable));
+  }
+  void SetDropable(const std::vector<std::string>& dropable) 
+  {
+    m_dropable.clear();
+    m_dropable.reserve(m_dropable.size());
+    copy(dropable.begin(), dropable.end(), back_inserter(m_dropable));
+  }
+  
+  void RemoveDragable(const CStdString& str) { m_dragable.erase(remove(m_dragable.begin(), m_dragable.end(), str)); }
+  void RemoveDropable(const CStdString& str) { m_dropable.erase(remove(m_dropable.begin(), m_dropable.end(), str)); }
 protected:
   void LoadControl(TiXmlElement *child, CGUIControlGroup *group);
   void Update(CFileItem *item);
@@ -69,6 +91,9 @@ protected:
   float m_height;
   bool m_focused;
   bool m_invalidated;
+  
+  std::vector<CStdString> m_dragable;
+  std::vector<CStdString> m_dropable;
 
   unsigned int m_condition;
   CGUIInfoBool m_isPlaying;

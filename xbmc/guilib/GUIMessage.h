@@ -133,6 +133,11 @@
 
 #define GUI_MSG_WINDOW_LOAD 43
 
+/*!
+ \brief Notify a Dialog/Window, that one of it's list item has been dragged
+ */
+#define GUI_MSG_IN_LIST_DRAGGED 44
+
 #define GUI_MSG_USER         1000
 
 /*!

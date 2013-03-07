@@ -32,6 +32,9 @@
 
 typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;
 
+
+#define ITEM_IS_DRAGGED_FLAG "isdragged"
+
 /*!
  \ingroup controls
  \brief
@@ -104,6 +107,11 @@ public:
    \param offset CPoint holding the offset in skin coordinates.
    */
   void SetRenderOffset(const CPoint &offset);
+  
+  void SetReorderable(bool reorderable=true);
+    //returns true, either if this container is reorderable (true for favourites and playlists
+    //or the selected items layout has a "dragable" property
+  bool CanDrag() const;
 
 #ifdef _DEBUG
   virtual void DumpTextureUse();
@@ -169,7 +177,12 @@ protected:
   void UpdateScrollOffset(unsigned int currentTime);
 
   CScroller m_scroller;
-
+  
+  int m_draggedObject;
+  short m_draggedScrollDirection;
+  CGUIControl* m_dragHint;
+  CRect m_dragHint_; //TODO: remove
+  
   bool m_staticContent;
   bool m_staticDefaultAlways;
   int  m_staticDefaultItem;
@@ -206,6 +219,8 @@ protected:
   inline int GetOffset() const { return m_offset; };
 
 private:
+  int calculateDragInsertPosition(const CPoint& point, CPoint& hintPosition);
+  
   int m_cursor;
   int m_offset;
   int m_cacheItems;
