@@ -206,7 +206,12 @@ bool CGUIWindowMusicPlayList::OnMessage(CGUIMessage& message)
       }
     }
     break;
-
+  case GUI_MSG_IN_LIST_DRAGGED:
+    {
+      int offset = message.GetParam2()+message.GetParam1();
+      MoveItem(message.GetParam1(), offset);
+    }
+    break;
   }
   return CGUIWindowMusicBase::OnMessage(message);
 }
@@ -668,6 +673,21 @@ void CGUIWindowMusicPlayList::MoveItem(int iStart, int iDest)
 
   if (bRestart)
     m_musicInfoLoader.Load(*m_vecItems);
+}
+
+void CGUIWindowMusicPlayList::OnWindowLoaded()
+{ 
+    // mark our list as orderable
+  try {
+    CGUIControl* pControl = (CGUIControl *)GetControl(50);
+    CGUIBaseContainer* pContainer = dynamic_cast<CGUIBaseContainer*>(pControl);
+    pContainer->SetReorderable();
+  } 
+  catch(...) 
+  {
+      CLog::Log(LOGNOTICE, "No in-list drag&drop available in Favourites, because the control with id %i is not a container", 50);
+  }
+  CGUIWindow::OnWindowLoaded();
 }
 
 void CGUIWindowMusicPlayList::MarkPlaying()

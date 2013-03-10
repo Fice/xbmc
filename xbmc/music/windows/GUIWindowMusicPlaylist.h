@@ -45,6 +45,7 @@ protected:
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   void OnMove(int iItem, int iAction);
   virtual bool OnPlayMedia(int iItem);
+  void OnWindowLoaded();
 
   void SavePlayList();
   void ClearPlayList();
