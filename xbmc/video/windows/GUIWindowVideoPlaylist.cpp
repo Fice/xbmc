@@ -188,6 +188,12 @@ bool CGUIWindowVideoPlaylist::OnMessage(CGUIMessage& message)
       }
     }
     break;
+  case GUI_MSG_IN_LIST_DRAGGED:
+    {
+      int dest = message.GetParam2()+message.GetParam1();
+      MoveItem(message.GetParam1(), dest);
+    }
+      break;
   }
   return CGUIWindowVideoBase::OnMessage(message);
 }
@@ -221,6 +227,21 @@ bool CGUIWindowVideoPlaylist::OnBack(int actionID)
   if (actionID == ACTION_NAV_BACK)
     return CGUIWindow::OnBack(actionID); // base class goes up a folder, but none to go up
   return CGUIWindowVideoBase::OnBack(actionID);
+}
+
+void CGUIWindowVideoPlaylist::OnWindowLoaded()
+{ 
+  // mark our list as orderable
+  try {
+    CGUIControl* pControl = (CGUIControl *)GetControl(50);
+    CGUIBaseContainer* pContainer = dynamic_cast<CGUIBaseContainer*>(pControl);
+    pContainer->SetReorderable();
+  } 
+  catch(...) 
+  {
+    CLog::Log(LOGNOTICE, "No in-list drag&drop available in Favourites, because the control with id %i is not a container", 50);
+  }
+  CGUIWindow::OnWindowLoaded();
 }
 
 bool CGUIWindowVideoPlaylist::MoveCurrentPlayListItem(int iItem, int iAction, bool bUpdate /* = true */)
