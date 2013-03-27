@@ -31,6 +31,7 @@
 #include "Key.h"
 #include "utils/MathUtils.h"
 #include "utils/XBMCTinyXML.h"
+#include "input/MouseStat.h"
 
 using namespace std;
 
@@ -739,17 +740,21 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
     { // grab exclusive access
       CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, GetID(), GetParentID());
       SendWindowMessage(msg);
-      
+            
       int selected = GetSelectedItem();
       if (selected >= 0 && selected < (int)m_items.size())
       {
         m_draggedObject = selected;
         m_items[selected]->SetProperty(ITEM_IS_DRAGGED_FLAG, CVariant(true));
       
-        //show the drag handle
+        g_Mouse.SetState(MOUSE_STATE_DRAG);
+        
+        g_infoManager.DraggingStart(CFileItemPtr(new CFileItem(*m_items[selected])));
+        
         
         //show the drag hint
       }
+      
     }
     else if (event.m_state == 2)
     {
@@ -767,10 +772,11 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
         
         if(newPosition!=m_draggedObject)
         {
+          int offset = 10;
           if (m_orientation == VERTICAL)
           {
             
-            m_dragHint_.SetRect(GetXPosition(), insertPoint.y-(height/2), GetXPosition()+GetWidth(), insertPoint.y+(height/2));
+            m_dragHint_.SetRect(GetXPosition(), insertPoint.y-(offset/2), GetXPosition()+GetWidth(), insertPoint.y+(offset/2));
           }
           else
           {
@@ -808,6 +814,10 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
         m_draggedScrollDirection = 0;
         
         m_dragHint_.SetRect(0,0,0,0); //Disable drag hint
+        
+        g_infoManager.DraggingStop();
+        
+        g_Mouse.SetState(MOUSE_STATE_NORMAL);
       }
 
     }
@@ -838,8 +848,6 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
           SendWindowMessage(msg2);
         }
       }
-        
-        //remove drag handle
       
         //remove drag hint
       m_dragHint_.SetRect(0,0,0,0);
