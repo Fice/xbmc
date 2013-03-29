@@ -837,6 +837,12 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   XMLUtils::GetStringArray(pControlNode, "dragable", dragable, false, "");
   XMLUtils::GetStringArray(pControlNode, "dropable", dropable, false, "");
 
+    //TODO: remove
+  if(!dropable.empty())
+  {
+    CLog::Log(LOGNOTICE, "Yeah");
+  }
+  
   if (XMLUtils::GetString(pControlNode, "subtype", strSubType))
   {
     strSubType.ToLower();

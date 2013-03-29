@@ -580,6 +580,43 @@ EVENT_RESULT CGUIControl::SendMouseEvent(const CPoint &point, const CMouseEvent 
   return (handled && (event.m_id == ACTION_MOUSE_MOVE)) ? EVENT_RESULT_HANDLED : EVENT_RESULT_UNHANDLED;
 }
 
+  //TODO: remove
+#include "dialogs/GUIDialogKaiToast.h"
+
+EVENT_RESULT CGUIControl::OnMouseEvent(const CPoint &point, const CMouseEvent &event) { 
+  if (event.m_id == ACTION_MOUSE_DRAG) {
+    if (event.m_state == 1)
+    {
+      if(!m_dragable.empty()) //Are we dragable?
+      { 
+        CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, GetID(), GetParentID());
+        SendWindowMessage(msg);
+        
+        g_Mouse.SetState(MOUSE_STATE_DRAG);
+        g_infoManager.DraggingStart(m_dragable, CFileItemPtr());
+      }
+    } 
+    else if(event.m_state == 2)
+    {
+        //TODO: check if we are dropable!
+      CLog::Log(LOGWARNING, "Dropping over: ", GetID());
+        //CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(20052),g_localizeStrings.Get(20053));
+        
+      
+    }
+    else if(event.m_state == 3)
+    {
+      CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, 0, GetParentID());
+      SendWindowMessage(msg);
+      
+      g_Mouse.SetState(MOUSE_STATE_NORMAL);
+      g_infoManager.DraggingStop();
+    }
+  }
+    
+  return EVENT_RESULT_UNHANDLED; 
+};
+
 // override this function to implement custom mouse behaviour
 bool CGUIControl::OnMouseOver(const CPoint &point)
 {

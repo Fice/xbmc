@@ -112,11 +112,14 @@ public:
     //returns true, either if this container is reorderable (true for favourites and playlists
     //or the selected items layout has a "dragable" property
   bool CanDrag() const;
+  bool CanDrop(const CStdString& dropable) const;
 
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif
 protected:
+  CStdString GetInListDraggingName();
+  
   virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   bool OnClick(int actionID);
 

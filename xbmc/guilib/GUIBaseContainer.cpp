@@ -41,6 +41,8 @@ using namespace std;
 #define SCROLLING_GAP   200U
 #define SCROLLING_THRESHOLD 300U
 
+#define IN_LIST_DRAGGING_NAME "in_list_dragging"
+
 
 IGUIContainer::IGUIContainer(int parentID, int controlID, float posX, float posY, float width, float height)
   : CGUIControl(parentID, controlID, posX, posY, width, height)
@@ -734,8 +736,8 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
     ScrollToOffset(toOffset);
     return EVENT_RESULT_HANDLED;
   }
-  else if (event.m_id == ACTION_MOUSE_DRAG && CanDrag()) {
-    if (event.m_state == 1)
+  else if (event.m_id == ACTION_MOUSE_DRAG) {
+    if (event.m_state == 1  && CanDrag())
     { // grab exclusive access
       CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, GetID(), GetParentID());
       SendWindowMessage(msg);
@@ -748,10 +750,9 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
       
         g_Mouse.SetState(MOUSE_STATE_DRAG);
         
-        g_infoManager.DraggingStart(CFileItemPtr(new CFileItem(*m_items[selected])));
+        g_infoManager.DraggingStart(m_focusedLayout->GetDragable(), CFileItemPtr(new CFileItem(*m_items[selected])));
         
-        
-        //show the drag hint
+        return EVENT_RESULT_HANDLED;
       }
       
     }
@@ -760,11 +761,8 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
       CPoint insertPoint;
       int newPosition = calculateDragInsertPosition(point, insertPoint);
       
-      if(newPosition>-2)
+      if(newPosition>-2 && CanDrop(GetInListDraggingName())) //TODO: move can drop
       { //it seems, the user wants to drop the item on our list
-        
-          //enable visual clues, in case they are currently not visible
-        m_items[m_draggedObject]->SetProperty(ITEM_IS_DRAGGED_FLAG, CVariant(true));
         
         if (newPosition < m_draggedObject)
           newPosition++;
@@ -802,21 +800,15 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
         { //stop scrolling
           m_draggedScrollDirection = 0;
         }
-
       }
       else 
       { //We are not currently dropping the item on this list,
-        //so we disable the visual clues
-        m_items[m_draggedObject]->SetProperty(ITEM_IS_DRAGGED_FLAG, CVariant(false));
         
-        //and also stop scrolling
+        //so stop scrolling
         m_draggedScrollDirection = 0;
         
         m_dragHint_.SetRect(0,0,0,0); //Disable drag hint
         
-        g_infoManager.DraggingStop();
-        
-        g_Mouse.SetState(MOUSE_STATE_NORMAL);
       }
 
     }
@@ -827,26 +819,36 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
       
       m_draggedScrollDirection = 0;
       
-        //remove "in dragging" flag of current item
-      m_items[m_draggedObject]->ClearProperty(ITEM_IS_DRAGGED_FLAG); 
-      CPoint insertPoint;
-      int newPosition = calculateDragInsertPosition(point, insertPoint);
-        //Valid positions from -1 (move item to the beginning of the list) to list.size
-      if(newPosition>-2)  //make sure the item was droppen on our list
+        //Only do our moving, when we are actually draging one of this items!
+        //TODO: figure out, how to handle when we dropped an item from the outside on our list
+      if(m_draggedObject>=0)
       {
-        if(newPosition < m_draggedObject)
-          newPosition++;
-        
-        CLog::Log(LOGERROR, "newPosition: %i, oldPosition: %i", newPosition, m_draggedObject);
-        if(newPosition!=m_draggedObject)
+        //remove "in dragging" flag of current item
+        m_items[m_draggedObject]->ClearProperty(ITEM_IS_DRAGGED_FLAG); 
+      
+      
+        CPoint insertPoint;
+        int newPosition = calculateDragInsertPosition(point, insertPoint);
+        //Valid positions from -1 (move item to the beginning of the list) to list.size
+        if(newPosition>-2)  //make sure the item was droppen on our list
         {
-          CGUIMessage msg2(GUI_MSG_IN_LIST_DRAGGED, 0, 
-                           GetParentID(), 
-                           m_draggedObject, 
-                           newPosition-m_draggedObject);
-          SendWindowMessage(msg2);
+          if(newPosition < m_draggedObject)
+            newPosition++;
+        
+          CLog::Log(LOGERROR, "newPosition: %i, oldPosition: %i", newPosition, m_draggedObject);
+          if(newPosition!=m_draggedObject)
+          {
+            CGUIMessage msg2(GUI_MSG_IN_LIST_DRAGGED, 0, 
+                             GetParentID(), 
+                             m_draggedObject, 
+                             newPosition-m_draggedObject);
+            SendWindowMessage(msg2);
+          }
         }
       }
+      
+      g_Mouse.SetState(MOUSE_STATE_NORMAL);
+      g_infoManager.DraggingStop();
       
         //remove drag hint
       m_dragHint_.SetRect(0,0,0,0);
@@ -858,12 +860,18 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
   return EVENT_RESULT_UNHANDLED;
 }
 
-void CGUIBaseContainer::SetReorderable(bool reorderable)
+CStdString CGUIBaseContainer::GetInListDraggingName()
 {
-  string dragableType = "in_list_dragging";
+  string dragableType = IN_LIST_DRAGGING_NAME;
   int id = GetID();
   if(id)
     dragableType += id;
+  return dragableType;
+}
+
+void CGUIBaseContainer::SetReorderable(bool reorderable)
+{
+  string dragableType = GetInListDraggingName();
   
   std::vector<CGUIListItemLayout>::iterator it;
   
@@ -890,6 +898,16 @@ bool CGUIBaseContainer::CanDrag() const
   if(m_focusedLayout)
   {
     return !m_focusedLayout->GetDragable().empty();
+  }
+  return false;
+}
+
+bool CGUIBaseContainer::CanDrop(const CStdString& dropable) const
+{
+  if(m_focusedLayout)
+  {
+    const std::vector<CStdString>& dropables = m_focusedLayout->GetDropable();
+    return find(dropables.begin(), dropables.end(), dropable) != dropables.end();
   }
   return false;
 }

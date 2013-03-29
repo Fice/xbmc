@@ -69,13 +69,13 @@ public:
   void SetDragable(const std::vector<std::string>& dragable) 
   {
     m_dragable.clear();
-    m_dragable.reserve(m_dragable.size());
+    m_dragable.reserve(dragable.size());
     copy(dragable.begin(), dragable.end(), back_inserter(m_dragable));
   }
   void SetDropable(const std::vector<std::string>& dropable) 
   {
     m_dropable.clear();
-    m_dropable.reserve(m_dropable.size());
+    m_dropable.reserve(dropable.size());
     copy(dropable.begin(), dropable.end(), back_inserter(m_dropable));
   }
   
