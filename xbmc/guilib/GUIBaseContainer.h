@@ -171,7 +171,8 @@ protected:
 
   std::vector<CGUIListItemLayout> m_layouts;
   std::vector<CGUIListItemLayout> m_focusedLayouts;
-
+  
+  ListItemLayoutPtr m_dragHintLayout;
   CGUIListItemLayout *m_layout;
   CGUIListItemLayout *m_focusedLayout;
 

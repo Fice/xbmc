@@ -1295,6 +1295,14 @@ void CGUIBaseContainer::LoadLayout(TiXmlElement *layout)
     m_focusedLayouts.push_back(itemLayout);
     itemElement = itemElement->NextSiblingElement("focusedlayout");
   }
+  itemElement = layout->FirstChildElement("draghint");
+  while (itemElement)
+  {
+    ListItemLayoutPtr itemLayout(new CGUIListItemLayout);
+    itemLayout->LoadLayout(itemElement, GetParentID(), false);
+    m_dragHintLayout = itemLayout;
+    itemElement = itemElement->NextSiblingElement("draghint");
+  }
 }
 
 void CGUIBaseContainer::LoadContent(TiXmlElement *content)
