@@ -949,21 +949,21 @@ int CGUIBaseContainer::calculateDragInsertPosition(const CPoint& point, CPoint& 
       { //we have our element!
         if(point.y<pos+(current_layout.Size(m_orientation)/2)) //is the mouse in the left side?
         {
-          hintPosition.y = pos;
+          hintPosition.y = orientationPos;
           return --itemNo;
           
         }
-        hintPosition.y = orientationPos;
+        hintPosition.y = orientationPos+current_layout.Size(m_orientation);
         return itemNo;
       }
       else if (m_orientation == HORIZONTAL && pos<point.x && orientationPos>point.x)
       { //We have our element!
         if(point.x<pos+(current_layout.Size(m_orientation)/2)) //is the mouse in the top part
         {
-          hintPosition.x = pos;
+          hintPosition.x = orientationPos;
           return --itemNo;
         }
-        hintPosition.x = orientationPos;
+        hintPosition.x = orientationPos+current_layout.Size(m_orientation);
         return itemNo;
       }
     }
