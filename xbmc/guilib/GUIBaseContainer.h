@@ -125,6 +125,8 @@ protected:
 
   virtual void ProcessItem(float posX, float posY, CGUIListItemPtr& item, bool focused, unsigned int currentTime, CDirtyRegionList &dirtyregions);
 
+  CGUIControl* LoadControl(TiXmlElement *child, CGUIControl *group);
+  
   virtual void Render();
   virtual void RenderItem(float posX, float posY, CGUIListItem *item, bool focused);
   virtual void Scroll(int amount);
@@ -172,7 +174,6 @@ protected:
   std::vector<CGUIListItemLayout> m_layouts;
   std::vector<CGUIListItemLayout> m_focusedLayouts;
   
-  ListItemLayoutPtr m_dragHintLayout;
   CGUIListItemLayout *m_layout;
   CGUIListItemLayout *m_focusedLayout;
 
@@ -184,7 +185,7 @@ protected:
   
   int m_draggedObject;
   short m_draggedScrollDirection;
-  CGUIControl* m_dragHint;
+  boost::shared_ptr<CGUIControl> m_dragHint;
   CRect m_dragHint_; //TODO: remove
   
   bool m_staticContent;

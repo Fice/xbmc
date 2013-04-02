@@ -91,6 +91,9 @@ void CGUIBaseContainer::DoProcess(unsigned int currentTime, CDirtyRegionList &di
   if (m_pageChangeTimer.GetElapsedMilliseconds() > 200)
     m_pageChangeTimer.Stop();
   m_wasReset = false;
+  
+  if(m_dragHint)
+    m_dragHint->DoProcess(currentTime, dirtyregions);
 }
 
 void CGUIBaseContainer::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
@@ -154,6 +157,14 @@ void CGUIBaseContainer::Process(unsigned int currentTime, CDirtyRegionList &dirt
   // when we are scrolling up, offset will become lower (integer division, see offset calc)
   // to have same behaviour when scrolling down, we need to set page control to offset+1
   UpdatePageControl(offset + (m_scroller.IsScrollingDown() ? 1 : 0));
+  
+  if(m_dragHint)
+  {
+    CLog::Log(LOGNOTICE, "%f, %f pos", m_dragHint_.x1, m_dragHint_.x2);
+    g_graphicsContext.SetOrigin(m_dragHint_.x1, m_dragHint_.x2);
+    m_dragHint->Process(currentTime, dirtyregions);
+    g_graphicsContext.RestoreOrigin();
+  }
 
   CGUIControl::Process(currentTime, dirtyregions);
 }
@@ -277,6 +288,16 @@ void CGUIBaseContainer::Render()
   
   CGUITexture::DrawQuad(m_dragHint_, 0x4c00ff00);
 
+
+    //CGUITexture::DrawQuad(m_dragHint_, 0x4c00ff00);
+  if(m_dragHint)
+  {
+    CLog::Log(LOGNOTICE, "yeha... doing render");
+    g_graphicsContext.SetOrigin(500, 500);
+    m_dragHint->DoRender();
+    g_graphicsContext.RestoreOrigin();
+  }
+  
 
   CGUIControl::Render();
 }
@@ -772,16 +793,17 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
           int offset = 10;
           if (m_orientation == VERTICAL)
           {
-            
             m_dragHint_.SetRect(GetXPosition(), insertPoint.y-(offset/2), GetXPosition()+GetWidth(), insertPoint.y+(offset/2));
           }
           else
           {
             m_dragHint_.SetRect(insertPoint.x, GetYPosition(), insertPoint.x+10, GetYPosition()+GetHeight());
           }
+          m_dragHint->SetVisible(true);
         }
         else
         {
+            //m_dragHint->SetVisible(false);
           m_dragHint_.SetRect(0,0,0,0);
         }
 
@@ -851,6 +873,7 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
       g_infoManager.DraggingStop();
       
         //remove drag hint
+        //m_dragHint->SetVisible(false);
       m_dragHint_.SetRect(0,0,0,0);
       
       
@@ -1296,13 +1319,41 @@ void CGUIBaseContainer::LoadLayout(TiXmlElement *layout)
     itemElement = itemElement->NextSiblingElement("focusedlayout");
   }
   itemElement = layout->FirstChildElement("draghint");
-  while (itemElement)
+  if (itemElement)
   {
-    ListItemLayoutPtr itemLayout(new CGUIListItemLayout);
-    itemLayout->LoadLayout(itemElement, GetParentID(), false);
-    m_dragHintLayout = itemLayout;
-    itemElement = itemElement->NextSiblingElement("draghint");
+    CGUIControl* control = LoadControl(itemElement->FirstChildElement(), this);
+    if(control)
+    {
+      control->SetVisible(true); //todo: set to false, only visible during drag&drop
+      m_dragHint = boost::shared_ptr<CGUIControl>(control);
+    }
   }
+}
+
+
+  //TODO: this is almost an exact copy of GUIListItemLayout::LoadControl... so perhabs I should merge them?!?
+CGUIControl* CGUIBaseContainer::LoadControl(TiXmlElement *child, CGUIControl *group)
+{
+  if (!group) return NULL;
+  
+  CRect rect(group->GetXPosition(), group->GetYPosition(), group->GetXPosition() + group->GetWidth(), group->GetYPosition() + group->GetHeight());
+  
+  CGUIControlFactory factory;
+  CGUIControl *control = factory.Create(0, rect, child, true);  // true indicating we're inside a list for the
+                                                                // different label control + defaults.
+  if (control)
+  {
+    if (control->IsGroup())
+    {
+      TiXmlElement *grandChild = child->FirstChildElement("control");
+      while (grandChild)
+      {
+        LoadControl(grandChild, (CGUIControlGroup *)control);
+        grandChild = grandChild->NextSiblingElement("control");
+      }
+    }
+  }
+  return control;
 }
 
 void CGUIBaseContainer::LoadContent(TiXmlElement *content)
