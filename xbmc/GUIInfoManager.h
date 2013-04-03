@@ -423,6 +423,8 @@ namespace INFO
 
 #define SYSTEM_PROFILEAUTOLOGIN     1004
 
+#define DRAGNDROP_HOVERED_ID        1500
+
 #define PVR_CONDITIONS_START        1100
 #define PVR_IS_RECORDING            (PVR_CONDITIONS_START)
 #define PVR_HAS_TIMER               (PVR_CONDITIONS_START + 1)
@@ -805,13 +807,12 @@ public:
     m_draggedFileItem = draggedFileItem;
     m_isDragging = true; 
   }
-  void DraggingStop() { m_isDragging = false; m_draggedFileItem = CFileItemPtr(); m_draggableType.clear(); }
+  const std::vector<CStdString>& GetDraggableType() const { return m_draggableType; }
+  void DraggingStop() { m_isDragging = false; m_draggedFileItem = CFileItemPtr(); m_draggableType.clear(); m_dragHoveredControl = NULL; }
   void DragHover(CGUIControl* hoveredObject) {
-    ASSERT(m_isDragging);
-    CLog::Log(LOGNOTICE, "hovered object while dragging: %i", hoveredObject->GetID());
-    
+    m_dragHoveredControl = hoveredObject;
   }
-  CFileItemPtr GetDraggedFileItem() { return m_draggedFileItem; }
+  const CFileItemPtr GetDraggedFileItem() const { return m_draggedFileItem; }
 
 
   std::string GetSystemHeatInfo(int info);
@@ -962,8 +963,10 @@ protected:
   int m_libraryHasMusicVideos;
   int m_libraryHasMovieSets;
   
+    //Drag&Drop stuff
   bool m_isDragging;
   CFileItemPtr m_draggedFileItem;
+  CGUIControl* m_dragHoveredControl;
   std::vector<CStdString> m_draggableType;
 
   SPlayerVideoStreamInfo m_videoInfo;

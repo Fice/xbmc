@@ -202,6 +202,7 @@
 #define ACTION_MOUSE_WHEEL_DOWN       105
 #define ACTION_MOUSE_DRAG             106
 #define ACTION_MOUSE_MOVE             107
+#define ACTION_MOUSE_DRAG_HOVER       108
 #define ACTION_MOUSE_END              109
 
 #define ACTION_BACKSPACE          110

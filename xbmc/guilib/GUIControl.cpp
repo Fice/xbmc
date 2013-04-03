@@ -360,6 +360,18 @@ bool CGUIControl::OnMessage(CGUIMessage& message)
       return true;
     }
   }
+  if(message.GetMessage() == ACTION_MOUSE_DRAG_HOVER)
+  {
+    CPoint point(message.GetParam1(), message.GetParam2());
+    if(!HitTest(point))
+      return false;
+    
+    if(IsDropable(g_infoManager.GetDraggableType()))
+    {
+      g_infoManager.DragHover(this);
+      return true;
+    }
+  }
   return false;
 }
 

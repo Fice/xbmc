@@ -494,6 +494,75 @@ bool CGUIBaseContainer::OnMessage(CGUIMessage& message)
       return true;
     }
   }
+  else if (message.GetMessage() == ACTION_MOUSE_DRAG_HOVER)
+  {
+    
+    
+    CPoint point(message.GetParam1(), message.GetParam2());
+    if(!HitTest(point))
+      return false;
+    
+    g_infoManager.DragHover(this);
+    CPoint insertPoint;
+    int newPosition = calculateDragInsertPosition(point, insertPoint);
+    
+    if(newPosition>-2 && CanDrop(GetInListDraggingName())) //TODO: move can drop
+    { //it seems, the user wants to drop the item on our list
+      
+      if (newPosition < m_draggedObject)
+        newPosition++;
+      
+      if(newPosition!=m_draggedObject)
+      {
+        int offset = 10;
+        if (m_orientation == VERTICAL)
+        {
+          m_dragHint_.SetRect(GetXPosition(), insertPoint.y-(offset/2), GetXPosition()+GetWidth(), insertPoint.y+(offset/2));
+        }
+        else
+        {
+          m_dragHint_.SetRect(insertPoint.x, GetYPosition(), insertPoint.x+10, GetYPosition()+GetHeight());
+        }
+        m_dragHint->SetVisible(true);
+      }
+      else
+      {
+        
+          //we are not dropping on our list, so disable any visual hints
+          //m_dragHint->SetVisible(false);
+        m_dragHint_.SetRect(0,0,0,0);
+        
+          //also notify the element that is actually hovered... perhabs that one wants to show some hints ;)
+      }
+      
+      
+      
+        //do we need to scroll?
+      if (newPosition == m_offset) //are we hovering the first element?
+      { //then move up
+        m_draggedScrollDirection = -1;
+      }
+      else if (newPosition == m_offset + m_itemsPerPage - 1) //Are we hovering the last element?
+      { //then move down
+        m_draggedScrollDirection = 1;
+      }
+      else 
+      { //stop scrolling
+        m_draggedScrollDirection = 0;
+      }
+    }
+    else 
+    { //We are not currently dropping the item on this list,
+      
+        //so stop scrolling
+      m_draggedScrollDirection = 0;
+      
+      m_dragHint_.SetRect(0,0,0,0); //Disable drag hint
+      
+    }
+    return true;
+  }
+  
   return CGUIControl::OnMessage(message);
 }
 
@@ -779,60 +848,10 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
     }
     else if (event.m_state == 2)
     {
-      CPoint insertPoint;
-      int newPosition = calculateDragInsertPosition(point, insertPoint);
+      CGUIMessage msg(ACTION_MOUSE_DRAG_HOVER, GetID(), 0, point.x, point.y, m_items[GetSelectedItem()]);
+      SendWindowMessage(msg); //TODO: Try to do an OnAction instead of OnMessage?!?
       
-      if(newPosition>-2 && CanDrop(GetInListDraggingName())) //TODO: move can drop
-      { //it seems, the user wants to drop the item on our list
-        
-        if (newPosition < m_draggedObject)
-          newPosition++;
-        
-        if(newPosition!=m_draggedObject)
-        {
-          int offset = 10;
-          if (m_orientation == VERTICAL)
-          {
-            m_dragHint_.SetRect(GetXPosition(), insertPoint.y-(offset/2), GetXPosition()+GetWidth(), insertPoint.y+(offset/2));
-          }
-          else
-          {
-            m_dragHint_.SetRect(insertPoint.x, GetYPosition(), insertPoint.x+10, GetYPosition()+GetHeight());
-          }
-          m_dragHint->SetVisible(true);
-        }
-        else
-        {
-            //m_dragHint->SetVisible(false);
-          m_dragHint_.SetRect(0,0,0,0);
-        }
-
-        
-        
-          //do we need to scroll?
-        if (newPosition == m_offset) //are we hovering the first element?
-        { //then move up
-          m_draggedScrollDirection = -1;
-        }
-        else if (newPosition == m_offset + m_itemsPerPage - 1) //Are we hovering the last element?
-        { //then move down
-          m_draggedScrollDirection = 1;
-        }
-        else 
-        { //stop scrolling
-          m_draggedScrollDirection = 0;
-        }
-      }
-      else 
-      { //We are not currently dropping the item on this list,
-        
-        //so stop scrolling
-        m_draggedScrollDirection = 0;
-        
-        m_dragHint_.SetRect(0,0,0,0); //Disable drag hint
-        
-      }
-
+      return EVENT_RESULT_HANDLED;
     }
     else if (event.m_state == 3)
     { // release exclusive access
@@ -878,6 +897,7 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
       
       
       m_draggedObject = -1;
+      return EVENT_RESULT_HANDLED;
     }
   }
   return EVENT_RESULT_UNHANDLED;

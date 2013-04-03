@@ -116,6 +116,7 @@ CGUIInfoManager::CGUIInfoManager(void) :
   m_AVInfoValid = false;
   ResetLibraryBools();
   m_isDragging = false;
+  m_dragHoveredControl = NULL;
 }
 
 CGUIInfoManager::~CGUIInfoManager(void)
@@ -656,6 +657,9 @@ const infomap slideshow[] =      {{ "ispaused",         SLIDESHOW_ISPAUSED },
                                   { "israndom",         SLIDESHOW_ISRANDOM }};
 
 
+  //Available as: dragndrop.hovered.{X}
+const infomap dragndropHovered[] = {{ "id", DRAGNDROP_HOVERED_ID}};
+
 const int picture_slide_map[]  = {/* LISTITEM_PICTURE_RESOLUTION => */ SLIDE_RESOLUTION,
                                   /* LISTITEM_PICTURE_LONGDATE   => */ SLIDE_EXIF_LONG_DATE,
                                   /* LISTITEM_PICTURE_LONGDATETIME => */ SLIDE_EXIF_LONG_DATE_TIME,
@@ -1168,16 +1172,32 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
   }
   else if (info.size() == 3)
   {
-    if (info[0].name == "dragndrop" && info[1].name == "item")
+    if (info[0].name == "dragndrop")
     {
-      int ret = TranslateListItem(info[2]);
+      if(info[1].name == "item")
+      {
+        int ret = TranslateListItem(info[2]);
       
-      if(ret == 0)
-        return 0;
+        if(ret == 0)
+          return 0;
       
-      ret = (ret - LISTITEM_START);
-      ret += DRAGGING_ITEM_BEGIN;
-      return ret;
+        ret = (ret - LISTITEM_START);
+        ret += DRAGGING_ITEM_BEGIN;
+        return ret;
+      }
+      if(info[1].name == "hovered")
+      {
+        for(size_t i = 0; i < sizeof(dragndropHovered) / sizeof(infomap); ++i)
+        {
+          if (info[2].name == dragndropHovered[i].str)
+          {
+            if(info[2].num_params()==0)
+              return dragndropHovered[i].val;
+            if(info[2].num_params()==1)
+              return AddMultiInfo(GUIInfo(dragndropHovered[i].val, 0, atoi(info[2].param().c_str())));
+          }
+        }
+      }
     }
     if (info[0].name == "system" && info[1].name == "platform")
     { // TODO: replace with a single system.platform
@@ -2025,6 +2045,12 @@ bool CGUIInfoManager::GetInt(int &value, int info, int contextWindow, const CGUI
     case SYSTEM_BATTERY_LEVEL:
       value = g_powerManager.BatteryLevel();
       return true;
+    case DRAGNDROP_HOVERED_ID:
+      if(m_dragHoveredControl)
+      {
+        value = m_dragHoveredControl->GetID();
+        return true;
+      }
   }
   return false;
 }
@@ -2914,6 +2940,24 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
             index += g_playlistPlayer.GetCurrentSong();
           }
           bReturn = (index >= 0 && index < g_playlistPlayer.GetPlaylist(PLAYLIST_MUSIC).size());
+        }
+        break;
+      case DRAGNDROP_HOVERED_ID:
+        {
+          if(!m_dragHoveredControl)
+          {
+            bReturn = false; //we have no valid hovered element
+            break;
+          }
+          
+          int id1 = info.GetData2();
+          int id2 = m_dragHoveredControl->GetID();
+          if(id2==3003)
+            return true;
+          if(id1==id2)
+            return true;
+          
+          bReturn = (id1==id2);
         }
         break;
     }
