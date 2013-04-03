@@ -50,6 +50,12 @@
 				<fadetime>IconCrossfadeTime</fadetime>
 				<label>$INFO[dragndrop.item.label]</label>
     	    </control>
+    	    <control type="label">
+    	        <visible>dragndrop.hovered.id(506)</visible>
+    	        <posx>40</posx>
+    	        <posy>40</posy>
+    	        <label>$INFO[dragndrop.hovered.id] -hmm</label>
+    	    </control>
 		</control>
 		<control type="image" id="4">
 			<description>Pointer Click Image</description>

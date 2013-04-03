@@ -765,7 +765,7 @@
 		    <label>Favourites</label>
 		</control>
 		<control type="button">
-		    <description>Opens the favourites dialog, also items can be dragged here, to add them to the favourites</description>
+		    <description>Opens the current playlist, also items can be dragged here, to add them to the favourites</description>
 		    <dropable>playlist</dropable>
 		    <posx>940</posx>
 		    <posy>80</posy>
