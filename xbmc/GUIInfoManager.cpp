@@ -1949,6 +1949,14 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, CStdString *fa
   case SYSTEM_RENDER_VERSION:
     strLabel = g_Windowing.GetRenderVersionString();
     break;
+  case DRAGNDROP_HOVERED_ID:
+    if(m_dragHoveredControl)
+    {
+      int id = m_dragHoveredControl->GetID();
+      if (id != 0) //id of 0 means no id, so leave the string empty then
+        strLabel.Format("%i", id);
+    }
+    break;
   }
 
   return strLabel;
