@@ -112,7 +112,11 @@ public:
     //returns true, either if this container is reorderable (true for favourites and playlists
     //or the selected items layout has a "dragable" property
   bool CanDrag() const;
-  bool CanDrop(const CStdString& dropable) const;
+  virtual bool IsDropable(const std::vector<CStdString>& dragable) const;
+  virtual bool IsDropable(const CStdString& dragable) const;
+  virtual void DraggedAway();
+  virtual void DragStop();
+  void CleanupDragHints();
 
 #ifdef _DEBUG
   virtual void DumpTextureUse();
@@ -126,6 +130,8 @@ protected:
   virtual void ProcessItem(float posX, float posY, CGUIListItemPtr& item, bool focused, unsigned int currentTime, CDirtyRegionList &dirtyregions);
 
   CGUIControl* LoadControl(TiXmlElement *child, CGUIControl *group);
+  
+  void MoveItemInternally(int pos, int newPos);
   
   virtual void Render();
   virtual void RenderItem(float posX, float posY, CGUIListItem *item, bool focused);
@@ -184,6 +190,7 @@ protected:
   CScroller m_scroller;
   
   int m_draggedObject;
+  int m_draggedOrigPosition;
   short m_draggedScrollDirection;
   boost::shared_ptr<CGUIControl> m_dragHint;
   CRect m_dragHint_; //TODO: remove

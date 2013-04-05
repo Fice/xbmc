@@ -76,7 +76,7 @@ CGUIBaseContainer::CGUIBaseContainer(int parentID, int controlID, float posX, fl
   m_cacheItems = preloadItems;
   m_scrollItemsPerFrame = 0.0f;
   m_type = VIEW_TYPE_NONE;
-  m_draggedObject = -1;
+  m_draggedOrigPosition = m_draggedObject = -1;
   m_draggedScrollDirection = 0;
 }
 
@@ -287,9 +287,6 @@ void CGUIBaseContainer::Render()
   }
   
   CGUITexture::DrawQuad(m_dragHint_, 0x4c00ff00);
-
-
-    //CGUITexture::DrawQuad(m_dragHint_, 0x4c00ff00);
   if(m_dragHint)
   {
     CLog::Log(LOGNOTICE, "yeha... doing render");
@@ -494,75 +491,6 @@ bool CGUIBaseContainer::OnMessage(CGUIMessage& message)
       return true;
     }
   }
-  else if (message.GetMessage() == ACTION_MOUSE_DRAG_HOVER)
-  {
-    
-    
-    CPoint point(message.GetParam1(), message.GetParam2());
-    if(!HitTest(point))
-      return false;
-    
-    g_infoManager.DragHover(this);
-    CPoint insertPoint;
-    int newPosition = calculateDragInsertPosition(point, insertPoint);
-    
-    if(newPosition>-2 && CanDrop(GetInListDraggingName())) //TODO: move can drop
-    { //it seems, the user wants to drop the item on our list
-      
-      if (newPosition < m_draggedObject)
-        newPosition++;
-      
-      if(newPosition!=m_draggedObject)
-      {
-        int offset = 10;
-        if (m_orientation == VERTICAL)
-        {
-          m_dragHint_.SetRect(GetXPosition(), insertPoint.y-(offset/2), GetXPosition()+GetWidth(), insertPoint.y+(offset/2));
-        }
-        else
-        {
-          m_dragHint_.SetRect(insertPoint.x, GetYPosition(), insertPoint.x+10, GetYPosition()+GetHeight());
-        }
-        m_dragHint->SetVisible(true);
-      }
-      else
-      {
-        
-          //we are not dropping on our list, so disable any visual hints
-          //m_dragHint->SetVisible(false);
-        m_dragHint_.SetRect(0,0,0,0);
-        
-          //also notify the element that is actually hovered... perhabs that one wants to show some hints ;)
-      }
-      
-      
-      
-        //do we need to scroll?
-      if (newPosition == m_offset) //are we hovering the first element?
-      { //then move up
-        m_draggedScrollDirection = -1;
-      }
-      else if (newPosition == m_offset + m_itemsPerPage - 1) //Are we hovering the last element?
-      { //then move down
-        m_draggedScrollDirection = 1;
-      }
-      else 
-      { //stop scrolling
-        m_draggedScrollDirection = 0;
-      }
-    }
-    else 
-    { //We are not currently dropping the item on this list,
-      
-        //so stop scrolling
-      m_draggedScrollDirection = 0;
-      
-      m_dragHint_.SetRect(0,0,0,0); //Disable drag hint
-      
-    }
-    return true;
-  }
-  
   return CGUIControl::OnMessage(message);
 }
 
@@ -827,80 +755,180 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
     return EVENT_RESULT_HANDLED;
   }
   else if (event.m_id == ACTION_MOUSE_DRAG) {
-    if (event.m_state == 1  && CanDrag())
-    { // grab exclusive access
-      CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, GetID(), GetParentID());
-      SendWindowMessage(msg);
-            
+    if (event.m_state == 1  && CanDrag() && HitTest(point))
+    {
       int selected = GetSelectedItem();
       if (selected >= 0 && selected < (int)m_items.size())
       {
-        m_draggedObject = selected;
+        m_draggedOrigPosition = m_draggedObject = selected;
         m_items[selected]->SetProperty(ITEM_IS_DRAGGED_FLAG, CVariant(true));
       
         g_Mouse.SetState(MOUSE_STATE_DRAG);
         
-        g_infoManager.DraggingStart(m_focusedLayout->GetDragable(), CFileItemPtr(new CFileItem(*m_items[selected])));
+        g_infoManager.DraggingStart(m_focusedLayout->GetDragable(), CFileItemPtr(new CFileItem(*m_items[selected])), this);
         
         return EVENT_RESULT_HANDLED;
       }
       
     }
-    else if (event.m_state == 2)
+    else if (event.m_state == 2 && HitTest(point))
     {
-      CGUIMessage msg(ACTION_MOUSE_DRAG_HOVER, GetID(), 0, point.x, point.y, m_items[GetSelectedItem()]);
-      SendWindowMessage(msg); //TODO: Try to do an OnAction instead of OnMessage?!?
+      bool canDrop = IsDropable(GetInListDraggingName()); //
       
+      
+      CPoint insertPoint;
+      int newPosition = calculateDragInsertPosition(point, insertPoint);
+      
+      CGUIControl* dragStartControl = g_infoManager.GetDragStartControl();
+      if(canDrop)
+        g_infoManager.DragHover(this);
+      
+      
+      if(newPosition>-2 && canDrop)
+      { //it seems, the user wants to drop the item on our list
+        
+        if (newPosition < m_draggedObject)
+          newPosition++;
+        
+        if(newPosition!=m_draggedObject)
+        {
+          if(m_dragHint) //do we have a drag hint?
+          {
+            int offset = 10;
+            if (m_orientation == VERTICAL)
+            {
+              m_dragHint_.SetRect(GetXPosition(), insertPoint.y-(offset/2), GetXPosition()+GetWidth(), insertPoint.y+(offset/2));
+            }
+            else
+            {
+              m_dragHint_.SetRect(insertPoint.x, GetYPosition(), insertPoint.x+10, GetYPosition()+GetHeight());
+            }
+            m_dragHint->SetVisible(true);
+          } 
+          else //we don't have a drag hint, so lets reorder immediately
+          {
+            MoveItemInternally(m_draggedObject, newPosition);
+            SetCursor(newPosition - GetOffset());
+            m_draggedObject=newPosition;
+          }
+
+        }
+        else
+        {
+            //m_dragHint->SetVisible(false);
+          m_dragHint_.SetRect(0,0,0,0);
+        }
+        
+        
+        
+          //do we need to scroll?
+        if (newPosition == m_offset) //are we hovering the first element?
+        { //then move up
+          m_draggedScrollDirection = -1;
+        }
+        else if (newPosition == m_offset + m_itemsPerPage - 1) //Are we hovering the last element?
+        { //then move down
+          m_draggedScrollDirection = 1;
+        }
+        else 
+        { //stop scrolling
+          m_draggedScrollDirection = 0;
+        }
+      }
+      else 
+      { //We are not currently dropping the item on this list,
+         CleanupDragHints(); 
+      }
       return EVENT_RESULT_HANDLED;
     }
     else if (event.m_state == 3)
-    { // release exclusive access
-      CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, 0, GetParentID());
-      SendWindowMessage(msg);
-      
-      m_draggedScrollDirection = 0;
-      
+    {
         //Only do our moving, when we are actually draging one of this items!
         //TODO: figure out, how to handle when we dropped an item from the outside on our list
       if(m_draggedObject>=0)
       {
-        //remove "in dragging" flag of current item
-        m_items[m_draggedObject]->ClearProperty(ITEM_IS_DRAGGED_FLAG); 
-      
-      
         CPoint insertPoint;
         int newPosition = calculateDragInsertPosition(point, insertPoint);
         //Valid positions from -1 (move item to the beginning of the list) to list.size
         if(newPosition>-2)  //make sure the item was droppen on our list
         {
-          if(newPosition < m_draggedObject)
+          if(newPosition < m_draggedOrigPosition)
             newPosition++;
         
-          CLog::Log(LOGERROR, "newPosition: %i, oldPosition: %i", newPosition, m_draggedObject);
-          if(newPosition!=m_draggedObject)
+          if(newPosition!=m_draggedOrigPosition)
           {
             CGUIMessage msg2(GUI_MSG_IN_LIST_DRAGGED, 0, 
                              GetParentID(), 
-                             m_draggedObject, 
-                             newPosition-m_draggedObject);
+                             m_draggedOrigPosition, 
+                             newPosition-m_draggedOrigPosition);
             SendWindowMessage(msg2);
           }
+            //for whatever reason, the focused item is set wrong after dragging is done...
+            //so, set it correct
+            //TODO: perhabs fix it at the position where it is wrongly set?!?
+          SetCursor(newPosition - GetOffset());
         }
       }
       
-      g_Mouse.SetState(MOUSE_STATE_NORMAL);
-      g_infoManager.DraggingStop();
+      if(HitTest(point))
+        g_infoManager.DraggingStop();
       
-        //remove drag hint
-        //m_dragHint->SetVisible(false);
-      m_dragHint_.SetRect(0,0,0,0);
-      
-      
-      m_draggedObject = -1;
       return EVENT_RESULT_HANDLED;
     }
   }
   return EVENT_RESULT_UNHANDLED;
+}
+
+void CGUIBaseContainer::CleanupDragHints()
+{
+  if(m_dragHint)
+  {
+    //remove drag hint
+    //m_dragHint->SetVisible(false);
+    m_dragHint_.SetRect(0,0,0,0); 
+  }
+  
+  m_draggedScrollDirection = 0;
+}
+
+void CGUIBaseContainer::DragStop()
+{
+  CleanupDragHints();
+  if(m_draggedObject>=0)
+    m_items[m_draggedObject]->ClearProperty(ITEM_IS_DRAGGED_FLAG); 
+  m_draggedOrigPosition = m_draggedObject = -1;
+    //remove "in dragging" flag of current item
+  
+}
+
+void CGUIBaseContainer::DraggedAway()
+{  
+  if(!m_dragHint)
+  {
+      //the user did not release the mouse, but direct reordering is enabled... so revert the item to it's original position
+    CLog::Log(LOGERROR, "Moving from %i to %i ERROR", m_draggedObject, m_draggedOrigPosition);
+    MoveItemInternally(m_draggedObject, m_draggedOrigPosition);
+    m_draggedObject = m_draggedOrigPosition;
+    SetCursor(m_draggedObject - GetOffset()); //focus the dragged object again
+  }
+
+  CleanupDragHints();
+}
+
+void CGUIBaseContainer::MoveItemInternally(int pos, int newPos)
+{
+  if(pos<0 || (size_t)pos>m_items.size())
+    return;
+  if(newPos<0 || (size_t)newPos>m_items.size())
+    return;
+  
+  int direction = (pos>newPos) ? -1 : 1;
+  for(int i=pos; i!=newPos; i+=direction)
+  {
+    CGUIListItemPtr copy = m_items[i];
+    m_items[i] = m_items[i+direction];
+    m_items[i+direction] = copy;
+  }
 }
 
 CStdString CGUIBaseContainer::GetInListDraggingName()
@@ -945,15 +973,21 @@ bool CGUIBaseContainer::CanDrag() const
   return false;
 }
 
-bool CGUIBaseContainer::CanDrop(const CStdString& dropable) const
+bool CGUIBaseContainer::IsDropable(const std::vector<CStdString>& dragable) const
+{
+  const std::vector<CStdString>& dropables = m_focusedLayout->GetDropable();
+  return find_first_of(dropables.begin(), dropables.end(), dragable.begin(), dragable.end()) != dropables.end();
+}
+bool CGUIBaseContainer::IsDropable(const CStdString& dragable) const
 {
   if(m_focusedLayout)
   {
     const std::vector<CStdString>& dropables = m_focusedLayout->GetDropable();
-    return find(dropables.begin(), dropables.end(), dropable) != dropables.end();
+    return find(dropables.begin(), dropables.end(), dragable) != dropables.end();
   }
   return false;
 }
+
 
 
 int CGUIBaseContainer::calculateDragInsertPosition(const CPoint& point, CPoint& hintPosition)
