@@ -799,11 +799,12 @@ public:
   bool ToggleShowInfo() { m_playerShowInfo = !m_playerShowInfo; return m_playerShowInfo; };
   bool m_performingSeek;
   
-  void DraggingStart(const std::vector<CStdString>& dragable, CFileItemPtr draggedFileItem);
+  void DraggingStart(const std::vector<CStdString>& dragable, CFileItemPtr draggedFileItem, CGUIControl* controlStart);
   const std::vector<CStdString>& GetDraggableType() const { return m_draggableType; }
   void DraggingStop();
   void DragHover(CGUIControl* hoveredObject);
   const CFileItemPtr GetDraggedFileItem() const { return m_draggedFileItem; }
+  CGUIControl* GetDragStartControl() const { return m_dragStartControl; }
 
 
   std::string GetSystemHeatInfo(int info);
@@ -955,7 +956,7 @@ protected:
   int m_libraryHasMovieSets;
   
     //Drag&Drop stuff
-  bool m_isDragging;
+  CGUIControl* m_dragStartControl;
   CFileItemPtr m_draggedFileItem;
   CGUIControl* m_dragHoveredControl;
   std::vector<CStdString> m_draggableType;

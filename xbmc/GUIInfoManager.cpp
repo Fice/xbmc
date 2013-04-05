@@ -115,7 +115,7 @@ CGUIInfoManager::CGUIInfoManager(void) :
   m_fps = 0.0f;
   m_AVInfoValid = false;
   ResetLibraryBools();
-  m_isDragging = false;
+  m_dragStartControl = NULL;
   m_dragHoveredControl = NULL;
 }
 
@@ -5417,18 +5417,20 @@ bool CGUIInfoManager::GetEpgInfoTag(CEpgInfoTag& tag) const
   return false;
 }
 
-void CGUIInfoManager::DraggingStart(const std::vector<CStdString>& dragable, CFileItemPtr draggedFileItem) 
+void CGUIInfoManager::DraggingStart(const std::vector<CStdString>& dragable, CFileItemPtr draggedFileItem, CGUIControl* startControl) 
 { 
   m_draggableType.clear();
   m_draggableType.reserve(dragable.size());
   copy(dragable.begin(), dragable.end(), back_inserter(m_draggableType));
   m_draggedFileItem = draggedFileItem;
-  m_isDragging = true; 
+  m_dragStartControl = startControl;
 }
 
 void CGUIInfoManager::DraggingStop() 
 { 
-  m_isDragging = false; 
+  if(m_dragStartControl)
+     m_dragStartControl->DragStop();
+  m_dragStartControl = NULL;
   m_draggedFileItem = CFileItemPtr(); 
   m_draggableType.clear(); 
   m_dragHoveredControl = NULL; 
