@@ -25,14 +25,21 @@
 class CFileItemList;
 class CFileItem;
 
-class CFavourites
+namespace XFILE
+{
+
+class CFavouritesDirectory
 {
 public:
-  static bool Load(CFileItemList& items);
-  static bool LoadFavourites(CStdString& strPath, CFileItemList& items);
-  static bool AddOrRemove(CFileItem *item, int contextWindow);
-  static bool Save(const CFileItemList& items);
-  static bool IsFavourite(CFileItem *item, int contextWindow);
+  virtual bool GetDirectory(const CStdString& strPath, CFileItemList &items);
+  virtual bool Exists(const char* strPath) { return true; }
+  virtual bool IsReorderable() { return true; }
+  
+  bool AddOrRemove(CFileItem *item, int contextWindow);
+  bool Save(const CFileItemList& items);
+  bool IsFavourite(CFileItem *item, int contextWindow);
 private:
-  static CStdString GetExecutePath(const CFileItem *item, int contextWindow);
+  CStdString GetExecutePath(const CFileItem *item, int contextWindow);
 };
+  
+}

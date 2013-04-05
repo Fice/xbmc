@@ -18,7 +18,7 @@
  *
  */
 
-#include "Favourites.h"
+#include "filesystem/FavouritesDirectory.h"
 #include "filesystem/File.h"
 #include "Util.h"
 #include "profiles/ProfilesManager.h"
@@ -29,66 +29,79 @@
 #include "utils/URIUtils.h"
 #include "settings/AdvancedSettings.h"
 #include "video/VideoInfoTag.h"
+#include "URL.h"
 
-bool CFavourites::Load(CFileItemList &items)
+namespace XFILE
 {
-  items.Clear();
-  CStdString favourites;
 
-  favourites = "special://xbmc/system/favourites.xml";
-  if(XFILE::CFile::Exists(favourites))
-    CFavourites::LoadFavourites(favourites, items);
-  else
-    CLog::Log(LOGDEBUG, "CFavourites::Load - no system favourites found, skipping");
-  URIUtils::AddFileToFolder(CProfilesManager::Get().GetProfileUserDataFolder(), "favourites.xml", favourites);
-  if(XFILE::CFile::Exists(favourites))
-    CFavourites::LoadFavourites(favourites, items);
-  else
-    CLog::Log(LOGDEBUG, "CFavourites::Load - no userdata favourites found, skipping");
 
-  return true;
-}
-
-bool CFavourites::LoadFavourites(CStdString& strPath, CFileItemList& items)
+bool CFavouritesDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
 {
-  CXBMCTinyXML doc;
-  if (!doc.LoadFile(strPath))
+  CURL url(strPath);
+  
+  if(url.GetProtocol() == "favourites")
   {
-    CLog::Log(LOGERROR, "Unable to load %s (row %i column %i)", strPath.c_str(), doc.Row(), doc.Column());
-    return false;
-  }
-  TiXmlElement *root = doc.RootElement();
-  if (!root || strcmp(root->Value(), "favourites"))
-  {
-    CLog::Log(LOGERROR, "Favourites.xml doesn't contain the <favourites> root element");
-    return false;
-  }
-
-  TiXmlElement *favourite = root->FirstChildElement("favourite");
-  while (favourite)
-  {
-    // format:
-    // <favourite name="Cool Video" thumb="foo.jpg">PlayMedia(c:\videos\cool_video.avi)</favourite>
-    // <favourite name="My Album" thumb="bar.tbn">ActivateWindow(MyMusic,c:\music\my album)</favourite>
-    // <favourite name="Apple Movie Trailers" thumb="path_to_thumb.png">RunScript(special://xbmc/scripts/apple movie trailers/default.py)</favourite>
-    const char *name = favourite->Attribute("name");
-    const char *thumb = favourite->Attribute("thumb");
-    if (name && favourite->FirstChild())
+    bool result = false;
+    CStdString favourites("special://xbmc/system/favourites.xml");
+    if(XFILE::CFile::Exists(favourites))
     {
-      if(!items.Contains(favourite->FirstChild()->Value()))
-      {
-        CFileItemPtr item(new CFileItem(name));
-        item->SetPath(favourite->FirstChild()->Value());
-        if (thumb) item->SetArt("thumb", thumb);
-        items.Add(item);
-      }
+      result = GetDirectory(favourites, items);
     }
-    favourite = favourite->NextSiblingElement("favourite");
+    else
+      CLog::Log(LOGDEBUG, "CFavourites::Load - no system favourites found, skipping");
+    
+    URIUtils::AddFileToFolder(CProfilesManager::Get().GetProfileUserDataFolder(), "favourites.xml", favourites);
+    if(XFILE::CFile::Exists(favourites))
+    {
+      result |= GetDirectory(favourites, items);
+    }
+    else
+      CLog::Log(LOGDEBUG, "CFavourites::Load - no userdata favourites found, skipping");
+    return result;
   }
-  return true;
+  else 
+  {
+    CXBMCTinyXML doc;
+    if (!doc.LoadFile(strPath))
+    {
+      CLog::Log(LOGERROR, "Unable to load %s (row %i column %i)", strPath.c_str(), doc.Row(), doc.Column());
+      return false;
+    }
+    TiXmlElement *root = doc.RootElement();
+    if (!root || strcmp(root->Value(), "favourites"))
+    {
+      CLog::Log(LOGERROR, "Favourites.xml doesn't contain the <favourites> root element");
+      return false;
+    }
+    
+    TiXmlElement *favourite = root->FirstChildElement("favourite");
+    while (favourite)
+    {
+        // format:
+        // <favourite name="Cool Video" thumb="foo.jpg">PlayMedia(c:\videos\cool_video.avi)</favourite>
+        // <favourite name="My Album" thumb="bar.tbn">ActivateWindow(MyMusic,c:\music\my album)</favourite>
+        // <favourite name="Apple Movie Trailers" thumb="path_to_thumb.png">RunScript(special://xbmc/scripts/apple movie trailers/default.py)</favourite>
+      const char *name = favourite->Attribute("name");
+      const char *thumb = favourite->Attribute("thumb");
+      if (name && favourite->FirstChild())
+      {
+        if(!items.Contains(favourite->FirstChild()->Value()))
+        {
+          CFileItemPtr item(new CFileItem(name));
+          item->SetPath(favourite->FirstChild()->Value());
+          if (thumb) item->SetArt("thumb", thumb);
+          items.Add(item);
+        }
+      }
+      favourite = favourite->NextSiblingElement("favourite");
+    }
+    return true;
+  }
+  return false;
 }
 
-bool CFavourites::Save(const CFileItemList &items)
+
+bool CFavouritesDirectory::Save(const CFileItemList &items)
 {
   CStdString favourites;
   CXBMCTinyXML doc;
@@ -112,13 +125,13 @@ bool CFavourites::Save(const CFileItemList &items)
   return doc.SaveFile(favourites);
 }
 
-bool CFavourites::AddOrRemove(CFileItem *item, int contextWindow)
+bool CFavouritesDirectory::AddOrRemove(CFileItem *item, int contextWindow)
 {
   if (!item) return false;
 
   // load our list
   CFileItemList items;
-  Load(items);
+  GetDirectory("favcourites://", items);
 
   CStdString executePath(GetExecutePath(item, contextWindow));
 
@@ -141,15 +154,15 @@ bool CFavourites::AddOrRemove(CFileItem *item, int contextWindow)
   return Save(items);
 }
 
-bool CFavourites::IsFavourite(CFileItem *item, int contextWindow)
+bool CFavouritesDirectory::IsFavourite(CFileItem *item, int contextWindow)
 {
   CFileItemList items;
-  if (!Load(items)) return false;
+  if (!GetDirectory("favourites://", items)) return false;
 
   return items.Contains(GetExecutePath(item, contextWindow));
 }
 
-CStdString CFavourites::GetExecutePath(const CFileItem *item, int contextWindow)
+CStdString CFavouritesDirectory::GetExecutePath(const CFileItem *item, int contextWindow)
 {
   CStdString execute;
   if (item->m_bIsFolder && (g_advancedSettings.m_playlistAsFolders ||
@@ -165,4 +178,6 @@ CStdString CFavourites::GetExecutePath(const CFileItem *item, int contextWindow)
       execute.Format("PlayMedia(%s)", StringUtils::Paramify(item->GetPath()).c_str());
   }
   return execute;
+}
+  
 }

@@ -29,7 +29,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/GUISettings.h"
 #include "ApplicationMessenger.h"
-#include "Favourites.h"
+#include "filesystem/FavouritesDirectory.h"
 #include "utils/JobManager.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "addons/AddonManager.h"
@@ -790,7 +790,8 @@ void CAddonUnInstallJob::OnPostUnInstall()
 
   bool bSave(false);
   CFileItemList items;
-  CFavourites::Load(items);
+  XFILE::CFavouritesDirectory favs;
+  favs.GetDirectory("favourites://", items);
   for (int i=0; i < items.Size(); ++i)
   {
     if (items[i]->GetPath().Find(m_addon->ID()) > -1)
@@ -801,7 +802,7 @@ void CAddonUnInstallJob::OnPostUnInstall()
   }
 
   if (bSave)
-    CFavourites::Save(items);
+    favs.Save(items);
 
   if (m_addon->Type() == ADDON_PVRDLL)
   {

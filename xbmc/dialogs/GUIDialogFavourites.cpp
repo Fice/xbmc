@@ -21,7 +21,8 @@
 #include "GUIDialogFavourites.h"
 #include "GUIDialogContextMenu.h"
 #include "GUIDialogFileBrowser.h"
-#include "Favourites.h"
+#include "filesystem/Directory.h"
+#include "filesystem/FavouritesDirectory.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/GUIKeyboardFactory.h"
 #include "guilib/Key.h"
@@ -88,7 +89,7 @@ bool CGUIDialogFavourites::OnMessage(CGUIMessage &message)
 
 void CGUIDialogFavourites::OnInitWindow()
 {
-  CFavourites::Load(*m_favourites);
+  XFILE::CDirectory::GetDirectory("favourites://", *m_favourites);
   UpdateList();
   CGUIWindow::OnInitWindow();
 }
@@ -162,7 +163,8 @@ void CGUIDialogFavourites::OnMoveItem(int item, int amount)
   if (nextItem < 0) nextItem += m_favourites->Size();
   
   m_favourites->Move(item, nextItem-item);
-  CFavourites::Save(*m_favourites);
+  CFavouritesDirectory favs;
+  favs.Save(*m_favourites);
 
   CGUIMessage message(GUI_MSG_ITEM_SELECT, GetID(), FAVOURITES_LIST, nextItem);
   OnMessage(message);
@@ -175,7 +177,8 @@ void CGUIDialogFavourites::OnDelete(int item)
   if (item < 0 || item >= m_favourites->Size())
     return;
   m_favourites->Remove(item);
-  CFavourites::Save(*m_favourites);
+  XFILE::CFavouritesDirectory favs;
+  favs.Save(*m_favourites);
 
   CGUIMessage message(GUI_MSG_ITEM_SELECT, GetID(), FAVOURITES_LIST, item < m_favourites->Size() ? item : item - 1);
   OnMessage(message);
@@ -191,8 +194,9 @@ void CGUIDialogFavourites::OnRename(int item)
   CStdString label((*m_favourites)[item]->GetLabel());
   if (CGUIKeyboardFactory::ShowAndGetInput(label, g_localizeStrings.Get(16008), false))
     (*m_favourites)[item]->SetLabel(label);
-
-  CFavourites::Save(*m_favourites);
+  
+  XFILE::CFavouritesDirectory favs;
+  favs.Save(*m_favourites);
 
   UpdateList();
 }
@@ -228,7 +232,8 @@ void CGUIDialogFavourites::OnSetThumb(int item)
     return;
 
   (*m_favourites)[item]->SetArt("thumb", thumb);
-  CFavourites::Save(*m_favourites);
+  XFILE::CFavouritesDirectory favs;
+  favs.Save(*m_favourites);
   UpdateList();
 }
 

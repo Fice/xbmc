@@ -29,7 +29,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "guilib/GUIKeyboardFactory.h"
 #include "GUIUserMessages.h"
-#include "Favourites.h"
+#include "filesystem/FavouritesDirectory.h"
 #include "settings/Settings.h"
 #include "settings/GUISettings.h"
 #include "settings/MediaSettings.h"
@@ -437,8 +437,9 @@ void CGUIWindowVideoPlaylist::GetContextButtons(int itemNumber, CContextButtons 
         CPlayerCoreFactory::Get().GetPlayers(*item, vecCores);
       if (vecCores.size() > 1)
         buttons.Add(CONTEXT_BUTTON_PLAY_WITH, 15213); // Play With...
-
-      if (CFavourites::IsFavourite(item.get(), GetID()))
+      
+      XFILE::CFavouritesDirectory favs;
+      if (favs.IsFavourite(item.get(), GetID()))
         buttons.Add(CONTEXT_BUTTON_ADD_FAVOURITE, 14077);     // Remove Favourite
       else
         buttons.Add(CONTEXT_BUTTON_ADD_FAVOURITE, 14076);     // Add To Favourites;
@@ -514,7 +515,8 @@ bool CGUIWindowVideoPlaylist::OnContextButton(int itemNumber, CONTEXT_BUTTON but
   case CONTEXT_BUTTON_ADD_FAVOURITE:
     {
       CFileItemPtr item = m_vecItems->Get(itemNumber);
-      CFavourites::AddOrRemove(item.get(), GetID());
+      XFILE::CFavouritesDirectory favs;
+      favs.AddOrRemove(item.get(), GetID());
       return true;
     }
   case CONTEXT_BUTTON_CANCEL_PARTYMODE:
