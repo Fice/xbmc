@@ -2961,11 +2961,6 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
           
           int id1 = info.GetData2();
           int id2 = m_dragHoveredControl->GetID();
-          if(id2==3003)
-            return true;
-          if(id1==id2)
-            return true;
-          
           bReturn = (id1==id2);
         }
         break;
@@ -5441,5 +5436,9 @@ void CGUIInfoManager::DraggingStop()
 
 void CGUIInfoManager::DragHover(CGUIControl* hoveredObject) 
 {
+  if(m_dragHoveredControl!=hoveredObject && m_dragHoveredControl!=NULL)
+  {
+    m_dragHoveredControl->DraggedAway();
+  }
   m_dragHoveredControl = hoveredObject;
 }
