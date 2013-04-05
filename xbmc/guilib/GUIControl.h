@@ -241,7 +241,8 @@ public:
   CGUIControl *GetParentControl(void) const { return m_parentControl; };
   virtual void SaveStates(std::vector<CControlState> &states);
   
-  bool IsDropable(const std::vector<CStdString>& dragable) const;
+  virtual bool IsDropable(const std::vector<CStdString>& dragable) const;
+  virtual bool IsDropable(const CStdString& dragable) const;
   void SetDragable(const std::vector<std::string>& dragable) 
   {
     m_dragable.clear();
@@ -254,6 +255,8 @@ public:
     m_dropable.reserve(dropable.size());
     copy(dropable.begin(),dropable.end(),back_inserter(m_dropable));
   }
+  virtual void DraggedAway();
+  virtual void DragStop();
   
 
   enum GUICONTROLTYPES {

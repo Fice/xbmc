@@ -360,18 +360,7 @@ bool CGUIControl::OnMessage(CGUIMessage& message)
       return true;
     }
   }
-  if(message.GetMessage() == ACTION_MOUSE_DRAG_HOVER)
-  {
-    CPoint point(message.GetParam1(), message.GetParam2());
-    if(!HitTest(point))
-      return false;
-    
-    if(IsDropable(g_infoManager.GetDraggableType()))
-    {
-      g_infoManager.DragHover(this);
-      return true;
-    }
-  }
+  
   return false;
 }
 
@@ -596,38 +585,51 @@ EVENT_RESULT CGUIControl::SendMouseEvent(const CPoint &point, const CMouseEvent 
 #include "dialogs/GUIDialogKaiToast.h"
 
 EVENT_RESULT CGUIControl::OnMouseEvent(const CPoint &point, const CMouseEvent &event) { 
+  
+  
   if (event.m_id == ACTION_MOUSE_DRAG) {
+    if(!HitTest(point) || !IsVisible())
+      return EVENT_RESULT_UNHANDLED;
+
+    
     if (event.m_state == 1)
     {
       if(!m_dragable.empty()) //Are we dragable?
       { 
-        CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, GetID(), GetParentID());
-        SendWindowMessage(msg);
+        g_infoManager.DraggingStart(m_dragable, CFileItemPtr(), this);
         
-        g_Mouse.SetState(MOUSE_STATE_DRAG);
-        g_infoManager.DraggingStart(m_dragable, CFileItemPtr());
+        return EVENT_RESULT_HANDLED;
       }
     } 
     else if(event.m_state == 2)
     {
-        //TODO: check if we are dropable!
-      CLog::Log(LOGWARNING, "Dropping over: ", GetID());
-        //CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(20052),g_localizeStrings.Get(20053));
-        
-      
+      if(IsDropable(g_infoManager.GetDraggableType()))
+      {
+          //Set us as drop target
+        g_infoManager.DragHover(this);
+        return EVENT_RESULT_HANDLED;
+      }
     }
     else if(event.m_state == 3)
     {
-      CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, 0, GetParentID());
-      SendWindowMessage(msg);
-      
-      g_Mouse.SetState(MOUSE_STATE_NORMAL);
+      if(IsDropable(g_infoManager.GetDraggableType()))
+      {
+          //TODO: execute ondrop function!
+      }
       g_infoManager.DraggingStop();
+      return EVENT_RESULT_HANDLED;
+      
     }
   }
     
   return EVENT_RESULT_UNHANDLED; 
 };
+
+void CGUIControl::DraggedAway() 
+{ }
+
+void CGUIControl::DragStop() 
+{ }
 
 // override this function to implement custom mouse behaviour
 bool CGUIControl::OnMouseOver(const CPoint &point)
@@ -999,7 +1001,13 @@ void CGUIControl::SaveStates(vector<CControlState> &states)
 bool CGUIControl::IsDropable(const std::vector<CStdString>& dragable) const
 {
   std::vector<CStdString>::const_iterator it = find_first_of(m_dropable.begin(), m_dropable.end(), dragable.begin(), dragable.end());
-  return it!= m_dropable.end();
+  return it != m_dropable.end();
+}
+
+bool CGUIControl::IsDropable(const CStdString& dragable) const
+{
+  std::vector<CStdString>::const_iterator it = find(m_dropable.begin(), m_dropable.end(), dragable);
+  return it != m_dropable.end();
 }
 
 void CGUIControl::SetHitRect(const CRect &rect)
