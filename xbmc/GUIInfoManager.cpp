@@ -56,6 +56,7 @@
 #include "utils/SeekHandler.h"
 #include "URL.h"
 #include "addons/Skin.h"
+#include "input/MouseStat.h"
 
 // stuff for current song
 #include "music/MusicInfoLoader.h"
@@ -5424,6 +5425,7 @@ void CGUIInfoManager::DraggingStart(const std::vector<CStdString>& dragable, CFi
   copy(dragable.begin(), dragable.end(), back_inserter(m_draggableType));
   m_draggedFileItem = draggedFileItem;
   m_dragStartControl = startControl;
+  g_Mouse.SetState(MOUSE_STATE_DRAG);
 }
 
 void CGUIInfoManager::DraggingStop() 
@@ -5434,6 +5436,7 @@ void CGUIInfoManager::DraggingStop()
   m_draggedFileItem = CFileItemPtr(); 
   m_draggableType.clear(); 
   m_dragHoveredControl = NULL; 
+  g_Mouse.SetState(MOUSE_STATE_NORMAL);
 }
 
 void CGUIInfoManager::DragHover(CGUIControl* hoveredObject) 
