@@ -799,19 +799,10 @@ public:
   bool ToggleShowInfo() { m_playerShowInfo = !m_playerShowInfo; return m_playerShowInfo; };
   bool m_performingSeek;
   
-  void DraggingStart(const std::vector<CStdString>& dragable, CFileItemPtr draggedFileItem) 
-  { 
-    m_draggableType.clear();
-    m_draggableType.reserve(dragable.size());
-    copy(dragable.begin(), dragable.end(), back_inserter(m_draggableType));
-    m_draggedFileItem = draggedFileItem;
-    m_isDragging = true; 
-  }
+  void DraggingStart(const std::vector<CStdString>& dragable, CFileItemPtr draggedFileItem);
   const std::vector<CStdString>& GetDraggableType() const { return m_draggableType; }
-  void DraggingStop() { m_isDragging = false; m_draggedFileItem = CFileItemPtr(); m_draggableType.clear(); m_dragHoveredControl = NULL; }
-  void DragHover(CGUIControl* hoveredObject) {
-    m_dragHoveredControl = hoveredObject;
-  }
+  void DraggingStop();
+  void DragHover(CGUIControl* hoveredObject);
   const CFileItemPtr GetDraggedFileItem() const { return m_draggedFileItem; }
 
 

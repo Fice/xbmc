@@ -5416,3 +5416,25 @@ bool CGUIInfoManager::GetEpgInfoTag(CEpgInfoTag& tag) const
   }
   return false;
 }
+
+void CGUIInfoManager::DraggingStart(const std::vector<CStdString>& dragable, CFileItemPtr draggedFileItem) 
+{ 
+  m_draggableType.clear();
+  m_draggableType.reserve(dragable.size());
+  copy(dragable.begin(), dragable.end(), back_inserter(m_draggableType));
+  m_draggedFileItem = draggedFileItem;
+  m_isDragging = true; 
+}
+
+void CGUIInfoManager::DraggingStop() 
+{ 
+  m_isDragging = false; 
+  m_draggedFileItem = CFileItemPtr(); 
+  m_draggableType.clear(); 
+  m_dragHoveredControl = NULL; 
+}
+
+void CGUIInfoManager::DragHover(CGUIControl* hoveredObject) 
+{
+  m_dragHoveredControl = hoveredObject;
+}
