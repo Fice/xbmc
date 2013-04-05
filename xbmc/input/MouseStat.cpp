@@ -22,6 +22,7 @@
 #include "guilib/Key.h"
 #include "windowing/WindowingFactory.h"
 #include "utils/TimeUtils.h"
+#include "GUIInfoManager.h"
 
 CMouseStat::CMouseStat()
 {
@@ -189,9 +190,13 @@ void CMouseStat::SetActive(bool active /*=true*/)
 }
 
 // IsActive - returns true if we have been active in the last MOUSE_ACTIVE_LENGTH period
+// it will always return true while dragging
 bool CMouseStat::IsActive()
 {
-  if (m_mouseState.active && (CTimeUtils::GetFrameTime() - m_lastActiveTime > MOUSE_ACTIVE_LENGTH))
+  
+  if (m_mouseState.active && 
+     (CTimeUtils::GetFrameTime() - m_lastActiveTime > MOUSE_ACTIVE_LENGTH) &&
+     g_infoManager.GetDragStartControl() == NULL)
     SetActive(false);
   return (m_mouseState.active && IsEnabled());
 }
