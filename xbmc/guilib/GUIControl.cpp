@@ -615,6 +615,9 @@ EVENT_RESULT CGUIControl::OnMouseEvent(const CPoint &point, const CMouseEvent &e
       if(IsDropable(g_infoManager.GetDraggableType()))
       {
           //TODO: execute ondrop function!
+        /*int controlID = GetID();
+        int parentID = GetParentID();        
+        dragActions.ExecuteActions(controlID, parentID);*/
       }
       g_infoManager.DraggingStop();
       return EVENT_RESULT_HANDLED;
