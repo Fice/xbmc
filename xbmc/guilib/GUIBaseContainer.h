@@ -189,11 +189,18 @@ protected:
 
   CScroller m_scroller;
   
-  int m_draggedObject;
-  int m_draggedOrigPosition;
-  short m_draggedScrollDirection;
+  struct DragData
+  {
+    DragData();
+    
+    int m_draggedObject;
+    int m_draggedOrigPosition;
+    short m_draggedScrollDirection;
+    CRect m_dragHintPosition; //TODO: change to CPoint, once dragHint isnt a hardcoded DrawRect()
+  };
+  DragData *m_dragData;
   boost::shared_ptr<CGUIControl> m_dragHint;
-  CRect m_dragHint_; //TODO: remove
+  
   
   bool m_staticContent;
   bool m_staticDefaultAlways;
