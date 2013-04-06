@@ -32,6 +32,7 @@
 
 typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;
 
+class CGUIListDragHandler;
 
 #define ITEM_IS_DRAGGED_FLAG "isdragged"
 
@@ -109,6 +110,7 @@ public:
   void SetRenderOffset(const CPoint &offset);
   
   void SetReorderable(bool reorderable=true);
+  bool IsReorderable() const { return IsDropable(GetInListDraggingName()); }
     //returns true, either if this container is reorderable (true for favourites and playlists
     //or the selected items layout has a "dragable" property
   bool CanDrag() const;
@@ -116,13 +118,12 @@ public:
   virtual bool IsDropable(const CStdString& dragable) const;
   virtual void DraggedAway();
   virtual void DragStop();
-  void CleanupDragHints();
 
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif
 protected:
-  CStdString GetInListDraggingName();
+  CStdString GetInListDraggingName() const;
   
   virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   bool OnClick(int actionID);
@@ -189,16 +190,10 @@ protected:
 
   CScroller m_scroller;
   
-  struct DragData
-  {
-    DragData();
-    
-    int m_draggedObject;
-    int m_draggedOrigPosition;
-    short m_draggedScrollDirection;
-    CRect m_dragHintPosition; //TODO: change to CPoint, once dragHint isnt a hardcoded DrawRect()
-  };
-  DragData *m_dragData;
+  CGUIListDragHandler *m_dragHandler;
+    //DragHandler needs access to several BaseContainer internals,
+    //and this is better than exposing them via getters/setters
+  friend class CGUIListDragHandler;
   boost::shared_ptr<CGUIControl> m_dragHint;
   
   

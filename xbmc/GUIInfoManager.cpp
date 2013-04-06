@@ -5419,6 +5419,10 @@ void CGUIInfoManager::DraggingStart(const std::vector<CStdString>& dragable, CFi
   m_draggableType.reserve(dragable.size());
   copy(dragable.begin(), dragable.end(), back_inserter(m_draggableType));
   m_draggedFileItem = draggedFileItem;
+  if(m_draggedFileItem)
+    m_draggedFileItem->SetProperty(ITEM_IS_DRAGGED_FLAG, CVariant(true));
+  
+  
   m_dragStartControl = startControl;
   g_Mouse.SetState(MOUSE_STATE_DRAG);
 }
@@ -5427,6 +5431,8 @@ void CGUIInfoManager::DraggingStop()
 { 
   if(m_dragStartControl)
      m_dragStartControl->DragStop();
+  if(m_draggedFileItem)
+    m_draggedFileItem->ClearProperty(ITEM_IS_DRAGGED_FLAG);
   m_dragStartControl = NULL;
   m_draggedFileItem = CFileItemPtr(); 
   m_draggableType.clear(); 
