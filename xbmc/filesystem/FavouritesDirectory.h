@@ -21,6 +21,7 @@
  */
 
 #include "utils/StdString.h"
+#include "IDirectory.h"
 
 class CFileItemList;
 class CFileItem;
@@ -28,11 +29,11 @@ class CFileItem;
 namespace XFILE
 {
 
-class CFavouritesDirectory
+class CFavouritesDirectory : public IDirectory
 {
 public:
   virtual bool GetDirectory(const CStdString& strPath, CFileItemList &items);
-  virtual bool Exists(const char* strPath) { return true; }
+  virtual bool Exists(const char* strPath) { return true; } //TODO
   virtual bool IsReorderable() { return true; }
   
   bool AddOrRemove(CFileItem *item, int contextWindow);

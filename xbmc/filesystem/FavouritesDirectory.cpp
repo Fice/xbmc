@@ -131,7 +131,7 @@ bool CFavouritesDirectory::AddOrRemove(CFileItem *item, int contextWindow)
 
   // load our list
   CFileItemList items;
-  GetDirectory("favcourites://", items);
+  GetDirectory("favourites://", items);
 
   CStdString executePath(GetExecutePath(item, contextWindow));
 
