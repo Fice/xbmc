@@ -580,7 +580,6 @@
 		</control>
 	</include>
 	<include name="CommonNowPlaying_Controls">
-	    <ondrag>Notification(Playlist, Item $INFO[dragndrop.item.label] queued)</ondrag>
 		<control type="label" id="202">
 			<width>250</width>
 			<height>35</height>
@@ -887,6 +886,19 @@
 			<textureradiofocus>GoFullscreen.png</textureradiofocus>
 			<textureradionofocus>GoFullscreen.png</textureradionofocus>
 			<visible>Player.HasMedia</visible>
+		</control>
+		<control type="button">
+		    <description>Opens the current playlist, also items can be dragged here, to add them to the favourites</description>
+		    <ondrop>Notification(Playlist, $INFO[dragndrop.item.label] added)</ondrop>
+		    <width>250</width>
+		    <posx>200</posx>
+		    <posy>0</posy>
+		    <height>35</height>
+		    <include>VisibleFadeEffect</include>
+		   
+		    <onclick>XBMC.ActivateWindow(videoplaylist)</onclick>
+		    <label>Playlist ($INFO[videoplayer.playlistlength])</label>
+		    <visible>integergreaterthan(videoplayer.playlistlength, 0)</visible>
 		</control>
 	</include>
 	<include name="ScrollOffsetLabel">
