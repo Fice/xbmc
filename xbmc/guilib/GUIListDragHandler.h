@@ -61,16 +61,15 @@ struct CGUIListDragHandler
    \returns EVENT_RESULT_HANDLED if it actually performed an action. EVENT_RESULT_UNHANDLED otherwise
    **/
   EVENT_RESULT OnDrop();
-    
-  void ClearDragHint();
-  
-  void ShowDragHint(const CPoint& insertPoint);
   
     //States that do not change during drag&drop
   const bool m_bInternal; //true: it is in-list-drag&drop, false: the users tries to drag an item from another list onto our list
   const bool m_bReorderable; 
   const bool m_bDropable;
 protected:
+  void ClearDragHint();
+  void ShowDragHint(const CPoint& insertPoint);
+  
   const boost::shared_ptr<CGUIControl> m_dragHint;
   CGUIBaseContainer* const m_container;
     
