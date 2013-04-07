@@ -748,7 +748,7 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
 
       bool dropable = IsDropable(); //TODO:
       m_dragHandler = new CGUIListDragHandler(true, IsReorderable(), dropable, m_dragHint, this);
-      m_dragHandler->DragStart();
+      m_dragHandler->DragStart(point);
       return EVENT_RESULT_HANDLED;
     }
     else if (event.m_state == 2 && HitTest(point))
@@ -757,7 +757,7 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
       { //The users wants to drop sth. on the list, that comes from the outside
         bool canDrop = IsDropable(); //TODO:
         m_dragHandler = new CGUIListDragHandler(false, IsReorderable(), canDrop, m_dragHint, this);
-        m_dragHandler->DragStart();
+        m_dragHandler->DragStart(point);
       }
       
       return m_dragHandler->DragMove(point);
@@ -813,7 +813,7 @@ CStdString CGUIBaseContainer::GetInListDraggingName() const
 
 bool CGUIBaseContainer::CanDrag() const
 {
-  if(m_bReorderable)
+  if(IsReorderable())
     return true;
   
     //TODO: perhabs only allow dragging, if there is actually a control in the current
@@ -823,7 +823,7 @@ bool CGUIBaseContainer::CanDrag() const
 
 bool CGUIBaseContainer::IsDropable() const
 {
-  if(!m_bReorderable && m_dragHandler && m_dragHandler->m_bInternal)
+  if(!IsReorderable() && m_dragHandler && m_dragHandler->m_bInternal)
     return false; //The user tries to reoder this list, but it's not allowed
   
     //Ask the class that is responsible for adding and moving items,

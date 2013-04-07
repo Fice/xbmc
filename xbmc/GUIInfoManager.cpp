@@ -1327,7 +1327,10 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, CStdString *fa
   {
     int listitemInfo = info - DRAGGING_ITEM_BEGIN + LISTITEM_START;
     if(m_draggedFileItem)
-      strLabel = GetItemLabel(&*m_draggedFileItem, listitemInfo, fallback);
+    {
+      CFileItem item(*m_draggedFileItem);
+      strLabel = GetItemLabel(&item, listitemInfo, fallback);
+    }
     return strLabel;
   }
 
@@ -5419,7 +5422,7 @@ bool CGUIInfoManager::GetEpgInfoTag(CEpgInfoTag& tag) const
   return false;
 }
 
-void CGUIInfoManager::DraggingStart(CFileItemPtr draggedFileItem, CGUIControl* startControl) 
+void CGUIInfoManager::DraggingStart(CGUIListItemPtr draggedFileItem, CGUIControl* startControl) 
 { 
   m_draggedFileItem = draggedFileItem;
   if(m_draggedFileItem)

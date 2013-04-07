@@ -78,7 +78,7 @@ void CGUIListDragHandler::Render() //all public
   }
 }
 
-void CGUIListDragHandler::DragStart() //m_items and m_focusedLayout is protected
+void CGUIListDragHandler::DragStart(const CPoint& point) //m_items and m_focusedLayout is protected
 {
   if(m_bInternal)
   {
@@ -87,19 +87,40 @@ void CGUIListDragHandler::DragStart() //m_items and m_focusedLayout is protected
     int selected = m_container->GetSelectedItem();
     if (selected >= 0 && selected < (int)m_container->m_items.size())
     {
-      draggedItem = m_container-> m_items[selected];
+      draggedItem = m_container->m_items[selected];
       m_draggedOrigPosition = m_draggedNewPosition = selected;
     }
       //Let the skinner have access to drag&drop info stuff
-    g_infoManager.DraggingStart(CFileItemPtr(new CFileItem(*draggedItem)), m_container);
+    g_infoManager.DraggingStart(draggedItem, m_container);
 
   }
   else //Dragging started earlier, but now we're finnaly hovered!
   {
+    CGUIListItemPtr draggedItem = g_infoManager.GetDraggedFileItem();
+    if(!draggedItem)
+      return;
+    
+    CPoint insertPoint;
+    int newPosition = m_container->calculateDragInsertPosition(point, insertPoint);
     if(!m_dragHint)
     {
-        //TODO: add the dragged file item to our list
+        
     }
+    else
+    {
+       if(m_bReorderable)
+       {
+           //Add element under mouse cursor
+       }
+       else {
+         m_container->m_items.push_back(draggedItem);
+           //now let the responsible entity sort the m_items vector
+           //now find the position of our draggedItem
+         m_draggedNewPosition = m_container->m_items.size()-1;
+      }
+
+    }
+
   }
 }
 
@@ -190,8 +211,9 @@ void CGUIListDragHandler::DraggedAway()
       }
       else 
       {
+        ASSERT(m_draggedNewPosition>=(int)m_container->m_items.size());
           //remove item from our list
-      
+        m_container->m_items.erase(m_container->m_items.begin()+m_draggedNewPosition);
           //set focus to previously focused item
       
           //set default values!

@@ -800,10 +800,10 @@ public:
   bool ToggleShowInfo() { m_playerShowInfo = !m_playerShowInfo; return m_playerShowInfo; };
   bool m_performingSeek;
   
-  void DraggingStart(CFileItemPtr draggedFileItem, CGUIControl* controlStart);
+  void DraggingStart(CGUIListItemPtr draggedFileItem, CGUIControl* controlStart);
   void DraggingStop();
   void DragHover(CGUIControl* hoveredObject);
-  const CFileItemPtr GetDraggedFileItem() const { return m_draggedFileItem; }
+  const CGUIListItemPtr GetDraggedFileItem() const { return m_draggedFileItem; }
   CGUIControl* GetDragStartControl() const { return m_dragStartControl; }
 
 
@@ -957,7 +957,7 @@ protected:
   
     //Drag&Drop stuff
   CGUIControl* m_dragStartControl;
-  CFileItemPtr m_draggedFileItem;
+  CGUIListItemPtr m_draggedFileItem;
   CGUIControl* m_dragHoveredControl;
 
   SPlayerVideoStreamInfo m_videoInfo;

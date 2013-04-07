@@ -48,7 +48,7 @@ struct CGUIListDragHandler
   void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   void Render();
     
-  void DragStart();
+  void DragStart(const CPoint& point);
   EVENT_RESULT DragMove(const CPoint &point);
   /**
    Called when the user no longer hovers this item during drag&drop
