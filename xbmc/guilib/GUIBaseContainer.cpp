@@ -769,7 +769,7 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
       m_dragHandler->DragMove(point);
       EVENT_RESULT result = m_dragHandler->OnDrop();
       SAFE_DELETE(m_dragHandler);
-      return EVENT_RESULT_HANDLED;      
+      return result;      
     }
   }
   return EVENT_RESULT_UNHANDLED;
