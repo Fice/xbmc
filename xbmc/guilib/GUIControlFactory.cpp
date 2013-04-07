@@ -579,7 +579,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   float width = 0, height = 0;
   float minHeight = 0, minWidth = 0;
 
-  CGUIAction leftActions, rightActions, upActions, downActions, backActions, nextActions, prevActions;
+  CGUIAction leftActions, rightActions, upActions, downActions, backActions, nextActions, prevActions, dropActions;
 
   int pageControl = 0;
   CGUIInfoColor colorDiffuse(0xFFFFFFFF);
@@ -686,7 +686,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   bool resetOnLabelChange = true;
   bool bPassword = false;
   CStdString visibleCondition;
-  std::vector<std::string> dropable;
 
   /////////////////////////////////////////////////////////////////////////////
   // Read control properties from XML
@@ -734,7 +733,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   GetActions(pControlNode, "onnext",  nextActions);
   GetActions(pControlNode, "onprev",  prevActions);
   GetActions(pControlNode, "onback",  backActions);
-
   if (XMLUtils::GetInt(pControlNode, "defaultcontrol", defaultControl))
   {
     const char *always = pControlNode->FirstChildElement("defaultcontrol")->Attribute("always");
@@ -776,7 +774,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   GetActions(pControlNode, "onunfocus", unfocusActions);
   focusActions.m_sendThreadMessages = unfocusActions.m_sendThreadMessages = true;
   GetActions(pControlNode, "altclick", altclickActions);
-
+  GetActions(pControlNode, "ondrop", dropActions);
+  
   CStdString infoString;
   if (XMLUtils::GetString(pControlNode, "info", infoString))
     singleInfo = g_infoManager.TranslateString(infoString);
@@ -832,14 +831,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   XMLUtils::GetString(pControlNode, "tagset", strRSSTags);
   GetInfoColor(pControlNode, "headlinecolor", headlineColor, parentID);
   GetInfoColor(pControlNode, "titlecolor", textColor3, parentID);
-
-  XMLUtils::GetStringArray(pControlNode, "dropable", dropable, false, "");
-
-    //TODO: remove
-  if(!dropable.empty())
-  {
-    CLog::Log(LOGNOTICE, "Yeah");
-  }
   
   if (XMLUtils::GetString(pControlNode, "subtype", strSubType))
   {
@@ -1347,8 +1338,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
     control->SetAnimations(animations);
     control->SetColorDiffuse(colorDiffuse);
     control->SetNavigationActions(upActions, downActions, leftActions, rightActions, backActions);
+    control->SetDropAction(dropActions);
     control->SetPulseOnSelect(bPulse);
-    control->SetDropable(dropable);
     if (hasCamera)
       control->SetCamera(camera);
   }

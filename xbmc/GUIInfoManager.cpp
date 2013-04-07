@@ -5413,16 +5413,11 @@ bool CGUIInfoManager::GetEpgInfoTag(CEpgInfoTag& tag) const
   return false;
 }
 
-void CGUIInfoManager::DraggingStart(const std::vector<CStdString>& dragable, CFileItemPtr draggedFileItem, CGUIControl* startControl) 
+void CGUIInfoManager::DraggingStart(CFileItemPtr draggedFileItem, CGUIControl* startControl) 
 { 
-  m_draggableType.clear();
-  m_draggableType.reserve(dragable.size());
-  copy(dragable.begin(), dragable.end(), back_inserter(m_draggableType));
   m_draggedFileItem = draggedFileItem;
   if(m_draggedFileItem)
     m_draggedFileItem->SetProperty(ITEM_IS_DRAGGED_FLAG, CVariant(true));
-  
-  
   m_dragStartControl = startControl;
   g_Mouse.SetState(MOUSE_STATE_DRAG);
 }
@@ -5435,7 +5430,6 @@ void CGUIInfoManager::DraggingStop()
     m_draggedFileItem->ClearProperty(ITEM_IS_DRAGGED_FLAG);
   m_dragStartControl = NULL;
   m_draggedFileItem = CFileItemPtr(); 
-  m_draggableType.clear(); 
   m_dragHoveredControl = NULL; 
   g_Mouse.SetState(MOUSE_STATE_NORMAL);
 }

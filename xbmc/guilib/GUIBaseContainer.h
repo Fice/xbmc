@@ -109,13 +109,12 @@ public:
    */
   void SetRenderOffset(const CPoint &offset);
   
-  void SetReorderable(bool reorderable=true);
-  bool IsReorderable() const { return IsDropable(GetInListDraggingName()); }
+  void SetReorderable(bool reorderable=true) { m_bReorderable = reorderable; }
+  bool IsReorderable() const { return m_bReorderable; }
     //returns true, either if this container is reorderable (true for favourites and playlists
     //or the selected items layout has a "dragable" property
   bool CanDrag() const;
-  virtual bool IsDropable(const std::vector<CStdString>& dragable) const;
-  virtual bool IsDropable(const CStdString& dragable) const;
+  virtual bool IsDropable() const;
   virtual void DraggedAway();
   virtual void DragStop();
 
@@ -195,6 +194,7 @@ protected:
     //and this is better than exposing them via getters/setters
   friend class CGUIListDragHandler;
   boost::shared_ptr<CGUIControl> m_dragHint;
+  bool m_bReorderable;
   
   
   bool m_staticContent;

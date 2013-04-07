@@ -799,8 +799,7 @@ public:
   bool ToggleShowInfo() { m_playerShowInfo = !m_playerShowInfo; return m_playerShowInfo; };
   bool m_performingSeek;
   
-  void DraggingStart(const std::vector<CStdString>& dragable, CFileItemPtr draggedFileItem, CGUIControl* controlStart);
-  const std::vector<CStdString>& GetDraggableType() const { return m_draggableType; }
+  void DraggingStart(CFileItemPtr draggedFileItem, CGUIControl* controlStart);
   void DraggingStop();
   void DragHover(CGUIControl* hoveredObject);
   const CFileItemPtr GetDraggedFileItem() const { return m_draggedFileItem; }
@@ -959,7 +958,6 @@ protected:
   CGUIControl* m_dragStartControl;
   CFileItemPtr m_draggedFileItem;
   CGUIControl* m_dragHoveredControl;
-  std::vector<CStdString> m_draggableType;
 
   SPlayerVideoStreamInfo m_videoInfo;
   SPlayerAudioStreamInfo m_audioInfo;

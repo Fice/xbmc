@@ -65,11 +65,11 @@ struct CGUIListDragHandler
   
   void ShowDragHint(const CPoint& insertPoint);
   
-protected:
     //States that do not change during drag&drop
   const bool m_bInternal; //true: it is in-list-drag&drop, false: the users tries to drag an item from another list onto our list
   const bool m_bReorderable; 
   const bool m_bDropable;
+protected:
   const boost::shared_ptr<CGUIControl> m_dragHint;
   CGUIBaseContainer* const m_container;
     

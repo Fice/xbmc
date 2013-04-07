@@ -745,7 +745,7 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
     {
       ASSERT(!m_dragHandler); 
 
-      bool dropable = IsDropable(GetInListDraggingName()); //TODO:
+      bool dropable = IsDropable(); //TODO:
       m_dragHandler = new CGUIListDragHandler(true, IsReorderable(), dropable, m_dragHint, this);
       m_dragHandler->DragStart();
       return EVENT_RESULT_HANDLED;
@@ -754,7 +754,7 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
     {
       if(!m_dragHandler)
       { //The users wants to drop sth. on the list, that comes from the outside
-        bool canDrop = IsDropable(GetInListDraggingName()); //TODO:
+        bool canDrop = IsDropable(); //TODO:
         m_dragHandler = new CGUIListDragHandler(false, IsReorderable(), canDrop, m_dragHint, this);
         m_dragHandler->DragStart();
       }
@@ -810,58 +810,25 @@ CStdString CGUIBaseContainer::GetInListDraggingName() const
   return dragableType;
 }
 
-void CGUIBaseContainer::SetReorderable(bool reorderable)
-{
-  string dragableType = GetInListDraggingName();
-  
-  std::vector<CGUIListItemLayout>::iterator it;
-  
-  if(reorderable)
-  { 
-    for(it = m_focusedLayouts.begin(); it!=m_focusedLayouts.end(); ++it)
-    {
-      it->AddDragable(dragableType);
-      it->AddDropable(dragableType);
-    }    
-  } 
-  else {
-    for(it = m_focusedLayouts.begin(); it!=m_focusedLayouts.end(); ++it)
-    {
-      it->RemoveDragable(dragableType);
-      it->RemoveDropable(dragableType);
-    }  
-  }
-
-}
-
 bool CGUIBaseContainer::CanDrag() const
 {
-  if(IsReorderable())
+  if(m_bReorderable)
     return true;
   
-  if(m_focusedLayout)
-  {
-    return !m_focusedLayout->GetDragable().empty();
-  }
-  return false;
+    //TODO: perhabs only allow dragging, if there is actually a control in the current
+    //view, that accepts our listitem?
+  return true;
 }
 
-bool CGUIBaseContainer::IsDropable(const std::vector<CStdString>& dragable) const
+bool CGUIBaseContainer::IsDropable() const
 {
-  const std::vector<CStdString>& dropables = m_focusedLayout->GetDropable();
-  return find_first_of(dropables.begin(), dropables.end(), dragable.begin(), dragable.end()) != dropables.end();
+  if(!m_bReorderable && m_dragHandler && m_dragHandler->m_bInternal)
+    return false; //The user tries to reoder this list, but it's not allowed
+  
+    //Ask the class that is responsible for adding and moving items,
+    //if we can actually do that!
+  return true;
 }
-bool CGUIBaseContainer::IsDropable(const CStdString& dragable) const
-{
-  if(m_focusedLayout)
-  {
-    const std::vector<CStdString>& dropables = m_focusedLayout->GetDropable();
-    return find(dropables.begin(), dropables.end(), dragable) != dropables.end();
-  }
-  return false;
-}
-
-
 
 int CGUIBaseContainer::calculateDragInsertPosition(const CPoint& point, CPoint& hintPosition)
 {  

@@ -196,6 +196,7 @@ public:
                                     const CGUIAction &left, const CGUIAction &right,
                                     const CGUIAction &back, bool replace = true);
   void SetNavigationAction(int direction, const CGUIAction &action, bool replace = true);
+  void SetDropAction(const CGUIAction& drop, bool replace = true);
   int GetControlIdUp() const { return m_actionUp.GetNavigation(); };
   int GetControlIdDown() const { return  m_actionDown.GetNavigation(); };
   int GetControlIdLeft() const { return m_actionLeft.GetNavigation(); };
@@ -241,14 +242,7 @@ public:
   CGUIControl *GetParentControl(void) const { return m_parentControl; };
   virtual void SaveStates(std::vector<CControlState> &states);
   
-  virtual bool IsDropable(const std::vector<CStdString>& dragable) const;
-  virtual bool IsDropable(const CStdString& dragable) const;
-  void SetDropable(const std::vector<std::string>& dropable) 
-  {
-    m_dropable.clear();
-    m_dropable.reserve(dropable.size());
-    copy(dropable.begin(),dropable.end(),back_inserter(m_dropable));
-  }
+  virtual bool IsDropable() const;
   virtual void DraggedAway();
   virtual void DragStop();
   
@@ -333,6 +327,7 @@ protected:
   CGUIAction m_actionBack;
   CGUIAction m_actionNext;
   CGUIAction m_actionPrev;
+  CGUIAction m_actionDrop;
 
   float m_posX;
   float m_posY;
@@ -362,8 +357,6 @@ protected:
   bool m_enabled;
 
   bool m_pushedUpdates;
-  
-  std::vector<CStdString> m_dropable; //What kind of items are droppable on this one?
 
   // animation effects
   std::vector<CAnimation> m_animations;

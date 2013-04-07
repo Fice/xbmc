@@ -89,7 +89,7 @@ void CGUIListDragHandler::DragStart() //m_items and m_focusedLayout is protected
       m_draggedOrigPosition = m_draggedNewPosition = selected;
     }
       //Let the skinner have access to drag&drop info stuff
-    g_infoManager.DraggingStart(m_container->m_focusedLayout->GetDragable(), CFileItemPtr(new CFileItem(*draggedItem)), m_container);
+    g_infoManager.DraggingStart(CFileItemPtr(new CFileItem(*draggedItem)), m_container);
 
   }
   else //Dragging started earlier, but now we're finnaly hovered!

@@ -481,6 +481,11 @@ void CGUIControl::SetNavigationActions(const CGUIAction &up, const CGUIAction &d
   if (!m_actionBack.HasAnyActions()  || replace) m_actionBack  = back;
 }
 
+void CGUIControl::SetDropAction(const CGUIAction& drop, bool replace)
+{
+  if (!m_actionDrop.HasAnyActions()  || replace) m_actionDrop  = drop;
+}
+
 void CGUIControl::SetNavigationAction(int direction, const CGUIAction &action, bool replace /*= true*/)
 {
   switch (direction)
@@ -592,27 +597,23 @@ EVENT_RESULT CGUIControl::OnMouseEvent(const CPoint &point, const CMouseEvent &e
       return EVENT_RESULT_UNHANDLED;
 
     
-    if(event.m_state == 2)
+    if (event.m_state == 2)
     {
-      if(IsDropable(g_infoManager.GetDraggableType()))
+      if (IsDropable())
       {
           //Set us as drop target
         g_infoManager.DragHover(this);
         return EVENT_RESULT_HANDLED;
       }
     }
-    if(event.m_state == 3)
+    if (event.m_state == 3)
     {
-      if(IsDropable(g_infoManager.GetDraggableType()))
-      {
-          //TODO: execute ondrop function!
-        /*int controlID = GetID();
-        int parentID = GetParentID();        
-        dragActions.ExecuteActions(controlID, parentID);*/
+      if (IsDropable())
+      {        
+        m_actionDrop.ExecuteActions(GetID(), GetParentID());
+        g_infoManager.DraggingStop();
+        return EVENT_RESULT_HANDLED;
       }
-      g_infoManager.DraggingStop();
-      return EVENT_RESULT_HANDLED;
-      
     }
   }
     
@@ -992,16 +993,9 @@ void CGUIControl::SaveStates(vector<CControlState> &states)
 }
 
 
-bool CGUIControl::IsDropable(const std::vector<CStdString>& dragable) const
+bool CGUIControl::IsDropable() const
 {
-  std::vector<CStdString>::const_iterator it = find_first_of(m_dropable.begin(), m_dropable.end(), dragable.begin(), dragable.end());
-  return it != m_dropable.end();
-}
-
-bool CGUIControl::IsDropable(const CStdString& dragable) const
-{
-  std::vector<CStdString>::const_iterator it = find(m_dropable.begin(), m_dropable.end(), dragable);
-  return it != m_dropable.end();
+  return m_actionDrop.HasActionsMeetingCondition();
 }
 
 void CGUIControl::SetHitRect(const CRect &rect)
