@@ -687,7 +687,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   bool bPassword = false;
   CStdString visibleCondition;
   std::vector<std::string> dropable;
-  std::vector<std::string> dragable;
 
   /////////////////////////////////////////////////////////////////////////////
   // Read control properties from XML
@@ -834,7 +833,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   GetInfoColor(pControlNode, "headlinecolor", headlineColor, parentID);
   GetInfoColor(pControlNode, "titlecolor", textColor3, parentID);
 
-  XMLUtils::GetStringArray(pControlNode, "dragable", dragable, false, "");
   XMLUtils::GetStringArray(pControlNode, "dropable", dropable, false, "");
 
     //TODO: remove
@@ -1350,7 +1348,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
     control->SetColorDiffuse(colorDiffuse);
     control->SetNavigationActions(upActions, downActions, leftActions, rightActions, backActions);
     control->SetPulseOnSelect(bPulse);
-    control->SetDragable(dragable);
     control->SetDropable(dropable);
     if (hasCamera)
       control->SetCamera(camera);

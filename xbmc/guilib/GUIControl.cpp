@@ -592,16 +592,7 @@ EVENT_RESULT CGUIControl::OnMouseEvent(const CPoint &point, const CMouseEvent &e
       return EVENT_RESULT_UNHANDLED;
 
     
-    if (event.m_state == 1)
-    {
-      if(!m_dragable.empty()) //Are we dragable?
-      { 
-        g_infoManager.DraggingStart(m_dragable, CFileItemPtr(), this);
-        
-        return EVENT_RESULT_HANDLED;
-      }
-    } 
-    else if(event.m_state == 2)
+    if(event.m_state == 2)
     {
       if(IsDropable(g_infoManager.GetDraggableType()))
       {
@@ -610,7 +601,7 @@ EVENT_RESULT CGUIControl::OnMouseEvent(const CPoint &point, const CMouseEvent &e
         return EVENT_RESULT_HANDLED;
       }
     }
-    else if(event.m_state == 3)
+    if(event.m_state == 3)
     {
       if(IsDropable(g_infoManager.GetDraggableType()))
       {

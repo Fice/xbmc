@@ -243,12 +243,6 @@ public:
   
   virtual bool IsDropable(const std::vector<CStdString>& dragable) const;
   virtual bool IsDropable(const CStdString& dragable) const;
-  void SetDragable(const std::vector<std::string>& dragable) 
-  {
-    m_dragable.clear();
-    m_dragable.reserve(dragable.size());
-    copy(dragable.begin(),dragable.end(),back_inserter(m_dragable));
-  }
   void SetDropable(const std::vector<std::string>& dropable) 
   {
     m_dropable.clear();
@@ -370,7 +364,6 @@ protected:
   bool m_pushedUpdates;
   
   std::vector<CStdString> m_dropable; //What kind of items are droppable on this one?
-  std::vector<CStdString> m_dragable;
 
   // animation effects
   std::vector<CAnimation> m_animations;
