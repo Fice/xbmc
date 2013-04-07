@@ -768,38 +768,7 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
       m_dragHandler->DragMove(point);
       EVENT_RESULT result = m_dragHandler->OnDrop();
       SAFE_DELETE(m_dragHandler);
-      return EVENT_RESULT_HANDLED;
-      /*
-        //Only do our moving, when we are actually draging one of this items!
-        //TODO: figure out, how to handle when we dropped an item from the outside on our list
-      if(m_dragHandler->m_draggedObject>=0)
-      {
-        CPoint insertPoint;
-        int newPosition = calculateDragInsertPosition(point, insertPoint);
-        //Valid positions from -1 (move item to the beginning of the list) to list.size
-        if(newPosition>-2)  //make sure the item was droppen on our list
-        {
-          if(newPosition < m_dragHandler->m_draggedOrigPosition)
-            newPosition++;
-        
-          if(newPosition!=m_dragHandler->m_draggedOrigPosition)
-          {
-            CGUIMessage msg2(GUI_MSG_IN_LIST_DRAGGED, 0, 
-                             GetParentID(), 
-                             m_dragHandler->m_draggedOrigPosition, 
-                             newPosition-m_dragHandler->m_draggedOrigPosition);
-            SendWindowMessage(msg2);
-          }
-            //for whatever reason, the focused item is set wrong after dragging is done...
-            //so, set it correct
-            //TODO: perhabs fix it at the position where it is wrongly set?!?
-          SetCursor(newPosition - GetOffset());
-        }
-      }
-      
-      
-       */
-      
+      return EVENT_RESULT_HANDLED;      
     }
   }
   return EVENT_RESULT_UNHANDLED;
