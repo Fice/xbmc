@@ -755,13 +755,12 @@
 	<include name="MediaListView3">
 	    <control type="button" id="3003">
 		    <description>Opens the favourites dialog, also items can be dragged here, to add them to the favourites</description>
-		    <dropable>favourites</dropable>
-		    <dropable>test</dropable>
 		    <posx>800</posx>
 		    <posy>80</posy>
 		    <width>130</width>
 		    <height>30</height>
 		    <onclick>XBMC.ActivateWindow(Favourites)</onclick>
+		    <ondrop>Notification(Favourites, $INFO[dragndrop.item.label] added)</ondrop>
 		    <label>Favourites</label>
 		</control>
 		<control type="button">

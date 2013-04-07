@@ -580,6 +580,7 @@
 		</control>
 	</include>
 	<include name="CommonNowPlaying_Controls">
+	    <ondrag>Notification(Playlist, Item $INFO[dragndrop.item.label] queued)</ondrag>
 		<control type="label" id="202">
 			<width>250</width>
 			<height>35</height>

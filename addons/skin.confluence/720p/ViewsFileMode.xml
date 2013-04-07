@@ -88,8 +88,6 @@
 					</control>
 				</itemlayout>
 				<focusedlayout height="40" width="580">
-    				<dragable>favourites</dragable>
-    				<dragable>playlist</dragable>
 					<control type="image">
 						<posx>0</posx>
 						<posy>0</posy>
