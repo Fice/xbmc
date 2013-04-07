@@ -78,6 +78,7 @@ CGUIBaseContainer::CGUIBaseContainer(int parentID, int controlID, float posX, fl
   m_scrollItemsPerFrame = 0.0f;
   m_type = VIEW_TYPE_NONE;
   m_dragHandler = NULL;
+  m_bReorderable = false;
 }
 
 CGUIBaseContainer::~CGUIBaseContainer(void)
