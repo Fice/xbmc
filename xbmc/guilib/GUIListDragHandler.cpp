@@ -27,7 +27,9 @@ CGUIListDragHandler::CGUIListDragHandler(bool internal,
                                          CGUIBaseContainer *container)
 : m_bInternal(internal),
   m_bReorderable(reorderable),
-  m_bDropable(dropable),
+  //if this is a in-list-dragging and we are not reorderable, 
+  //then we shouldn't accept the item, no matter what everyone else says
+  m_bDropable((internal && !reorderable) ? false : dropable), 
   m_dragHint(dragHint),
   m_container(container)
 {
