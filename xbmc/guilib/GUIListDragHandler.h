@@ -58,6 +58,7 @@ struct CGUIListDragHandler
     
   /**
    This functio will be called, when the user dropped the fileitem on us
+   \returns EVENT_RESULT_HANDLED if it actually performed an action. EVENT_RESULT_UNHANDLED otherwise
    **/
   EVENT_RESULT OnDrop();
     
