@@ -54,13 +54,20 @@ void CGUIListDragHandler::Process(unsigned int currentTime, CDirtyRegionList &di
     if(m_container->m_scroller.IsScrolling())
       m_container->SetCursor(m_container->GetCursor()-m_draggedScrollDirection); //our dragged item should be kept focused
   }
-  
-    //If we have a drag handle, we need to process it
-  if(m_dragHint && m_bDropable)
+  if(m_bDropable)
   {
-    g_graphicsContext.SetOrigin(m_dragHintPosition.x1, m_dragHintPosition.x2);
-    m_dragHint->Process(currentTime, dirtyregions);
-    g_graphicsContext.RestoreOrigin();
+    //If we have a drag handle, we need to process it
+    if(m_dragHint && m_bDropable)
+    {
+      g_graphicsContext.SetOrigin(m_dragHintPosition.x1, m_dragHintPosition.x2);
+      m_dragHint->Process(currentTime, dirtyregions);
+      g_graphicsContext.RestoreOrigin();
+    }
+    dirtyregions.push_back(m_container->m_renderRegion); 
+      //TODO: this can be done better
+      //TODO: if hint: push region of old dragHint
+      //TODO: if hint: push region of new hint
+      //TODO: if !hint: 
   }
   
 }
@@ -97,29 +104,39 @@ void CGUIListDragHandler::DragStart(const CPoint& point) //m_items and m_focused
   else //Dragging started earlier, but now we're finnaly hovered!
   {
     CGUIListItemPtr draggedItem = g_infoManager.GetDraggedFileItem();
-    if(!draggedItem)
-      return;
+    ASSERT(draggedItem);
     
-    CPoint insertPoint;
-    int newPosition = m_container->calculateDragInsertPosition(point, insertPoint);
-    if(!m_dragHint)
+    if(m_bReorderable)
     {
-        
-    }
-    else
-    {
-       if(m_bReorderable)
-       {
-           //Add element under mouse cursor
-       }
-       else {
-         m_container->m_items.push_back(draggedItem);
-           //now let the responsible entity sort the m_items vector
-           //now find the position of our draggedItem
-         m_draggedNewPosition = m_container->m_items.size()-1;
+      CPoint insertPoint;
+      m_draggedNewPosition = m_container->calculateDragInsertPosition(point, insertPoint);
+      
+      if(m_dragHint)
+      { //set draghint position
+        ShowDragHint(insertPoint);
       }
-
+      else 
+      { //insert the item at the correct position
+        m_container->m_items.insert(m_container->m_items.begin()+m_draggedNewPosition, draggedItem);
+      }
     }
+    else {
+        //add item to the end
+      m_container->m_items.push_back(draggedItem);
+        //now let the responsible entity sort the m_items vector
+        //now find the position of our draggedItem
+      m_draggedNewPosition = m_container->m_items.size()-1;
+      
+      if(m_dragHint)
+      {
+        m_container->m_items.erase(m_container->m_items.begin()+m_draggedNewPosition); //remove the item again... we only wanted to get the sorted position
+        //TODO: get CPoint for dragged position
+          //TODO:ShowDragHint(ShowDragHint)
+      }
+      
+      
+    }
+    
 
   }
 }
@@ -139,7 +156,7 @@ EVENT_RESULT CGUIListDragHandler::DragMove(const CPoint &point)
       DraggedAway(); //This will make sure, we remove all visual hints etc...
       m_draggedNewPosition = -1;
     }
-    else
+    else if(!(!m_bReorderable && !m_bInternal))
     {
       if (newPosition < m_draggedOrigPosition)
         newPosition++;
@@ -263,9 +280,16 @@ EVENT_RESULT CGUIListDragHandler::OnDrop()
     }
   }
   
-  if(!m_bInternal)
-  { //notifie our window that a item has been added
+  if(!m_bInternal && m_draggedNewPosition>0)
+  { 
+    if(!m_dragHint) //remove our temporarly added item
+      m_container->m_items.erase(m_container->m_items.begin()+m_draggedNewPosition);
     
+    //notifie our window that a item has been added
+    CGUIMessage msg2(GUI_MSG_ON_LIST_DRAGGED, 0, 
+                     m_container->GetParentID(), 
+                     m_draggedNewPosition);
+    m_container->SendWindowMessage(msg2);
   }
   
   ClearDragHint();
