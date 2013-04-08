@@ -59,9 +59,9 @@ void CGUIListDragHandler::Process(unsigned int currentTime, CDirtyRegionList &di
     //If we have a drag handle, we need to process it
     if(m_dragHint && m_bDropable)
     {
-      g_graphicsContext.SetOrigin(m_dragHintPosition.x1, m_dragHintPosition.x2);
+        //g_graphicsContext.SetOrigin(m_dragHintPosition.x1, m_dragHintPosition.x2);
       m_dragHint->Process(currentTime, dirtyregions);
-      g_graphicsContext.RestoreOrigin();
+        //g_graphicsContext.RestoreOrigin();
     }
     dirtyregions.push_back(m_container->m_renderRegion); 
       //TODO: this can be done better
@@ -79,9 +79,9 @@ void CGUIListDragHandler::Render() //all public
   if(m_dragHint && m_bDropable) //TODO: only draw if it should be visible
   {
     CGUITexture::DrawQuad(m_dragHintPosition, 0x4c00ff00);
-    g_graphicsContext.SetOrigin(m_dragHintPosition.x1, m_dragHintPosition.x2);
+      //g_graphicsContext.SetOrigin(m_dragHintPosition.x1, m_dragHintPosition.x2);
     m_dragHint->DoRender();
-    g_graphicsContext.RestoreOrigin();
+      //g_graphicsContext.RestoreOrigin();
   }
 }
 
@@ -330,5 +330,8 @@ void CGUIListDragHandler::ShowDragHint(const CPoint& insertPoint)
                                insertPoint.x + xOffset,
                                m_container->GetYPosition() + m_container->GetHeight());
   }
+  m_dragHint->SetPosition(100, 100);
+  m_container->SetInvalid();
+  m_dragHint->SetInvalid();
   m_dragHint->SetVisible(true);
 }
