@@ -970,7 +970,7 @@ void CGUIBaseContainer::AllocResources()
     SelectStaticItemById(m_staticDefaultItem);
 }
 
-virtual void DynamicResourceAlloc(bool bOnOff)
+void CGUIBaseContainer::DynamicResourceAlloc(bool bOnOff)
 {
   if(m_dragHint)
     m_dragHint->DynamicResourceAlloc(bOnOff);
@@ -1327,6 +1327,8 @@ void CGUIBaseContainer::DumpTextureUse()
     if (item->GetFocusedLayout()) item->GetFocusedLayout()->DumpTextureUse();
     if (item->GetLayout()) item->GetLayout()->DumpTextureUse();
   }
+  if(m_dragHint)
+    m_dragHint->DumpTextureUse();
 }
 #endif
 

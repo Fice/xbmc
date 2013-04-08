@@ -67,16 +67,15 @@ struct CGUIListDragHandler
   const bool m_bReorderable; 
   const bool m_bDropable;
 protected:
+  const CPoint m_dragHintOffset;
+  
   void ClearDragHint();
   void ShowDragHint(const CPoint& insertPoint);
   
   const boost::shared_ptr<CGUIControl> m_dragHint;
   CGUIBaseContainer* const m_container;
-    
-  
   short m_draggedScrollDirection; 
-  //TODO: change to CPoint, once dragHint isnt a hardcoded DrawRect()
-  CRect m_dragHintPosition; 
+  CPoint m_dragHintPosition; 
   int m_draggedNewPosition; 
   int m_draggedOrigPosition; 
 };
