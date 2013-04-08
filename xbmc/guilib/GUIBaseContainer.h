@@ -74,6 +74,7 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual void SetFocus(bool bOnOff);
   virtual void AllocResources();
+  virtual void DynamicResourceAlloc(bool bOnOff);
   virtual void FreeResources(bool immediately = false);
   virtual void UpdateVisibility(const CGUIListItem *item = NULL);
 
@@ -117,7 +118,7 @@ public:
   virtual bool IsDropable() const;
   virtual void DraggedAway();
   virtual void DragStop();
-
+  
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif

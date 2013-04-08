@@ -970,6 +970,12 @@ void CGUIBaseContainer::AllocResources()
     SelectStaticItemById(m_staticDefaultItem);
 }
 
+virtual void DynamicResourceAlloc(bool bOnOff)
+{
+  if(m_dragHint)
+    m_dragHint->DynamicResourceAlloc(bOnOff);
+}
+
 void CGUIBaseContainer::FreeResources(bool immediately)
 {
   CGUIControl::FreeResources(immediately);
