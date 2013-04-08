@@ -134,10 +134,18 @@
 #define GUI_MSG_WINDOW_LOAD 43
 
 /*!
- \brief Notify a Dialog/Window, that one of it's list item has been dragged
+ \brief Notify a Dialog/Window, that one of it's list items has been moved
  */
 #define GUI_MSG_IN_LIST_DRAGGED 44
+/*!
+ \brief Notification that a fileitem from one list has beend droppen on to another dialog 
+ */
 #define GUI_MSG_ON_LIST_DRAGGED 45
+/*!
+ \breif Notification that the list stored in GUIBaseContainer needs to be sorted again
+ */
+#define GUI_MSG_NEEDS_SORTING 46
+
 
 #define GUI_MSG_USER         1000
 
