@@ -121,9 +121,7 @@ public:
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif
-protected:
-  CStdString GetInListDraggingName() const;
-  
+protected:  
   virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   bool OnClick(int actionID);
 

@@ -802,15 +802,6 @@ void CGUIBaseContainer::MoveItemInternally(int pos, int newPos)
   }
 }
 
-CStdString CGUIBaseContainer::GetInListDraggingName() const
-{
-  string dragableType = IN_LIST_DRAGGING_NAME;
-  int id = GetID();
-  if(id)
-    dragableType += id;
-  return dragableType;
-}
-
 bool CGUIBaseContainer::CanDrag() const
 {
   if(IsReorderable())
@@ -832,48 +823,8 @@ bool CGUIBaseContainer::IsDropable() const
 }
 
 int CGUIBaseContainer::calculateDragInsertPosition(const CPoint& point, CPoint& hintPosition)
-{  
-  /*
-  
-   
-   
-   
-   
-   float focusedPos = 0;
-   CGUIListItemPtr focusedItem;
-   
-   if (itemNo >= 0)
-   {
-   CGUIListItemPtr item = m_items[itemNo];
-   // render our item
-   if (focused)
-   {
-   focusedPos = pos;
-   focusedItem = item;
-   }
-   else
-   {
-   if (m_orientation == VERTICAL)
-   RenderItem(origin.x, pos, item.get(), false);
-   else
-   RenderItem(pos, origin.y, item.get(), false);
-   }
-   }
-   // increment our position
-   pos += focused ? m_focusedLayout->Size(m_orientation) : m_layout->Size(m_orientation);
-   current++;
-   }
-   // render focused item last so it can overlap other items
-   if (focusedItem)
-   {
-   if (m_orientation == VERTICAL)
-   RenderItem(origin.x, focusedPos, focusedItem.get(), true);
-   else
-   RenderItem(focusedPos, origin.y, focusedItem.get(), true);
-
-   */
-  
-   if (!m_layout || !m_focusedLayout) return -2;
+{    
+  if (!m_layout || !m_focusedLayout) return -2;
   
   if(!HitTest(point))
     return -2;  
@@ -1013,6 +964,8 @@ void CGUIBaseContainer::AllocResources()
   CGUIControl::AllocResources();
   CalculateLayout();
   UpdateStaticItems(true);
+  if(m_dragHint)
+    m_dragHint->AllocResources();
   if (m_staticDefaultItem != -1) // select default item
     SelectStaticItemById(m_staticDefaultItem);
 }
@@ -1020,6 +973,8 @@ void CGUIBaseContainer::AllocResources()
 void CGUIBaseContainer::FreeResources(bool immediately)
 {
   CGUIControl::FreeResources(immediately);
+  if(m_dragHint)
+    m_dragHint->FreeResources(immediately);
   if (m_staticContent)
   { // free any static content
     Reset();
