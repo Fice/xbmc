@@ -73,11 +73,6 @@ void CGUIListDragHandler::Process(unsigned int currentTime, CDirtyRegionList &di
         //m_dragHint->Process(currentTime, dirtyregions);
         //g_graphicsContext.RestoreOrigin();
     }
-      //dirtyregions.push_back(m_container->m_renderRegion); 
-      //TODO: this can be done better
-      //TODO: if hint: push region of old dragHint
-      //TODO: if hint: push region of new hint
-      //TODO: if !hint: 
   }
   
 }
