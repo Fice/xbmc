@@ -783,6 +783,8 @@ void CGUIBaseContainer::DraggedAway()
 {  
   ASSERT(m_dragHandler);
   m_dragHandler->DraggedAway();
+  if(!m_dragHandler->m_bInternal)
+    SAFE_DELETE(m_dragHandler);
 }
 
 void CGUIBaseContainer::MoveItemInternally(int pos, int newPos)
