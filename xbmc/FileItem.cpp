@@ -1529,6 +1529,26 @@ CFileItemList::CFileItemList()
   m_sortOrder = SortOrderNone;
   m_sortIgnoreFolders = false;
   m_replaceListing = false;
+  m_bReorderable = false;
+}
+
+CFileItemList::CFileItemList(const CFileItemList& rhs) 
+  : CFileItem(rhs), 
+    m_items(rhs.m_items), 
+    m_map(rhs.m_map), 
+    m_sortDetails(rhs.m_sortDetails)
+{
+  m_fastLookup = rhs.m_fastLookup;
+  m_bIsFolder = rhs.m_bIsFolder;
+  m_cacheToDisc = rhs.m_cacheToDisc;
+  m_sortMethod = rhs.m_sortMethod;
+  m_sortOrder = rhs.m_sortOrder;
+  m_sortIgnoreFolders = rhs.m_sortIgnoreFolders;
+  m_replaceListing = rhs.m_replaceListing;
+  m_cacheToDisc = rhs.m_cacheToDisc;
+  m_content = rhs.m_content;
+  m_bReorderable = rhs.m_bReorderable;
+  m_dropable = std::auto_ptr<IGUIDropable>(rhs.m_dropable->Copy());
 }
 
 CFileItemList::CFileItemList(const CStdString& strPath) : CFileItem(strPath, true)
@@ -1539,6 +1559,7 @@ CFileItemList::CFileItemList(const CStdString& strPath) : CFileItem(strPath, tru
   m_sortOrder = SortOrderNone;
   m_sortIgnoreFolders = false;
   m_replaceListing = false;
+  m_bReorderable = false;
 }
 
 CFileItemList::~CFileItemList()
@@ -1613,6 +1634,8 @@ void CFileItemList::Clear()
   m_sortDetails.clear();
   m_replaceListing = false;
   m_content.Empty();
+  m_bReorderable = false;
+  m_dropable = std::auto_ptr<IGUIDropable>();
 }
 
 void CFileItemList::ClearItems()
@@ -1690,6 +1713,16 @@ void CFileItemList::Remove(int iItem)
     m_items.erase(m_items.begin() + iItem);
   }
 }
+void CFileItemList::RemoveRange(int iRangeBegin, int iRangeEnd)
+{
+  CSingleLock lock(m_lock);
+  if(m_fastLookup)
+  {
+    for(int i = iRangeBegin; i<iRangeEnd; ++i)
+      m_map.erase(m_items[i]->GetPath());
+  }
+  m_items.erase(m_items.begin() + iRangeBegin, m_items.begin() + iRangeEnd);
+}
 
 void CFileItemList::Append(const CFileItemList& itemlist)
 {
@@ -1712,6 +1745,12 @@ void CFileItemList::Assign(const CFileItemList& itemlist, bool append)
   m_content = itemlist.m_content;
   m_mapProperties = itemlist.m_mapProperties;
   m_cacheToDisc = itemlist.m_cacheToDisc;
+  m_bReorderable   = itemlist.m_bReorderable;
+  if(itemlist.m_dropable.get()!=NULL)
+    m_dropable     = std::auto_ptr<IGUIDropable>(itemlist.m_dropable->Copy());
+  else
+    m_dropable     = std::auto_ptr<IGUIDropable>();
+  
 }
 
 bool CFileItemList::Copy(const CFileItemList& items, bool copyItems /* = true */)
@@ -1728,7 +1767,13 @@ bool CFileItemList::Copy(const CFileItemList& items, bool copyItems /* = true */
   m_sortMethod     = items.m_sortMethod;
   m_sortOrder      = items.m_sortOrder;
   m_sortIgnoreFolders = items.m_sortIgnoreFolders;
+  m_bReorderable   = items.m_bReorderable;
+  if(items.m_dropable.get()!=NULL)
+    m_dropable     = std::auto_ptr<IGUIDropable>(items.m_dropable->Copy());
+  else
+    m_dropable     = std::auto_ptr<IGUIDropable>();
 
+  
   if (copyItems)
   {
     // make a copy of each item
@@ -1824,6 +1869,11 @@ void CFileItemList::Reserve(int iCount)
 {
   CSingleLock lock(m_lock);
   m_items.reserve(iCount);
+}
+
+bool CFileItemList::IsDropable(const CFileItemPtr& item) const
+{
+  return (m_dropable.get()!=NULL) ? m_dropable->IsDropable(item) : false;
 }
 
 void CFileItemList::Sort(FILEITEMLISTCOMPARISONFUNC func)
@@ -1922,6 +1972,8 @@ void CFileItemList::Archive(CArchive& ar)
     ar << (int)m_sortOrder;
     ar << m_sortIgnoreFolders;
     ar << (int)m_cacheToDisc;
+    ar << m_bReorderable;
+      //TODO: how to archive the m_dropable?!?
 
     ar << (int)m_sortDetails.size();
     for (unsigned int j = 0; j < m_sortDetails.size(); ++j)
@@ -1983,6 +2035,8 @@ void CFileItemList::Archive(CArchive& ar)
     ar >> m_sortIgnoreFolders;
     ar >> (int&)tempint;
     m_cacheToDisc = CACHE_TYPE(tempint);
+    
+    ar >> m_bReorderable;
 
     unsigned int detailSize = 0;
     ar >> detailSize;

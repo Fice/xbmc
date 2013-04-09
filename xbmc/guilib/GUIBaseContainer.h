@@ -29,6 +29,7 @@
 #include "GUIListItemLayout.h"
 #include "boost/shared_ptr.hpp"
 #include "utils/Stopwatch.h"
+#include "FileItem.h"
 
 typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;
 
@@ -110,14 +111,14 @@ public:
    */
   void SetRenderOffset(const CPoint &offset);
   
-  void SetReorderable(bool reorderable=true) { m_bReorderable = reorderable; }
-  bool IsReorderable() const { return m_bReorderable; }
+  bool IsReorderable() const { return m_items.IsReorderable(); }
     //returns true, either if this container is reorderable (true for favourites and playlists
     //or the selected items layout has a "dragable" property
   bool CanDrag() const;
   virtual bool IsDropable() const;
   virtual void DraggedAway();
   virtual void DragStop();
+  void MoveItemInternally(int pos, int newPos);
   
 #ifdef _DEBUG
   virtual void DumpTextureUse();
@@ -130,8 +131,7 @@ protected:
 
   CGUIControl* LoadControl(TiXmlElement *child, CGUIControl *group);
   
-  void MoveItemInternally(int pos, int newPos);
-  
+
   virtual void Render();
   virtual void RenderItem(float posX, float posY, CGUIListItem *item, bool focused);
   virtual void Scroll(int amount);
@@ -149,7 +149,7 @@ protected:
   virtual bool SelectItemFromPoint(const CPoint &point) { return false; };
   virtual int GetCursorFromPoint(const CPoint &point, CPoint *itemPoint = NULL) const { return -1; };
   virtual void Reset();
-  virtual unsigned int GetNumItems() const { return m_items.size(); };
+  virtual unsigned int GetNumItems() const { return m_items.Size(); };
   virtual int GetCurrentPage() const;
   bool InsideLayout(const CGUIListItemLayout *layout, const CPoint &point) const;
   virtual void OnFocus();
@@ -170,7 +170,7 @@ protected:
   ORIENTATION m_orientation;
   int m_itemsPerPage;
 
-  std::vector< CGUIListItemPtr > m_items;
+  CFileItemList m_items;
   typedef std::vector<CGUIListItemPtr> ::iterator iItems;
   CGUIListItemPtr m_lastItem;
 
@@ -193,7 +193,6 @@ protected:
     //and this is better than exposing them via getters/setters
   friend class CGUIListDragHandler;
   boost::shared_ptr<CGUIControl> m_dragHint;
-  bool m_bReorderable;
   
   
   bool m_staticContent;

@@ -40,7 +40,10 @@ public:
   virtual bool OnAction(const CAction &action);
   virtual bool OnMessage(CGUIMessage& message);
   virtual int GetSelectedItem() const;
-
+    //TODO:
+    //If a list is reorderable and the user tries to drop an element on us, our dragHandler will try to reorder m_items
+    //Problem is, we might have added some copies to the end/begin of our list... everything would be screwed up after a sort!
+  virtual bool IsReorderable() { return false; }
 protected:
   virtual void Scroll(int amount);
   virtual bool MoveDown(bool wrapAround);
@@ -51,7 +54,7 @@ protected:
   virtual bool SelectItemFromPoint(const CPoint &point);
   virtual void SelectItem(int item);
   virtual void Reset();
-  virtual unsigned int GetNumItems() const { return m_items.size() - m_extraItems; };
+  virtual unsigned int GetNumItems() const { return m_items.Size() - m_extraItems; };
   virtual int GetCurrentPage() const;
   virtual void SetPageControlRange();
   virtual void UpdatePageControl(int offset);

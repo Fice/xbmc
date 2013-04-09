@@ -48,7 +48,6 @@ protected:
   void OnRename(int item);
   void OnSetThumb(int item);
   void UpdateList();
-  virtual void OnWindowLoaded();
 
   CFileItemList* m_favourites;
 };

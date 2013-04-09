@@ -229,21 +229,6 @@ bool CGUIWindowVideoPlaylist::OnBack(int actionID)
   return CGUIWindowVideoBase::OnBack(actionID);
 }
 
-void CGUIWindowVideoPlaylist::OnWindowLoaded()
-{ 
-  // mark our list as orderable
-  try {
-    CGUIControl* pControl = (CGUIControl *)GetControl(50);
-    CGUIBaseContainer* pContainer = dynamic_cast<CGUIBaseContainer*>(pControl);
-    pContainer->SetReorderable();
-  } 
-  catch(...) 
-  {
-    CLog::Log(LOGNOTICE, "No in-list drag&drop available in Favourites, because the control with id %i is not a container", 50);
-  }
-  CGUIWindow::OnWindowLoaded();
-}
-
 bool CGUIWindowVideoPlaylist::MoveCurrentPlayListItem(int iItem, int iAction, bool bUpdate /* = true */)
 {
   int iSelected = iItem;

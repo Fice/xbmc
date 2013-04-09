@@ -39,7 +39,6 @@ protected:
 
   virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
-  void OnWindowLoaded();
 
   void OnMove(int iItem, int iAction);
 

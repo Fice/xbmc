@@ -61,6 +61,8 @@ bool CFavouritesDirectory::GetDirectory(const CStdString& strPath, CFileItemList
   }
   else 
   {
+    items.SetReorderable(true);
+    items.SetDropable(new CGUIAlwaysDropable());
     CXBMCTinyXML doc;
     if (!doc.LoadFile(strPath))
     {

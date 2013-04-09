@@ -25,6 +25,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		0E07284C17137E610054EB44 /* GUIDropable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E07284A17137E610054EB44 /* GUIDropable.cpp */; };
 		0E2D4644170F246600AEFF7A /* FavouritesDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2D4642170F246600AEFF7A /* FavouritesDirectory.cpp */; };
 		0E2D478F17105A2C00AEFF7A /* GUIListDragHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2D478D17105A2C00AEFF7A /* GUIListDragHandler.cpp */; };
 		183FDF8A11AF0B0500B81E9C /* PluginSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 183FDF8811AF0B0500B81E9C /* PluginSource.cpp */; };
@@ -1061,6 +1062,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0E07284A17137E610054EB44 /* GUIDropable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIDropable.cpp; sourceTree = "<group>"; };
+		0E07284B17137E610054EB44 /* GUIDropable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIDropable.h; sourceTree = "<group>"; };
 		0E2D4642170F246600AEFF7A /* FavouritesDirectory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FavouritesDirectory.cpp; sourceTree = "<group>"; };
 		0E2D4643170F246600AEFF7A /* FavouritesDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FavouritesDirectory.h; sourceTree = "<group>"; };
 		0E2D478D17105A2C00AEFF7A /* GUIListDragHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIListDragHandler.cpp; sourceTree = "<group>"; };
@@ -3461,6 +3464,8 @@
 				18B7C70C1294222D009E7A26 /* GUIControlProfiler.h */,
 				18B7C7671294222E009E7A26 /* GUIDialog.cpp */,
 				18B7C70D1294222D009E7A26 /* GUIDialog.h */,
+				0E07284A17137E610054EB44 /* GUIDropable.cpp */,
+				0E07284B17137E610054EB44 /* GUIDropable.h */,
 				18B7C7681294222E009E7A26 /* GUIEditControl.cpp */,
 				18B7C70E1294222D009E7A26 /* GUIEditControl.h */,
 				18B7C7691294222E009E7A26 /* GUIFadeLabelControl.cpp */,
@@ -7762,6 +7767,7 @@
 				F52CC6AA1713BD2B00113454 /* DirectoryNodeGrouped.cpp in Sources */,
 				0E2D4644170F246600AEFF7A /* FavouritesDirectory.cpp in Sources */,
 				0E2D478F17105A2C00AEFF7A /* GUIListDragHandler.cpp in Sources */,
+				0E07284C17137E610054EB44 /* GUIDropable.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -34,7 +34,6 @@ class CFavouritesDirectory : public IDirectory
 public:
   virtual bool GetDirectory(const CStdString& strPath, CFileItemList &items);
   virtual bool Exists(const char* strPath) { return true; } //TODO
-  virtual bool IsReorderable() { return true; }
   
   bool AddOrRemove(CFileItem *item, int contextWindow);
   bool Save(const CFileItemList& items);

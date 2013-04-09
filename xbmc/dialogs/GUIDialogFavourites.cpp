@@ -244,20 +244,6 @@ void CGUIDialogFavourites::UpdateList()
   OnMessage(message);
 }
 
-void CGUIDialogFavourites::OnWindowLoaded()
-{ 
-  // mark our list as orderable
-  try {
-    CGUIControl* pControl = (CGUIControl *)GetControl(FAVOURITES_LIST);
-    CGUIBaseContainer* pContainer = dynamic_cast<CGUIBaseContainer*>(pControl);
-    pContainer->SetReorderable();
-  } 
-  catch(...) 
-  {
-    CLog::Log(LOGNOTICE, "No in-list drag&drop available in Favourites, because the control with id %i is not a container", FAVOURITES_LIST);
-  }
-  CGUIWindow::OnWindowLoaded();
-}
 
 CFileItemPtr CGUIDialogFavourites::GetCurrentListItem(int offset)
 {

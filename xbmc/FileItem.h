@@ -33,6 +33,7 @@
 #include "utils/LabelFormatter.h"
 #include "GUIPassword.h"
 #include "threads/CriticalSection.h"
+#include "guilib/GUIDropable.h"
 
 #include <vector>
 #include "boost/shared_ptr.hpp"
@@ -474,6 +475,7 @@ public:
 
   CFileItemList();
   CFileItemList(const CStdString& strPath);
+  CFileItemList(const CFileItemList& rhs);
   virtual ~CFileItemList();
   virtual void Archive(CArchive& ar);
   CFileItemPtr operator[] (int iItem);
@@ -486,6 +488,7 @@ public:
   void AddFront(const CFileItemPtr &pItem, int itemPosition);
   void Remove(CFileItem* pItem);
   void Remove(int iItem);
+  void RemoveRange(int iRangeBegin, int iRangeEnd);
   CFileItemPtr Get(int iItem);
   const CFileItemPtr Get(int iItem) const;
   const VECFILEITEMS GetList() const { return m_items; }
@@ -591,6 +594,11 @@ public:
   const CStdString &GetContent() const { return m_content; };
 
   void ClearSortState();
+  
+  bool IsReorderable() const { return m_bReorderable; }
+  void SetReorderable(bool reorderable = true) { m_bReorderable = reorderable; }
+  void SetDropable(IGUIDropable* dropable) { m_dropable = std::auto_ptr<IGUIDropable>(dropable); }
+  bool IsDropable(const CFileItemPtr& item) const;
 private:
   void Sort(FILEITEMLISTCOMPARISONFUNC func);
   void FillSortFields(FILEITEMFILLFUNC func);
@@ -617,8 +625,9 @@ private:
   CACHE_TYPE m_cacheToDisc;
   bool m_replaceListing;
   CStdString m_content;
+  bool m_bReorderable;
+  std::auto_ptr<IGUIDropable> m_dropable;
 
   std::vector<SORT_METHOD_DETAILS> m_sortDetails;
-
   CCriticalSection m_lock;
 };

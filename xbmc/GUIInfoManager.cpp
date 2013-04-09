@@ -5422,7 +5422,7 @@ bool CGUIInfoManager::GetEpgInfoTag(CEpgInfoTag& tag) const
   return false;
 }
 
-void CGUIInfoManager::DraggingStart(CGUIListItemPtr draggedFileItem, CGUIControl* startControl) 
+void CGUIInfoManager::DraggingStart(CFileItemPtr draggedFileItem, CGUIControl* startControl) 
 { 
   m_draggedFileItem = draggedFileItem;
   if(m_draggedFileItem)

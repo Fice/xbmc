@@ -103,9 +103,9 @@ void CGUIListDragHandler::DragStart(const CPoint& point) //m_items and m_focused
   if(m_bInternal)
   {
     //Store the item that the user wants to drag for later use
-    CGUIListItemPtr draggedItem;
+    CFileItemPtr draggedItem;
     int selected = m_container->GetSelectedItem();
-    if (selected >= 0 && selected < (int)m_container->m_items.size())
+    if (selected >= 0 && selected < (int)m_container->m_items.Size())
     {
       draggedItem = m_container->m_items[selected];
       m_draggedOrigPosition = m_draggedNewPosition = selected;
@@ -116,7 +116,7 @@ void CGUIListDragHandler::DragStart(const CPoint& point) //m_items and m_focused
   }
   else //Dragging started earlier, but now we're finnaly hovered!
   {
-    CGUIListItemPtr draggedItem = g_infoManager.GetDraggedFileItem();
+    CFileItemPtr draggedItem = g_infoManager.GetDraggedFileItem();
     ASSERT(draggedItem);
     
     if(m_bReorderable)
@@ -130,19 +130,19 @@ void CGUIListDragHandler::DragStart(const CPoint& point) //m_items and m_focused
       }
       else 
       { //insert the item at the correct position
-        m_container->m_items.insert(m_container->m_items.begin()+m_draggedNewPosition, draggedItem);
+        m_container->m_items.AddFront(draggedItem, m_draggedNewPosition);
       }
     }
     else {
         //add item to the end
-      m_container->m_items.push_back(draggedItem);
+      m_container->m_items.Add(draggedItem);
         //now let the responsible entity sort the m_items vector
         //now find the position of our draggedItem
-      m_draggedNewPosition = m_container->m_items.size()-1;
+      m_draggedNewPosition = m_container->m_items.Size()-1;
       
       if(m_dragHint)
       {
-        m_container->m_items.erase(m_container->m_items.begin()+m_draggedNewPosition); //remove the item again... we only wanted to get the sorted position
+        m_container->m_items.Remove(m_draggedNewPosition); //remove the item again... we only wanted to get the sorted position
         //TODO: get CPoint for dragged position
           //TODO:ShowDragHint(ShowDragHint)
       }
@@ -241,11 +241,12 @@ void CGUIListDragHandler::DraggedAway()
       }
       else 
       {
-        ASSERT(m_draggedNewPosition>=(int)m_container->m_items.size());
+        if(m_draggedNewPosition >= 0 && m_draggedNewPosition < m_container->m_items.Size());
+        {
           //remove item from our list
-        m_container->m_items.erase(m_container->m_items.begin()+m_draggedNewPosition);
+          m_container->m_items.Remove(m_draggedNewPosition);
           //set focus to previously focused item
-      
+        }
           //set default values!
         m_draggedOrigPosition = m_draggedNewPosition = -1;
       }
@@ -296,7 +297,7 @@ EVENT_RESULT CGUIListDragHandler::OnDrop()
   if(!m_bInternal && m_draggedNewPosition>0)
   { 
     if(!m_dragHint) //remove our temporarly added item
-      m_container->m_items.erase(m_container->m_items.begin()+m_draggedNewPosition);
+      m_container->m_items.Remove(m_draggedNewPosition);
     
     //notifie our window that a item has been added
     CGUIMessage msg2(GUI_MSG_ON_LIST_DRAGGED, 0, 

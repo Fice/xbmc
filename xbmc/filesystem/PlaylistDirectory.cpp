@@ -42,16 +42,21 @@ bool CPlaylistDirectory::GetDirectory(const CStdString& strPath, CFileItemList &
 
   int playlistTyp=PLAYLIST_NONE;
   if (url.GetProtocol()=="playlistmusic")
+  {
+    items.SetDropable(new CGUIMusicDropable);
     playlistTyp=PLAYLIST_MUSIC;
+  }
   else if (url.GetProtocol()=="playlistvideo")
+  {
+    items.SetDropable(new CGUIVideoDropable);
     playlistTyp=PLAYLIST_VIDEO;
+  }
 
   if (playlistTyp==PLAYLIST_NONE)
     return false;
 
   CPlayList& playlist = g_playlistPlayer.GetPlaylist(playlistTyp);
   items.Reserve(playlist.size());
-
   for (int i = 0; i < playlist.size(); ++i)
   {
     CFileItemPtr item = playlist[i];
@@ -61,5 +66,7 @@ bool CPlaylistDirectory::GetDirectory(const CStdString& strPath, CFileItemList &
     items.Add(item);
   }
 
+  items.SetReorderable(true);
+  
   return true;
 }

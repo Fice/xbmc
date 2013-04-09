@@ -677,21 +677,6 @@ void CGUIWindowMusicPlayList::MoveItem(int iStart, int iDest)
     m_musicInfoLoader.Load(*m_vecItems);
 }
 
-void CGUIWindowMusicPlayList::OnWindowLoaded()
-{ 
-    // mark our list as orderable
-  try {
-    CGUIControl* pControl = (CGUIControl *)GetControl(50);
-    CGUIBaseContainer* pContainer = dynamic_cast<CGUIBaseContainer*>(pControl);
-    pContainer->SetReorderable();
-  } 
-  catch(...) 
-  {
-      CLog::Log(LOGNOTICE, "No in-list drag&drop available in Favourites, because the control with id %i is not a container", 50);
-  }
-  CGUIWindow::OnWindowLoaded();
-}
-
 void CGUIWindowMusicPlayList::MarkPlaying()
 {
 /*  // clear markings
