@@ -989,7 +989,8 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
   CContextButtons choices;
   if (item >= 0)
   {
-    choices.Add(1, 188); // SelectAll
+    if(m_vecItems[list]->Size() - 1 > NumSelected(list))
+      choices.Add(1, 188); // SelectAll
     if (!pItem->IsParentFolder())
       choices.Add(2, CFavourites::IsFavourite(pItem.get(), GetID()) ? 14077 : 14076); // Add/Remove Favourite
     if (vecCores.size() > 1)
