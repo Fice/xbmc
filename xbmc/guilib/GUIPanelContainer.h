@@ -64,6 +64,7 @@ protected:
   virtual void SelectItem(int item);
   virtual bool HasPreviousPage() const;
   virtual bool HasNextPage() const;
+  virtual int calculateDragInsertPosition(const CPoint& point, CRect& itemPosition);
 
   int m_itemsPerRow;
 };

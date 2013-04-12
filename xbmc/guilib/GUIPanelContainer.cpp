@@ -169,6 +169,119 @@ void CGUIPanelContainer::Render()
   CGUIControl::Render();
 }
 
+int CGUIPanelContainer::calculateDragInsertPosition(const CPoint& point, CRect& itemPosition)
+{
+  if (!m_layout || !m_focusedLayout) return-2;
+  
+  int offset = (int)(m_scroller.GetValue() / m_layout->Size(m_orientation));
+  
+  int cacheBefore, cacheAfter;
+  GetCacheOffsets(cacheBefore, cacheAfter);
+  
+  CPoint origin = CPoint(m_posX, m_posY) + m_renderOffset;
+  float pos = (m_orientation == VERTICAL) ? origin.y : origin.x;
+  float end = (m_orientation == VERTICAL) ? m_posY + m_height : m_posX + m_width;
+  pos += (offset - cacheBefore) * m_layout->Size(m_orientation) - m_scroller.GetValue();
+  end += cacheAfter * m_layout->Size(m_orientation);
+    
+    //float focusedPos = 0;
+    //int focusedCol = 0;
+  CLog::Log(LOGERROR, "orientation is %s", (m_orientation == VERTICAL) ? "vertical" : "horiz");
+  
+  int current = (offset - cacheBefore) * m_itemsPerRow;
+  while (pos < end && m_items.Size())
+  {
+    if (current >= m_items.Size())
+      return -2;
+    
+    if(current >= 0)
+    {
+    
+      //Check if we have the correct row?
+      if ( (m_orientation == VERTICAL   && pos < point.y && pos+m_layout->Size(m_orientation) > point.y)
+         ||(m_orientation == HORIZONTAL && pos < point.x && pos+m_layout->Size(m_orientation) > point.x))
+      {
+          // return current;
+        int colPos = (m_orientation == VERTICAL) ? origin.x : origin.y;
+        int colWidth = (m_orientation == VERTICAL) ? m_layout->Size(HORIZONTAL) : m_layout->Size(VERTICAL);
+        for(int col=0; col<m_itemsPerRow; col++) //the the column we are in
+        {
+          if (m_orientation == VERTICAL)   
+          {
+            if(colPos < point.x && colPos + colWidth > point.x)
+            {
+              itemPosition = CRect(colPos, pos, colPos+colWidth, pos+m_layout->Size(m_orientation));
+              return current;
+            }/*
+            if(colPos < point.x && colPos+(colWidth/2) > point.x) //Add before the hovered item
+            {
+              CLog::Log(LOGERROR, "pos is %i", current);
+              return --current;
+            }
+            if(colPos+(colWidth/2) < point.x && colPos+colWidth > point.x)  //Add after the hovered item
+            {
+              
+              CLog::Log(LOGERROR, "pos is %i", current+1);
+              return current;
+            }*/
+          }
+          if (m_orientation == HORIZONTAL && colPos < point.y && colPos+colWidth > point.y) //do we have our item?
+          {
+            itemPosition = CRect(pos, colPos, pos+m_layout->Size(m_orientation), colPos+colWidth);
+            return current;
+          }      
+          ++current;
+          colPos += colWidth;
+        }
+        return -2;
+      }
+    }
+    
+    pos += m_layout->Size(m_orientation);
+    current += m_itemsPerRow;
+    
+    
+     /* if (current >= 0)
+      {
+        CGUIListItemPtr item = m_items[current];
+        bool focused = (current == GetOffset() * m_itemsPerRow + GetCursor()) && m_bHasFocus;
+          // render our item
+        if (focused)
+        {
+          focusedPos = pos;
+          focusedCol = col;
+          focusedItem = item;
+        }
+        else
+        {
+          if (m_orientation == VERTICAL)
+            RenderItem(origin.x + col * m_layout->Size(HORIZONTAL), pos, item.get(), false);
+          else
+            RenderItem(pos, origin.y + col * m_layout->Size(VERTICAL), item.get(), false);
+        }
+      }
+        // increment our position
+      if (col < m_itemsPerRow - 1)
+        col++;
+     /* else
+      {
+        pos += m_layout->Size(m_orientation);
+        col = 0;
+      }
+      current++;*/
+  }
+      // and render the focused item last (for overlapping purposes)
+   /* if (focusedItem)
+    {
+      if (m_orientation == VERTICAL)
+        RenderItem(origin.x + focusedCol * m_layout->Size(HORIZONTAL), focusedPos, focusedItem.get(), true);
+      else
+        RenderItem(focusedPos, origin.y + focusedCol * m_layout->Size(VERTICAL), focusedItem.get(), true);
+    }*/
+    
+  return -2; //item not found
+}
+
 bool CGUIPanelContainer::OnAction(const CAction &action)
 {
   switch (action.GetID())
