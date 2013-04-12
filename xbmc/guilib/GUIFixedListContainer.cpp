@@ -21,6 +21,7 @@
 #include "GUIFixedListContainer.h"
 #include "GUIListItem.h"
 #include "Key.h"
+#include "utils/log.h" //TODO: remove
 
 CGUIFixedListContainer::CGUIFixedListContainer(int parentID, int controlID, float posX, float posY, float width, float height, ORIENTATION orientation, const CScroller& scroller, int preloadItems, int fixedPosition, int cursorRange)
     : CGUIBaseContainer(parentID, controlID, posX, posY, width, height, orientation, scroller, preloadItems)
@@ -111,6 +112,12 @@ bool CGUIFixedListContainer::MoveDown(bool wrapAround)
   else
     return false;
   return true;
+}
+
+bool CGUIFixedListContainer::OnMouseOver(const CPoint &point)
+{
+  SelectItemFromPoint(point - CPoint(m_posX, m_posY));
+  return CGUIControl::OnMouseOver(point);
 }
 
 void CGUIFixedListContainer::Scroll(int amount)
@@ -313,5 +320,38 @@ void CGUIFixedListContainer::GetCursorRange(int &minCursor, int &maxCursor) cons
     else
       minCursor++;
   }
+}
+
+/*! \brief Responsible for deciding at what position a FileItem should be inserted during drag&drop
+ This function is only called when the container is reorderable, otherwise the FileItemList.SortMethod will be used
+ \param point current mouse position during drag&drop
+ \param currentPos the last result we returned
+ \param hintPosition out - the position where a dragHint should be drawn
+ \return the position in the list, where the dragged item should be inserted
+ \sa IsReorderable 
+ \sa GUIListDragHandler
+ */
+int CGUIFixedListContainer::calculateDragInsertPosition(const CPoint& point, CRect& itemPosition)
+{
+  int cursor = GetCursor();
+  if(m_itemsPerPage <= m_items.Size() - GetOffset())
+  {
+      //TODO: adjust the cursor
+  }
+    
+    //TODO: adjust if at the begin/end of the list!
+  
+  if(m_orientation == HORIZONTAL)
+  {
+      //    itemPosition(m_PosX + cursor * m_layout->Size(m_orientation),
+      //         m_PosY,
+      //         ,
+      //         m_PosY + m_Height);
+  }
+  else 
+  {
+  }
+  CLog::Log(LOGERROR, "cursor %i, offset %i", cursor, GetOffset());
+  return cursor + GetOffset();
 }
 

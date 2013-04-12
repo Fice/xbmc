@@ -39,7 +39,8 @@ public:
   virtual CGUIFixedListContainer *Clone() const { return new CGUIFixedListContainer(*this); };
 
   virtual bool OnAction(const CAction &action);
-
+  virtual bool OnMouseOver(const CPoint &point);
+  virtual void SelectItem(int item);
 protected:
   virtual void Scroll(int amount);
   virtual bool MoveDown(bool wrapAround);
@@ -48,12 +49,12 @@ protected:
   virtual void ValidateOffset();
   virtual bool SelectItemFromPoint(const CPoint &point);
   virtual int GetCursorFromPoint(const CPoint &point, CPoint *itemPoint = NULL) const;
-  virtual void SelectItem(int item);
   virtual bool HasNextPage() const;
   virtual bool HasPreviousPage() const;
   virtual int GetCurrentPage() const;
 
 private:
+  int calculateDragInsertPosition(const CPoint& point, CRect& itemPosition);
   /*!
    \brief Get the minimal and maximal cursor positions in the list
 
