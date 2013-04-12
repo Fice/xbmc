@@ -49,6 +49,8 @@ bool CVideoDatabaseDirectory::GetDirectory(const CStdString& strPath, CFileItemL
   if (!pNode.get())
     return false;
 
+  items.SetReorderable(true); //TODO: remove
+  
   bool bResult = pNode->GetChilds(items);
   for (int i=0;i<items.Size();++i)
   {
