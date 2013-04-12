@@ -821,7 +821,7 @@ bool CGUIBaseContainer::IsDropable() const
   return m_items.IsDropable(g_infoManager.GetDraggedFileItem());
 }
 
-int CGUIBaseContainer::calculateDragInsertPosition(const CPoint& point, CPoint& hintPosition)
+int CGUIBaseContainer::calculateDragInsertPosition(const CPoint& point, CRect& itemPosition)
 {    
   if (!m_layout || !m_focusedLayout) return -2;
   
@@ -833,6 +833,7 @@ int CGUIBaseContainer::calculateDragInsertPosition(const CPoint& point, CPoint& 
   GetCacheOffsets(cacheBefore, cacheAfter);
   
   CPoint origin = CPoint(m_posX, m_posY) + m_renderOffset;
+  CLog::Log(LOGDEBUG, "m_renderOffset: %f, %f", m_renderOffset.x, m_renderOffset.y);
   float pos = (m_orientation == VERTICAL) ? origin.y : origin.x;
   float end = (m_orientation == VERTICAL) ? m_posY + m_height : m_posX + m_width;
     // we offset our draw position to take into account scrolling and whether or not our focused
@@ -858,23 +859,30 @@ int CGUIBaseContainer::calculateDragInsertPosition(const CPoint& point, CPoint& 
       float orientationPos = pos+current_layout.Size(m_orientation);
       if (m_orientation == VERTICAL && pos<point.y && orientationPos>point.y)
       { //we have our element!
+        itemPosition = CRect(m_posX, pos, m_posX+m_width, orientationPos);
+        /*
         if(point.y<pos+(current_layout.Size(m_orientation)/2)) //is the mouse in the left side?
         {
           hintPosition.y = orientationPos;
+          if(currentPosition==itemNo) //
+            return currentPosition;
           return --itemNo;
           
         }
-        hintPosition.y = orientationPos+current_layout.Size(m_orientation);
+        hintPosition.y = orientationPos+current_layout.Size(m_orientation);*/
+        CLog::Log(LOGDEBUG, "drop position %i", itemNo);
         return itemNo;
       }
       else if (m_orientation == HORIZONTAL && pos<point.x && orientationPos>point.x)
       { //We have our element!
+        itemPosition = CRect(pos, origin.y, orientationPos, origin.y+m_height);
+        /*
         if(point.x<pos+(current_layout.Size(m_orientation)/2)) //is the mouse in the top part
         {
           hintPosition.x = orientationPos;
           return --itemNo;
         }
-        hintPosition.x = orientationPos+current_layout.Size(m_orientation);
+        hintPosition.x = orientationPos+current_layout.Size(m_orientation);*/
         return itemNo;
       }
     }
@@ -1490,4 +1498,27 @@ void CGUIBaseContainer::OnFocus()
     SelectStaticItemById(m_staticDefaultItem);
 
   CGUIControl::OnFocus();
+}
+
+
+short CGUIBaseContainer::NeedsScrolling(const CPoint& point)
+{
+    //Check if we need to scroll up
+  if(m_orientation == VERTICAL)
+  {
+    if(point.y > m_posY && point.y < m_posY + (m_layout->Size(m_orientation)/2))
+      return -1;
+    int end = m_posY + m_height;
+    if(point.y > end - (m_layout->Size(m_orientation)/2) && point.y < end)
+      return 1;
+  }
+  if(m_orientation == HORIZONTAL)
+  {
+    if(point.x > m_posX && point.x < m_posX + (m_layout->Size(m_orientation)/2))
+      return -1;
+    int end = m_posX + m_width;
+    if(point.x > end - (m_layout->Size(m_orientation)/2) && point.x < end)
+      return 1;
+  }
+  return 0; //don't scroll
 }

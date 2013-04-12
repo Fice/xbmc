@@ -807,6 +807,7 @@ public:
   const CFileItemPtr GetDraggedFileItem() const { return m_draggedFileItem; }
   CGUIControl* GetDragStartControl() const { return m_dragStartControl; }
 
+  CFileItemPtr GetCurrentListItem(CGUIWindow *window);
 
   std::string GetSystemHeatInfo(int info);
   CTemperature GetGPUTemperature();

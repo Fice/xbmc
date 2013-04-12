@@ -231,7 +231,21 @@ protected:
   inline int GetOffset() const { return m_offset; };
 
 private:
-  int calculateDragInsertPosition(const CPoint& point, CPoint& hintPosition);
+  /*! \brief Responsible for deciding at what position a FileItem should be inserted during drag&drop
+   This function is only called when the container is reorderable, otherwise the FileItemList.SortMethod will be used
+   \param point current mouse position during drag&drop
+   \param currentPos the last result we returned
+   \param hintPosition out - the position where a dragHint should be drawn
+   \return the position in the list, where the dragged item should be inserted
+   \sa IsReorderable 
+   \sa GUIListDragHandler
+   */
+  virtual int calculateDragInsertPosition(const CPoint& point, CRect& itemPosition);
+  /*! \brief Called during drag and drop. This function is responsible to decide if we should scroll right now.
+      \param point the current mouse position
+      \return Should return -1 when we should scoll upwards, 1 for downwards and 0 for no scrolling
+   */
+  short NeedsScrolling(const CPoint& point);
   
   int m_cursor;
   int m_offset;

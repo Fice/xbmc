@@ -70,7 +70,8 @@ protected:
   const CPoint m_dragHintOffset;
   
   void ClearDragHint();
-  void ShowDragHint(const CPoint& insertPoint);
+  void ShowDragHint();
+  void CalcDragHint(const CPoint& mouse, const CRect& hoveredArea, int& Pos);
   
   const boost::shared_ptr<CGUIControl> m_dragHint;
   CGUIBaseContainer* const m_container;

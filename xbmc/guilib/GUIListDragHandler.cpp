@@ -48,7 +48,7 @@ CGUIListDragHandler::~CGUIListDragHandler()
 
 void CGUIListDragHandler::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions) //all public
 {
-    //Do wee need to scroll?
+    //Do we need to scroll?
   if(m_draggedScrollDirection && !m_container->m_scroller.IsScrolling())
   {
     m_container->Scroll(m_draggedScrollDirection);
@@ -121,12 +121,12 @@ void CGUIListDragHandler::DragStart(const CPoint& point) //m_items and m_focused
     
     if(m_bReorderable)
     {
-      CPoint insertPoint;
-      m_draggedNewPosition = m_container->calculateDragInsertPosition(point, insertPoint);
-      
+      CRect insertRect;
+      m_draggedNewPosition = m_container->calculateDragInsertPosition(point, insertRect);
       if(m_dragHint)
       { //set draghint position
-        ShowDragHint(insertPoint);
+        CalcDragHint(point, insertRect, m_draggedNewPosition);
+        ShowDragHint();
       }
       else 
       { //insert the item at the correct position
@@ -156,9 +156,10 @@ void CGUIListDragHandler::DragStart(const CPoint& point) //m_items and m_focused
 
 EVENT_RESULT CGUIListDragHandler::DragMove(const CPoint &point)
 {
-  CPoint insertPoint;
+  CRect insertPoint;
   int newPosition = m_container->calculateDragInsertPosition(point, insertPoint);
-  
+  CalcDragHint(point, insertPoint, newPosition);
+
   if(m_bDropable)
   {
       //Let the skinner know, that we are currently the drop target
@@ -171,61 +172,38 @@ EVENT_RESULT CGUIListDragHandler::DragMove(const CPoint &point)
     }
     else if(!(!m_bReorderable && !m_bInternal))
     {
-      if (newPosition < m_draggedOrigPosition)
-        newPosition++;
-      
-      
       if (m_dragHint) //we have a drag hint, so let's calculate it's position and  make it visible
       {
+        if (newPosition < m_draggedOrigPosition)
+          newPosition++;
         m_draggedNewPosition = newPosition;
         if(m_bInternal)
         {
           if (m_draggedNewPosition != m_draggedOrigPosition) //only if the drop position is different then the item's original position
-            ShowDragHint(insertPoint);
+            ShowDragHint();
           else //Don't show drag hint, if user drags on current item position
             ClearDragHint();
         }
         else
         { //Always show drag hint when sth. gets draged onto this list
-          ShowDragHint(insertPoint);
+          ShowDragHint();
         }
       } 
       else //we don't have a drag hint, so lets reorder immediately
       {
         m_container->MoveItemInternally(m_draggedNewPosition, newPosition);
         m_container->SetCursor(newPosition - m_container->GetOffset());
+        m_container->m_items[newPosition]->Select(true);
         m_draggedNewPosition=newPosition;
       }      
     }
   }
  
   
-    //Take care of scrolling (even if we're not dropable)
-  if (newPosition == m_container->m_offset) //are we hovering the first element?
-  { //then move up
-    m_draggedScrollDirection = -1;
-  }
-  else if (newPosition == m_container->m_offset + m_container->m_itemsPerPage - 1) //Are we hovering the last element?
-  { //then move down
-    m_draggedScrollDirection = 1;
-  }
-  else 
-  { //stop scrolling
-    m_draggedScrollDirection = 0;
-  }
+  m_draggedScrollDirection = m_container->NeedsScrolling(point);
   
   return (m_bDropable) ? EVENT_RESULT_HANDLED : EVENT_RESULT_UNHANDLED;
 } 
-
-  //DragMove
-  //if reorderable
-    //Handle scrolling
-  //internal && dropable
-    //move item
-  //external && dropable
-    //add item
-  //external && dropable && !reorderable
-    //scroll to added item
 
 void CGUIListDragHandler::DraggedAway()
 {
@@ -238,6 +216,7 @@ void CGUIListDragHandler::DraggedAway()
         m_container->MoveItemInternally(m_draggedNewPosition, m_draggedOrigPosition);
         m_draggedNewPosition = m_draggedOrigPosition;
         m_container->SetCursor(m_draggedNewPosition - m_container->GetOffset()); //focus the dragged object again
+        m_container->m_items[m_draggedNewPosition]->Select(true);
       }
       else 
       {
@@ -324,12 +303,53 @@ void CGUIListDragHandler::ClearDragHint()
   }
 }
 
-void CGUIListDragHandler::ShowDragHint(const CPoint& insertPoint)
+void CGUIListDragHandler::CalcDragHint(const CPoint& mouse, const CRect& hoveredArea, int& Pos)
+{
+  if(!m_dragHint)
+    return;
+  
+  if (m_container->m_orientation == VERTICAL)
+  {
+      //check if the drag hint is supposed to be above or under the item
+    if(mouse.y < hoveredArea.y1 + (hoveredArea.y2-hoveredArea.y1) / 2) 
+    {
+      if(m_bReorderable)
+        Pos--;
+      m_dragHintPosition.y = hoveredArea.y1;
+    }
+    else 
+    {
+      m_dragHintPosition.y = hoveredArea.y2;
+    }
+    
+    m_dragHintPosition.x = m_container->GetXPosition();
+    
+  }
+  else
+  {
+      //check if the drag hint is supposed to be on the left, or right
+    if(mouse.y < hoveredArea.y1 + (hoveredArea.y2-hoveredArea.y1) / 2) 
+    {
+      if(m_bReorderable)
+        Pos--;
+      m_dragHintPosition.x = hoveredArea.x1;
+    }
+    else 
+    {
+      m_dragHintPosition.x = hoveredArea.x2;
+    }
+    m_dragHintPosition.y = m_container->GetYPosition();
+  }
+  
+  CLog::Log(LOGDEBUG, "adjusted drop position %i", m_draggedNewPosition);
+}
+
+void CGUIListDragHandler::ShowDragHint()
 {
   if(!m_dragHint)
     return; //Nothing to do
   
-  if (m_container->m_orientation == VERTICAL)
+/*  if (m_container->m_orientation == VERTICAL)
   {
     m_dragHintPosition.x = m_container->GetXPosition();
     m_dragHintPosition.y = insertPoint.y;
@@ -338,7 +358,7 @@ void CGUIListDragHandler::ShowDragHint(const CPoint& insertPoint)
   {
     m_dragHintPosition.x = insertPoint.x;
     m_dragHintPosition.y = m_container->GetYPosition();
-  }
+  }*/
   
   m_dragHint->SetVisible(true);
   m_dragHint->SetPosition(m_dragHintPosition.x+m_dragHintOffset.x, m_dragHintPosition.y+m_dragHintOffset.y);

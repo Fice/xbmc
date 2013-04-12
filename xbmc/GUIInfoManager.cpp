@@ -1316,7 +1316,7 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, CStdString *fa
     CGUIWindow *window = GetWindowWithCondition(contextWindow, WINDOW_CONDITION_HAS_LIST_ITEMS); // true for has list items
     if (window)
     {
-      CFileItemPtr item = window->GetCurrentListItem();
+      CFileItemPtr item = GetCurrentListItem(window);
       strLabel = GetItemLabel(item.get(), info, fallback);
     }
 
@@ -5420,6 +5420,16 @@ bool CGUIInfoManager::GetEpgInfoTag(CEpgInfoTag& tag) const
     }
   }
   return false;
+}
+
+CFileItemPtr CGUIInfoManager::GetCurrentListItem(CGUIWindow *window) 
+{ 
+  CFileItemPtr ptr = GetDraggedFileItem();
+  if(ptr) 
+    return ptr;
+  if(window)
+    return window->GetCurrentListItem();
+  return CFileItemPtr();
 }
 
 void CGUIInfoManager::DraggingStart(CFileItemPtr draggedFileItem, CGUIControl* startControl) 
