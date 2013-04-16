@@ -27,14 +27,17 @@
 #include "boost/shared_ptr.hpp"
 #include "utils/StringUtils.h"
 #include "guilib/GUIListItem.h"
+#include "guilib/LocalizeStrings.h"
 #include <functional>
+#include <boost/enable_shared_from_this.hpp>
 
 class IGUIContextItem;
 typedef boost::shared_ptr<IGUIContextItem> ContextItemPtr;
 
-class IGUIContextItem
+class IGUIContextItem : public boost::enable_shared_from_this<IGUIContextItem>
 {
 public:
+  virtual ContextItemPtr GetByID(unsigned int id) { return (getMsgID()==id) ? shared_from_this() : ContextItemPtr(); }
   virtual unsigned int getMsgID() const =0;
   virtual CStdString getLabel() const =0;
   virtual bool isVisible(const CGUIListItem *item) const=0;
@@ -50,18 +53,81 @@ public:
     bool operator()(const ContextItemPtr& item, const CGUIListItem * const listItem) const;
   };
   
+  /*
   struct IDFinder : std::binary_function<ContextItemPtr, unsigned int, bool>
   {
     bool operator()(const ContextItemPtr& item, unsigned int id) const;
-  };
+  };*/
   
   
 protected:
   virtual bool execute()=0;
   
 };
-
 typedef boost::shared_ptr<IGUIContextItem> ContextItemPtr;
+
+class CGUIBaseContextItem : public IGUIContextItem
+{
+public:
+  CGUIBaseContextItem(unsigned int msgId, int labelId) { m_msgId = msgId; m_labelId = labelId; }
+  virtual unsigned int getMsgID() const { return m_msgId; }
+  virtual CStdString getLabel() const { return g_localizeStrings.Get(m_labelId); }
+protected:
+  unsigned int m_msgId;
+  int m_labelId;
+private:
+  CGUIBaseContextItem() {}
+};
+
+/* \brief This class represents a Context Menu with sub items */
+class CGUIContextFolder : public CGUIBaseContextItem
+{
+  CGUIContextFolder(unsigned int msgId, int labelId) : CGUIBaseContextItem(msgId, labelId) {}
+  
+  virtual ContextItemPtr GetByID(unsigned int id) {
+    if(getMsgID()==id)
+      return shared_from_this();
+      //todo
+    for(contextIter it = m_subEntries.begin(); it!=m_subEntries.end(); ++it)
+    {
+      ContextItemPtr ptr = (*it)->GetByID(id);
+      if(ptr)
+        return ptr;
+    }
+    return ContextItemPtr();
+  }
+  
+  virtual bool isVisible(const CGUIListItem *item) const
+  {
+    constContextIter it = find_if(m_subEntries.begin(), 
+                                  m_subEntries.end(),
+                                  std::bind2nd(IGUIContextItem::ContextVisiblePredicate(), item)
+                                 );
+    return it!=m_subEntries.end();
+  }
+  
+  typedef std::vector<ContextItemPtr>::iterator contextIter;
+  typedef std::vector<ContextItemPtr>::const_iterator constContextIter;
+protected:
+  virtual bool execute()=0; //TODO:
+  
+  std::vector<ContextItemPtr> m_subEntries;
+  
+  
+};
+
+  //Actual implementations of the Context items... should propably moved out into another file
+class ContextItemNowPlaying : public CGUIBaseContextItem
+{
+public:
+  ContextItemNowPlaying();
+  
+  virtual bool isVisible(const CGUIListItem *item) const;
+  virtual bool execute();
+};
+
+
+
 
 
 

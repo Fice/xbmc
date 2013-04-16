@@ -25,7 +25,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		0E04BF8E1632C82B002700F6 /* ContextItemAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E04BF8C1632C82A002700F6 /* ContextItemAddon.cpp */; };
 		0E04BF901632C85B002700F6 /* GUIContextMenuManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E04BF8F1632C85B002700F6 /* GUIContextMenuManager.cpp */; };
 		0E04BF941632C875002700F6 /* IGUIContextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E04BF921632C875002700F6 /* IGUIContextItem.cpp */; };
 		183FDF8A11AF0B0500B81E9C /* PluginSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 183FDF8811AF0B0500B81E9C /* PluginSource.cpp */; };
@@ -1063,8 +1062,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0E04BF8C1632C82A002700F6 /* ContextItemAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContextItemAddon.cpp; sourceTree = "<group>"; };
-		0E04BF8D1632C82B002700F6 /* ContextItemAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContextItemAddon.h; sourceTree = "<group>"; };
 		0E04BF8F1632C85B002700F6 /* GUIContextMenuManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIContextMenuManager.cpp; sourceTree = "<group>"; };
 		0E04BF911632C862002700F6 /* GUIContextMenuManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIContextMenuManager.h; sourceTree = "<group>"; };
 		0E04BF921632C875002700F6 /* IGUIContextItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IGUIContextItem.cpp; sourceTree = "<group>"; };
@@ -3386,8 +3383,6 @@
 				F52BFFD9115D5574004B1D66 /* AddonStatusHandler.h */,
 				18B700DF13A6A5750009C1AF /* AddonVersion.cpp */,
 				18B700E013A6A5750009C1AF /* AddonVersion.h */,
-				0E04BF8C1632C82A002700F6 /* ContextItemAddon.cpp */,
-				0E04BF8D1632C82B002700F6 /* ContextItemAddon.h */,
 				18B49FF61152BFA5001AF8A6 /* DllAddon.h */,
 				18B7C38612942090009E7A26 /* GUIDialogAddonInfo.cpp */,
 				18B7C38712942090009E7A26 /* GUIDialogAddonInfo.h */,
@@ -7771,7 +7766,6 @@
 				7C87B2CE162CE39600EF897D /* PlayerController.cpp in Sources */,
 				F52CC5F01713AAA200113454 /* DirectoryNodeGrouped.cpp in Sources */,
 				F52CC6AA1713BD2B00113454 /* DirectoryNodeGrouped.cpp in Sources */,
-				0E04BF8E1632C82B002700F6 /* ContextItemAddon.cpp in Sources */,
 				0E04BF901632C85B002700F6 /* GUIContextMenuManager.cpp in Sources */,
 				0E04BF941632C875002700F6 /* IGUIContextItem.cpp in Sources */,
 			);

@@ -114,8 +114,6 @@ namespace ADDON
     static AddonPtr AddonFromProps(AddonProps& props);
     void FindAddons();
     void RemoveAddon(const CStdString& ID);
-    
-    unsigned int GetMsgIdForContextAddon(CStdString AddonID);
 
     /* libcpluff */
     CStdString GetExtValue(cp_cfg_element_t *base, const char *path);
@@ -205,8 +203,7 @@ namespace ADDON
     CAddonMgr const& operator=(CAddonMgr const&);
     virtual ~CAddonMgr();
 
-    std::map<CStdString, unsigned int> m_contextMsgAssign;
-    unsigned int m_iCurrentContextId;
+      //std::map<CStdString, unsigned int> m_contextMsgAssign;
     
     static std::map<TYPE, IAddonMgrCallback*> m_managers;
     CCriticalSection m_critSection;

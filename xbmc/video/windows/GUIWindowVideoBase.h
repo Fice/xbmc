@@ -94,7 +94,7 @@ protected:
   virtual bool CanContainFilter(const CStdString &strDirectory) const;
 
   virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
-  void GetNonContextButtons(int itemNumber, CContextButtons &buttons);
+    //TODO: remove void GetNonContextButtons(int itemNumber, CContextButtons &buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   virtual void OnQueueItem(int iItem);
   virtual void OnDeleteItem(CFileItemPtr pItem);

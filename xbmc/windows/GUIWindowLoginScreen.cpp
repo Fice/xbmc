@@ -234,7 +234,7 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
   
   
   std::list<ContextItemPtr> additional_context_items;
-  GUIContextMenuManager::Get().GetVisibleContextItems(0, pItem, additional_context_items);
+  GUIContextMenuManager::Get().GetVisibleContextItems(0, &*pItem, additional_context_items);
   std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(choices), ConvertFromContextItem());
 
   int choice = CGUIDialogContextMenu::ShowAndGetChoice(choices);
@@ -265,7 +265,7 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
   ContextItemPtr context_item = GUIContextMenuManager::Get().GetContextItemByID(choice);
   if(context_item==0)
     return false;
-  return (*context_item)(pItem); //execute our context item logic
+  return (*context_item)(&*pItem); //execute our context item logic
   
   //NOTE: this can potentially (de)select the wrong item if the filelisting has changed because of an action above.
   if (iItem < (int)CProfilesManager::Get().GetNumberOfProfiles())

@@ -19,9 +19,11 @@
  */
 
 #include "IGUIContextItem.h"
+#include "dialogs/GUIDialogContextMenu.h"
+#include "PlayListPlayer.h"
+#include "playlists/PlayList.h"
 
-
-
+#include "guilib/GUIWindowManager.h"
 
 bool IGUIContextItem::ContextVisiblePredicate::operator()(const ContextItemPtr& item, const CGUIListItem *listItem) const
 { 
@@ -29,9 +31,18 @@ bool IGUIContextItem::ContextVisiblePredicate::operator()(const ContextItemPtr& 
 }
 
 
-bool IGUIContextItem::IDFinder::operator()(const ContextItemPtr& item, unsigned int id) const
-{ 
-  return item->getMsgID()==id; 
+ContextItemNowPlaying::ContextItemNowPlaying() : CGUIBaseContextItem(CONTEXT_BUTTON_NOW_PLAYING, 13350) {}
+
+///////////////////////////////
+//Context Item: Now Playing
+///////////////////////////////
+bool ContextItemNowPlaying::isVisible(const CGUIListItem *item) const {
+  return (g_playlistPlayer.GetPlaylist(PLAYLIST_VIDEO).size() > 0); // && container.content(VIDEO)
+}
+bool ContextItemNowPlaying::execute() 
+{  
+  g_windowManager.ActivateWindow(WINDOW_VIDEO_PLAYLIST); 
+  return true; 
 }
 
 

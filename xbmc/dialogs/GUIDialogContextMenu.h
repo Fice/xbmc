@@ -127,7 +127,7 @@ enum CONTEXT_BUTTON { CONTEXT_BUTTON_CANCELLED = 0,
                       CONTEXT_BUTTON_RECORD_ITEM,
                       CONTEXT_BUTTON_TAGS_ADD_ITEMS,
                       CONTEXT_BUTTON_TAGS_REMOVE_ITEMS,
-					  CONTEXT_BUTTON_SET_MOVIESET,
+                      CONTEXT_BUTTON_SET_MOVIESET,
                       CONTEXT_BUTTON_MOVIESET_ADD_REMOVE_ITEMS,
                       CONTEXT_BUTTON_FIRST_CONTEXT_PLUGIN //NOTE: this has to be the last in this enum,
                                       //because this one, and the ones higher will be used by context plugins

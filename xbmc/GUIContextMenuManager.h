@@ -38,7 +38,6 @@ public:
   
   
   bool RegisterContextItem(ContextItemPtr cm);
-  bool UnregisterContextItem(ContextItemPtr cm);
   ContextItemPtr GetContextItemByID(const unsigned int ID);
   void GetVisibleContextItems(int context, const CGUIListItem *item, std::list<ContextItemPtr> &visible);
 protected:

@@ -19,12 +19,8 @@
  */
 
 #include "GUIContextMenuManager.h"
-#include "addons/Addon.h"
-#include "addons/AddonManager.h"
-#include "addons/ContextItemAddon.h"
 #include "Util.h"
 #include "List.h"
-#include "IAddon.h"
 #include <functional>
 
 
@@ -41,19 +37,8 @@ GUIContextMenuManager::GUIContextMenuManager()
     //Add core context items
   
   
-  
-    //Add context items from addons
-  ADDON::VECADDONS addons;
-  if(ADDON::CAddonMgr::Get().GetAddons(ADDON::ADDON_CONTEXT, addons)) 
-  {
-    m_vecContextMenus.reserve(addons.size());
-  
-    for(ADDON::IVECADDONS i = addons.begin(); i!=addons.end(); ++i) 
-    {
-      ContextItemPtr ptr(boost::shared_polymorphic_downcast<ADDON::CContextItemAddon>(*i));
-      RegisterContextItem(ptr);
-    }
-  }
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextItemNowPlaying()));
+
 }
 
 bool GUIContextMenuManager::RegisterContextItem(ContextItemPtr cm) 
@@ -70,30 +55,15 @@ bool GUIContextMenuManager::RegisterContextItem(ContextItemPtr cm)
   return true;
 }
 
-bool GUIContextMenuManager::UnregisterContextItem(ContextItemPtr cm) 
-{
-  contextIter it = remove_if(m_vecContextMenus.begin(), 
-                             m_vecContextMenus.end(), 
-                             std::bind2nd(IGUIContextItem::IDFinder(), cm->getMsgID())
-                            );
-  if (it!=m_vecContextMenus.end())
-  {
-    m_vecContextMenus.erase(it, m_vecContextMenus.end());
-    return true;
-  }
-  return false;
-}
-
-
 ContextItemPtr GUIContextMenuManager::GetContextItemByID(const unsigned int ID) 
 {
-  contextIter it = find_if(m_vecContextMenus.begin(), 
-                           m_vecContextMenus.end(), 
-                           std::bind2nd(IGUIContextItem::IDFinder(), ID)
-                          );
-  if (it==m_vecContextMenus.end())
-    return ContextItemPtr();
-  return *it;
+  for(contextIter it = m_vecContextMenus.begin(); it!=m_vecContextMenus.end(); ++it)
+  {
+    ContextItemPtr ptr = (*it)->GetByID(ID);
+    if(ptr)
+      return ptr;
+  }
+  return ContextItemPtr();
 }
 
 void GUIContextMenuManager::GetVisibleContextItems(int context/*TODO: */, const CGUIListItem * const item, std::list<ContextItemPtr> &visible)
