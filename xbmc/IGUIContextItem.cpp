@@ -31,6 +31,13 @@ bool IGUIContextItem::ContextVisiblePredicate::operator()(const ContextItemPtr& 
 }
 
 
+void IGUIContextItem::AddVisibleItems(const CGUIListItem* listItem, const CGUIBaseContainer& container, std::list<ContextItemPtr>& list)
+{
+  if(isVisible(listItem))
+    list.push_back(listItem, container);
+}
+
+
 ContextItemNowPlaying::ContextItemNowPlaying() : CGUIBaseContextItem(CONTEXT_BUTTON_NOW_PLAYING, 13350) {}
 
 ///////////////////////////////

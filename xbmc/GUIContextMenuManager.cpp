@@ -68,9 +68,16 @@ ContextItemPtr GUIContextMenuManager::GetContextItemByID(const unsigned int ID)
 
 void GUIContextMenuManager::GetVisibleContextItems(int context/*TODO: */, const CGUIListItem * const item, std::list<ContextItemPtr> &visible)
 {  
+  contextIter end = m_vecContextMenus.end();
+  for(contextIter i = m_vecContextMenus.begin(); i!=end; ++i)
+  {
+    (*i)->AddVisibleItems(item, visible);
+  }
+  
+  /*
   copy_if (m_vecContextMenus.begin(), 
            m_vecContextMenus.end(), 
            back_inserter(visible), 
            std::bind2nd(IGUIContextItem::ContextVisiblePredicate(), item)
-          );
+          );*/
 }

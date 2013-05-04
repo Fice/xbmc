@@ -27,9 +27,11 @@
 #include "boost/shared_ptr.hpp"
 #include "utils/StringUtils.h"
 #include "guilib/GUIListItem.h"
+#include "guilib/GUIBaseContainer.h"
 #include "guilib/LocalizeStrings.h"
 #include <functional>
 #include <boost/enable_shared_from_this.hpp>
+#include <list>
 
 class IGUIContextItem;
 typedef boost::shared_ptr<IGUIContextItem> ContextItemPtr;
@@ -40,7 +42,8 @@ public:
   virtual ContextItemPtr GetByID(unsigned int id) { return (getMsgID()==id) ? shared_from_this() : ContextItemPtr(); }
   virtual unsigned int getMsgID() const =0;
   virtual CStdString getLabel() const =0;
-  virtual bool isVisible(const CGUIListItem *item) const=0;
+  virtual void AddVisibleItems(const CGUIListItem* listItem, const CGUIBaseContainer& container, std::list<ContextItemPtr>& list);
+  virtual bool isVisible(const CGUIListItem *item, const CGUIBaseContainer& container) const=0;
   virtual ~IGUIContextItem() {}
   bool operator()(const CGUIListItem *item) {
     if(!isVisible(item))
@@ -104,6 +107,28 @@ class CGUIContextFolder : public CGUIBaseContextItem
                                   std::bind2nd(IGUIContextItem::ContextVisiblePredicate(), item)
                                  );
     return it!=m_subEntries.end();
+  }
+  virtual void AddVisibleItems(const CGUIListItem* item, std::list<ContextItemPtr>& list)
+  {
+    contextIter it = find_if(m_subEntries.begin(), 
+                             m_subEntries.end(),
+                             std::bind2nd(IGUIContextItem::ContextVisiblePredicate(), item)
+                            );
+    if(it==m_subEntries.end())
+      return;
+    
+    constContextIter it2 = find_if(it, 
+                                  m_subEntries.end(),
+                                  std::bind2nd(IGUIContextItem::ContextVisiblePredicate(), item)
+                                  );
+    if(it2!=m_subEntries.end())
+    { //we have at least two visible sub-items -> Show the folder
+      list.push_back(shared_from_this());
+    }
+    else 
+    { //we only have one subitem visible... show that one directly!
+      (*it)->AddVisibleItems(item, list);
+    }
   }
   
   typedef std::vector<ContextItemPtr>::iterator contextIter;
