@@ -166,10 +166,6 @@ void CGUIWindowAddonBrowser::GetContextButtons(int itemNumber,
     if (addon->HasSettings())
       buttons.Add(CONTEXT_BUTTON_SETTINGS,24020);
   }
-  
-  std::list<ContextItemPtr> additional_context_items;
-  GUIContextMenuManager::Get().GetVisibleContextItems(0, &*pItem, additional_context_items);
-  std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(buttons), ConvertFromContextItem());  
 }
 
 bool CGUIWindowAddonBrowser::OnContextButton(int itemNumber,

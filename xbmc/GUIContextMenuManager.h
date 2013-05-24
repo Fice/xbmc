@@ -39,7 +39,7 @@ public:
   
   bool RegisterContextItem(ContextItemPtr cm);
   ContextItemPtr GetContextItemByID(const unsigned int ID);
-  void GetVisibleContextItems(int context, const CGUIListItem *item, std::list<ContextItemPtr> &visible);
+  void GetVisibleContextItems(int context, const CFileItemList& list, const CFileItem *item, std::list<ContextItemPtr> &visible);
 protected:
   GUIContextMenuManager();
   

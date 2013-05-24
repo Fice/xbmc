@@ -48,6 +48,7 @@ public:
    */
   static void LoadVideoInfo(CFileItemList &items, CVideoDatabase &database, bool allowReplaceLabels = true);
 
+  static CStdString GetLocalizedType(const std::string &strType);
 protected:
   /*! \brief Load video information from the database for these items
    Useful for grabbing information for file listings, from watched status to full metadata
@@ -79,7 +80,6 @@ protected:
   virtual CStdString GetQuickpathName(const CStdString& strPath) const;
 
   bool GetItemsForTag(const CStdString &strHeading, const std::string &type, CFileItemList &items, int idTag = -1, bool showAll = true);
-  static CStdString GetLocalizedType(const std::string &strType);
 
   bool GetSetForMovie(CFileItemPtr &movieItem, CFileItemPtr &selectedSet);
   bool GetMoviesForSet(CFileItemPtr &setItem, CFileItemList &originalMovies, CFileItemList &selectedMovies);

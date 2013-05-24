@@ -1364,11 +1364,6 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     item = m_vecItems->Get(itemNumber);
   switch (button)
   {
-  case CONTEXT_BUTTON_SET_CONTENT:
-    {
-      OnAssignContent(item->HasVideoInfoTag() && !item->GetVideoInfoTag()->m_strPath.IsEmpty() ? item->GetVideoInfoTag()->m_strPath : item->GetPath());
-      return true;
-    }
   case CONTEXT_BUTTON_PLAY_PART:
     {
       if (OnPlayStackPart(itemNumber)) 
@@ -1414,52 +1409,6 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
   case CONTEXT_BUTTON_RESUME_ITEM:
     return OnFileAction(itemNumber, SELECT_ACTION_RESUME);
-
-      /*
-  case CONTEXT_BUTTON_NOW_PLAYING:
-    g_windowManager.ActivateWindow(WINDOW_VIDEO_PLAYLIST);
-    return true;*/
-
-  case CONTEXT_BUTTON_INFO:
-    OnInfo(itemNumber);
-    return true;
-
-  case CONTEXT_BUTTON_STOP_SCANNING:
-    {
-      g_application.StopVideoScan();
-      return true;
-    }
-  case CONTEXT_BUTTON_SCAN:
-  case CONTEXT_BUTTON_UPDATE_TVSHOW:
-    {
-      if( !item)
-        return false;
-      ADDON::ScraperPtr info;
-      SScanSettings settings;
-      GetScraperForItem(item.get(), info, settings);
-      CStdString strPath = item->GetPath();
-      if (item->IsVideoDb() && (!item->m_bIsFolder || item->GetVideoInfoTag()->m_strPath.IsEmpty()))
-        return false;
-
-      if (item->IsVideoDb())
-        strPath = item->GetVideoInfoTag()->m_strPath;
-
-      if (!info || info->Content() == CONTENT_NONE)
-        return false;
-
-      if (item->m_bIsFolder)
-      {
-        m_database.SetPathHash(strPath,""); // to force scan
-        OnScan(strPath, true);
-      }
-      else
-        OnInfo(item.get(),info);
-
-      return true;
-    }
-  case CONTEXT_BUTTON_DELETE:
-    OnDeleteItem(itemNumber);
-    return true;
   case CONTEXT_BUTTON_EDIT_SMART_PLAYLIST:
     {
       CStdString playlist = m_vecItems->Get(itemNumber)->IsSmartPlayList() ? m_vecItems->Get(itemNumber)->GetPath() : m_vecItems->GetPath(); // save path as activatewindow will destroy our items
@@ -1467,24 +1416,7 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         Refresh(true); // need to update
       return true;
     }
-  case CONTEXT_BUTTON_RENAME:
-    OnRenameItem(itemNumber);
-    return true;
-  case CONTEXT_BUTTON_MARK_WATCHED:
-    {
-      int newSelection = m_viewControl.GetSelectedItem() + 1;
-      MarkWatched(item,true);
-      m_viewControl.SetSelectedItem(newSelection);
 
-      CUtil::DeleteVideoDatabaseDirectoryCache();
-      Refresh();
-      return true;
-    }
-  case CONTEXT_BUTTON_MARK_UNWATCHED:
-    MarkWatched(item,false);
-    CUtil::DeleteVideoDatabaseDirectoryCache();
-    Refresh();
-    return true;
   case CONTEXT_BUTTON_PLAY_AND_QUEUE:
     return OnPlayAndQueueMedia(item);
   case CONTEXT_BUTTON_PLAY_ONLY_THIS:
@@ -2122,24 +2054,27 @@ void CGUIWindowVideoBase::OnSearchItemFound(const CFileItem* pSelItem)
   m_viewControl.SetFocused();
 }
 
-int CGUIWindowVideoBase::GetScraperForItem(CFileItem *item, ADDON::ScraperPtr &info, SScanSettings& settings)
+int CGUIWindowVideoBase::GetScraperForItem(const CFileItemList& vecItems, const CFileItem *item, ADDON::ScraperPtr &info, SScanSettings& settings)
 {
   if (!item)
     return 0;
 
-  if (m_vecItems->IsPlugin() || m_vecItems->IsRSS())
+  if (vecItems.IsPlugin() || vecItems.IsRSS())
   {
     info.reset();
     return 0;
   }
-  else if(m_vecItems->IsLiveTV())
+  else if(vecItems.IsLiveTV())
   {
     info.reset();
     return 0;
   }
 
   bool foundDirectly = false;
-  info = m_database.GetScraperForPath(item->HasVideoInfoTag() && !item->GetVideoInfoTag()->m_strPath.IsEmpty() ? item->GetVideoInfoTag()->m_strPath : item->GetPath(), settings, foundDirectly);
+  CVideoDatabase database;
+  database.Open();
+  info = database.GetScraperForPath(item->HasVideoInfoTag() && !item->GetVideoInfoTag()->m_strPath.IsEmpty() ? item->GetVideoInfoTag()->m_strPath : item->GetPath(), settings, foundDirectly);
+  database.Close();
   return foundDirectly ? 1 : 0;
 }
 

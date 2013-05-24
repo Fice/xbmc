@@ -81,6 +81,8 @@ public:
    */
   static CStdString GetResumeString(const CFileItem &item);
 
+  
+  static int GetScraperForItem(const CFileItemList& vecItems, const CFileItem *item, ADDON::ScraperPtr &info, VIDEO::SScanSettings& settings);
 protected:
   void OnScan(const CStdString& strPath, bool scanAll = false);
   virtual void OnInitWindow();
@@ -129,7 +131,6 @@ protected:
 
   void OnSearch();
   void OnSearchItemFound(const CFileItem* pSelItem);
-  int GetScraperForItem(CFileItem *item, ADDON::ScraperPtr &info, VIDEO::SScanSettings& settings);
 
   static bool OnUnAssignContent(const CStdString &path, int label1, int label2, int label3);
 

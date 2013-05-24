@@ -20,7 +20,8 @@
 
 #include "GUIContextMenuManager.h"
 #include "Util.h"
-#include "List.h"
+#include "utils/Variant.h"
+#include <list>
 #include <functional>
 
 
@@ -38,7 +39,34 @@ GUIContextMenuManager::GUIContextMenuManager()
   
   
   m_vecContextMenus.push_back(ContextItemPtr(new ContextItemNowPlaying()));
-
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonVideoStopScanning()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonVideoUpdateLibrary()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonVideoScanLibrary()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonVideoSetContent()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonVideoGoArtist()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonVideoGoAlbum()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonVideoPlayOther()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonVideoInfo()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonUpdateTVShow()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonMarkUnwatched()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonMarkWatched()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonEditTitle()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonUnlinkMovie()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonLinkMovie()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonSetMovieset()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonSetSeasonArt()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonSetMoviesetArt()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonMoviesetAddRemove()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonTagAddItems()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonTagRemoveItems()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonDelete()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonSetArtistThumb()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonSetActortThumb()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonUnlinkBookmark()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonFileDelete()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonFileRename()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonSetContent()));
+  m_vecContextMenus.push_back(ContextItemPtr(new ContextButtonPluginSettings()));
 }
 
 bool GUIContextMenuManager::RegisterContextItem(ContextItemPtr cm) 
@@ -66,12 +94,15 @@ ContextItemPtr GUIContextMenuManager::GetContextItemByID(const unsigned int ID)
   return ContextItemPtr();
 }
 
-void GUIContextMenuManager::GetVisibleContextItems(int context/*TODO: */, const CGUIListItem * const item, std::list<ContextItemPtr> &visible)
+void GUIContextMenuManager::GetVisibleContextItems(int context/*TODO: */, const CFileItemList& list, const CFileItem * const item, std::list<ContextItemPtr> &visible)
 {  
+  if (item && item->GetProperty("pluginreplacecontextitems").asBoolean())
+    return;
+  
   contextIter end = m_vecContextMenus.end();
   for(contextIter i = m_vecContextMenus.begin(); i!=end; ++i)
   {
-    (*i)->AddVisibleItems(item, visible);
+    (*i)->AddVisibleItems(item, list, visible);
   }
   
   /*

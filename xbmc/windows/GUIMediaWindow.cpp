@@ -1565,12 +1565,7 @@ void CGUIMediaWindow::GetContextButtons(int itemNumber, CContextButtons &buttons
       buttons.Add(CONTEXT_BUTTON_ADD_FAVOURITE, 14077);     // Remove Favourite
     else
       buttons.Add(CONTEXT_BUTTON_ADD_FAVOURITE, 14076);     // Add To Favourites;
-  }
-  
-  std::list<ContextItemPtr> additional_context_items;
-  GUIContextMenuManager::Get().GetVisibleContextItems(0, &*item, additional_context_items);
-  std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(buttons), ConvertFromContextItem());  
-  
+  }  
 }
 
 bool CGUIMediaWindow::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
@@ -1583,26 +1578,10 @@ bool CGUIMediaWindow::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CFavourites::AddOrRemove(item.get(), GetID());
       return true;
     }
-  case CONTEXT_BUTTON_PLUGIN_SETTINGS:
-    {
-      CFileItemPtr item = m_vecItems->Get(itemNumber);
-      // CONTEXT_BUTTON_PLUGIN_SETTINGS can be called for plugin item
-      // or script item; or for the plugin directory current listing.
-      bool isPluginOrScriptItem = (item && (item->IsPlugin() || item->IsScript()));
-      CURL plugin(isPluginOrScriptItem ? item->GetPath() : m_vecItems->GetPath());
-      ADDON::AddonPtr addon;
-      if (CAddonMgr::Get().GetAddon(plugin.GetHostName(), addon))
-        if (CGUIDialogAddonSettings::ShowAndGetInput(addon))
-          Refresh();
-      return true;
-    }
   default:
     break;
   }
-  ContextItemPtr context_item = GUIContextMenuManager::Get().GetContextItemByID(button);
-  if(context_item==0)
-    return false;
-  return (*context_item)(&*(m_vecItems->Get(itemNumber))); //execute our context item logic
+  return false;
 }
 
 const CGUIViewState *CGUIMediaWindow::GetViewState() const
