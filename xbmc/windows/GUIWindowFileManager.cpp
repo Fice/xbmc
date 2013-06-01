@@ -989,7 +989,8 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
   CContextButtons choices;
   if (item >= 0)
   {
-    choices.Add(1, 188); // SelectAll
+    if(m_vecItems[list]->Size() - 1 > NumSelected(list))
+      choices.Add(1, 188); // SelectAll
     if (!pItem->IsParentFolder())
       choices.Add(2, CFavourites::IsFavourite(pItem.get(), GetID()) ? 14077 : 14076); // Add/Remove Favourite
     if (vecCores.size() > 1)
@@ -1007,7 +1008,6 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
     choices.Add(8, 20309); // New Folder
   if (item >= 0 && pItem->m_bIsFolder && !pItem->IsParentFolder())
     choices.Add(9, 13393); // Calculate Size
-  choices.Add(10, 5);     // Settings
   choices.Add(11, 20128); // Go To Root
   choices.Add(12, 523);     // switch media
   if (CJobManager::GetInstance().IsProcessing("filemanager"))
@@ -1073,11 +1073,6 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
     }
     if (progress)
       progress->Close();
-  }
-  if (btnid == 10)
-  {
-    g_windowManager.ActivateWindow(WINDOW_SETTINGS_MENU);
-    return;
   }
   if (btnid == 11)
   {
