@@ -578,6 +578,7 @@ public:
   void RemoveDiscCache(int windowID = 0) const;
   bool AlwaysCache() const;
 
+  void Move(int position, int move);
   void Swap(unsigned int item1, unsigned int item2);
 
   /*! \brief Update an item in the item list
