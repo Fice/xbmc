@@ -25,6 +25,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		0E303252175E4DA400D93596 /* ExternalProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E303251175E4DA400D93596 /* ExternalProvider.cpp */; };
+		0E303253175E4DA400D93596 /* ExternalProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E303251175E4DA400D93596 /* ExternalProvider.cpp */; };
+		0E303254175E4DA400D93596 /* ExternalProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E303251175E4DA400D93596 /* ExternalProvider.cpp */; };
 		183FDF8A11AF0B0500B81E9C /* PluginSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 183FDF8811AF0B0500B81E9C /* PluginSource.cpp */; };
 		18404DA61396C31B00863BBA /* SlingboxLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18404DA51396C31B00863BBA /* SlingboxLib.a */; };
 		1840B74D13993D8A007C848B /* JSONVariantParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1840B74B13993D8A007C848B /* JSONVariantParser.cpp */; };
@@ -3155,6 +3158,8 @@
 
 /* Begin PBXFileReference section */
 		0E30286C1759FCC200D93596 /* SettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsManager.h; sourceTree = "<group>"; };
+		0E303233175E410000D93596 /* ExternalProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExternalProvider.h; path = xbmc/listproviders/ExternalProvider.h; sourceTree = SOURCE_ROOT; };
+		0E303251175E4DA400D93596 /* ExternalProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExternalProvider.cpp; path = xbmc/listproviders/ExternalProvider.cpp; sourceTree = SOURCE_ROOT; };
 		18308CB41303370800AA309E /* stat_utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stat_utf8.h; sourceTree = "<group>"; };
 		18308CB51303370800AA309E /* stdio_utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdio_utf8.h; sourceTree = "<group>"; };
 		183FDF8811AF0B0500B81E9C /* PluginSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PluginSource.cpp; sourceTree = "<group>"; };
@@ -6569,6 +6574,8 @@
 			children = (
 				7C430162175C4244009B82E5 /* IListProvider.cpp */,
 				7C430165175C4244009B82E5 /* IListProvider.h */,
+				0E303251175E4DA400D93596 /* ExternalProvider.cpp */,
+				0E303233175E410000D93596 /* ExternalProvider.h */,
 				7C430164175C4244009B82E5 /* StaticProvider.cpp */,
 				7C430163175C4244009B82E5 /* StaticProvider.h */,
 			);
@@ -10549,6 +10556,7 @@
 				DFE4095B17417FDF00473BD9 /* LegacyPathTranslation.cpp in Sources */,
 				7C430166175C4244009B82E5 /* IListProvider.cpp in Sources */,
 				7C430167175C4244009B82E5 /* StaticProvider.cpp in Sources */,
+				0E303252175E4DA400D93596 /* ExternalProvider.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11570,6 +11578,7 @@
 				DF3C3C0E1752A7EE000989C3 /* IOSEAGLView.mm in Sources */,
 				DF3C3C0F1752A7EE000989C3 /* IOSExternalTouchController.mm in Sources */,
 				DF3C3C101752A7EE000989C3 /* IOSScreenManager.mm in Sources */,
+				0E303254175E4DA400D93596 /* ExternalProvider.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12593,6 +12602,7 @@
 				E4991592174E6B5C00741B6D /* fstrcmp.c in Sources */,
 				E4991593174E707400741B6D /* cc_decoder.c in Sources */,
 				E4991596174E70BF00741B6D /* yuv2rgb.neon.S in Sources */,
+				0E303253175E4DA400D93596 /* ExternalProvider.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -30,25 +30,7 @@ CStaticProvider::CStaticProvider(const TiXmlElement *element, int parentID)
   m_defaultAlways(false),
   m_updateTime(0)
 {
-  assert(element);
-
-  const TiXmlElement *item = element->FirstChildElement("item");
-  while (item)
-  {
-    if (item->FirstChild())
-    {
-      CGUIStaticItemPtr newItem(new CGUIStaticItem(item, parentID));
-      m_items.push_back(newItem);
-    }
-    item = item->NextSiblingElement("item");
-  }
-
-  if (XMLUtils::GetInt(element, "default", m_defaultItem))
-  {
-    const char *always = element->FirstChildElement("default")->Attribute("always");
-    if (always && strnicmp(always, "true", 4) == 0)
-      m_defaultAlways = true;
-  }
+  Load(element);
 }
 
 CStaticProvider::CStaticProvider(const std::vector<CGUIStaticItemPtr> &items)
@@ -60,8 +42,38 @@ CStaticProvider::CStaticProvider(const std::vector<CGUIStaticItemPtr> &items)
 {
 }
 
+CStaticProvider::CStaticProvider(int parentID)
+: IListProvider(parentID),
+  m_defaultItem(-1),
+  m_defaultAlways(false),
+  m_updateTime(0)
+{
+}
+
 CStaticProvider::~CStaticProvider()
 {
+}
+
+void CStaticProvider::Load(const TiXmlElement *element)
+{
+  assert(element);
+  const TiXmlElement *item = element->FirstChildElement("item");
+  while (item)
+  {
+    if (item->FirstChild())
+    {
+      CGUIStaticItemPtr newItem(new CGUIStaticItem(item, m_parentID));
+      m_items.push_back(newItem);
+    }
+    item = item->NextSiblingElement("item");
+  }
+
+  if (XMLUtils::GetInt(element, "default", m_defaultItem))
+  {
+    const char *always = element->FirstChildElement("default")->Attribute("always");
+    if (always && strnicmp(always, "true", 4) == 0)
+      m_defaultAlways = true;
+  }
 }
 
 bool CStaticProvider::Update()

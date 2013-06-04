@@ -36,6 +36,12 @@ public:
   virtual void SetDefaultItem(int item, bool always);
   virtual int  GetDefaultItem() const;
   virtual bool AlwaysFocusDefaultItem() const;
+
+protected:
+  CStaticProvider(int parentID);
+  
+  void Load(const TiXmlElement *element);
+
 private:
   int                            m_defaultItem;
   bool                           m_defaultAlways;
