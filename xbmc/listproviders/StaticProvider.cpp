@@ -67,7 +67,7 @@ void CStaticProvider::Load(const TiXmlElement *element)
     }
     item = item->NextSiblingElement("item");
   }
-
+   
   if (XMLUtils::GetInt(element, "default", m_defaultItem))
   {
     const char *always = element->FirstChildElement("default")->Attribute("always");
