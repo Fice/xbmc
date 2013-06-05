@@ -846,19 +846,13 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
 {
   CGUIWindowVideoBase::GetContextButtons(itemNumber, buttons);
   
+  /*
   CFileItemPtr item;
   if (itemNumber >= 0 && itemNumber < m_vecItems->Size())
     item = m_vecItems->Get(itemNumber);
   if (m_vecItems->GetPath().Equals("sources://video/"))
       // get the usual shares
     CGUIDialogContextMenu::GetContextButtons("video", item, buttons);
-  
-  
-  CFileItemPtr item;
-  if (itemNumber >= 0 && itemNumber < m_vecItems->Size())
-    item = m_vecItems->Get(itemNumber);
-
-  
 
   if (item && item->GetProperty("pluginreplacecontextitems").asBoolean())
     return;
