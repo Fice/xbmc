@@ -406,6 +406,30 @@ bool CGUIBaseContainer::OnMessage(CGUIMessage& message)
         return true;
       }
     }
+    if (message.GetMessage() == GUI_MSG_ITEM_REMOVE)
+    {
+      int toRemove = message.GetParam1();
+      bool isVisible = (toRemove > GetItemOffset() && toRemove < GetItemOffset() + m_itemsPerPage); //Check if the selected item is currently visible
+      CGUIListItemLayout* animatedLayout = NULL;
+      if(isVisible)
+      {
+        if(GetSelectedItem() == toRemove && m_focusedLayout && m_focusedLayout->HasAnimationOfType(ANIM_TYPE_REMOVE))
+          animatedLayout = m_focusedLayout;
+        else if(m_layout && m_layout->HasAnimationOfType(ANIM_TYPE_REMOVE))
+          animatedLayout = m_layout;
+        MarkDirtyRegion();
+      }
+      if(animatedLayout!=NULL)
+      {
+      }
+      else //No skin animations, or not visible. Do it directly
+      {
+        m_items.erase(m_items.begin()+message.GetParam1());
+        
+        UpdateScrollByLetter();
+      }
+      return true;
+    }
     if (message.GetMessage() == GUI_MSG_ITEM_SELECT)
     {
       SelectItem(message.GetParam1());

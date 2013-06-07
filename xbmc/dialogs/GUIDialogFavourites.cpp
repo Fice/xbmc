@@ -172,8 +172,9 @@ void CGUIDialogFavourites::OnDelete(int item)
 
   CGUIMessage message(GUI_MSG_ITEM_SELECT, GetID(), FAVOURITES_LIST, item < m_favourites->Size() ? item : item - 1);
   OnMessage(message);
-
-  UpdateList();
+  
+  CGUIMessage message2(GUI_MSG_ITEM_REMOVE, GetID(), FAVOURITES_LIST, item);
+  OnMessage(message2);
 }
 
 void CGUIDialogFavourites::OnRename(int item)

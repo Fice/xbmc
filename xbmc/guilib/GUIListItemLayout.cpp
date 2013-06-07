@@ -190,7 +190,21 @@ void CGUIListItemLayout::LoadLayout(TiXmlElement *layout, int context, bool focu
   // ensure width and height are valid
   m_width = std::max(1.0f, m_width);
   m_height = std::max(1.0f, m_height);
+  CRect animRect; //TODO:
+  CGUIControlFactory::GetAnimations(layout, animRect, context, m_animations, true);
 }
+
+bool CGUIListItemLayout::HasAnimationOfType(ANIMATION_TYPE type) const
+{
+    // check for conditional animations
+  for (unsigned int i = 0; i < m_animations.size(); i++)
+  {
+    if (m_animations[i].GetType() == type)
+      return true;
+  }
+  return false;
+}
+
 
 //#ifdef PRE_SKIN_VERSION_9_10_COMPATIBILITY
 void CGUIListItemLayout::CreateListControlLayouts(float width, float height, bool focused, const CLabelInfo &labelInfo, const CLabelInfo &labelInfo2, const CTextureInfo &texture, const CTextureInfo &textureFocus, float texHeight, float iconWidth, float iconHeight, const CStdString &nofocusCondition, const CStdString &focusCondition)

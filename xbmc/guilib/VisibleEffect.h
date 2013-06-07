@@ -43,6 +43,10 @@ enum ANIMATION_TYPE
   ANIM_TYPE_WINDOW_OPEN,
   ANIM_TYPE_VISIBLE,
   ANIM_TYPE_FOCUS,
+  ANIM_TYPE_REMOVE,
+  ANIM_TYPE_MOVE_UP,
+  ANIM_TYPE_MOVE_DOWN,
+  ANIM_TYPE_ADD,
   ANIM_TYPE_CONDITIONAL       // for animations triggered by a condition change
 };
 
@@ -152,7 +156,7 @@ public:
 
   static CAnimation CreateFader(float start, float end, unsigned int delay, unsigned int length, ANIMATION_TYPE type = ANIM_TYPE_NONE);
 
-  void Create(const TiXmlElement *node, const CRect &rect, int context);
+  void Create(const TiXmlElement *node, const CRect &rect, int context, bool isItemLayout);
 
   void Animate(unsigned int time, bool startAnim);
   void ResetAnimation();

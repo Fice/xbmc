@@ -351,7 +351,7 @@ bool CGUIControlFactory::GetConditionalVisibility(const TiXmlNode *control, CStd
   return GetConditionalVisibility(control, condition, allowHiddenFocus);
 }
 
-bool CGUIControlFactory::GetAnimations(TiXmlNode *control, const CRect &rect, int context, vector<CAnimation> &animations)
+bool CGUIControlFactory::GetAnimations(TiXmlNode *control, const CRect &rect, int context, vector<CAnimation> &animations, bool isItemLayout /* = false */)
 {
   TiXmlElement* node = control->FirstChildElement("animation");
   bool ret = false;
@@ -363,7 +363,7 @@ bool CGUIControlFactory::GetAnimations(TiXmlNode *control, const CRect &rect, in
     if (node->FirstChild())
     {
       CAnimation anim;
-      anim.Create(node, rect, context);
+      anim.Create(node, rect, context, isItemLayout);
       animations.push_back(anim);
       if (strcmpi(node->FirstChild()->Value(), "VisibleChange") == 0)
       { // add the hidden one as well
@@ -382,7 +382,7 @@ bool CGUIControlFactory::GetAnimations(TiXmlNode *control, const CRect &rect, in
         else if (end)
           hidden.SetAttribute("start", end);
         CAnimation anim2;
-        anim2.Create(&hidden, rect, context);
+        anim2.Create(&hidden, rect, context, isItemLayout);
         animations.push_back(anim2);
       }
     }
@@ -750,7 +750,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   XMLUtils::GetString(pControlNode, "enable", enableCondition);
 
   CRect animRect(posX, posY, posX + width, posY + height);
-  GetAnimations(pControlNode, animRect, parentID, animations);
+  GetAnimations(pControlNode, animRect, parentID, animations, false);
 
   GetInfoColor(pControlNode, "textcolor", labelInfo.textColor, parentID);
   GetInfoColor(pControlNode, "focusedcolor", labelInfo.focusedColor, parentID);

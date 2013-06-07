@@ -133,6 +133,16 @@
 
 #define GUI_MSG_WINDOW_LOAD 43
 
+/*!
+ \brief Send to BaseContainer when an item is removed from the list
+ */
+#define GUI_MSG_ITEM_REMOVE 44
+
+/*!
+ \brief Send to BaseContainer when an item is added to the list
+ */
+#define GUI_MSG_ITEM_ADD 45
+
 #define GUI_MSG_USER         1000
 
 /*!
