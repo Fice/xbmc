@@ -609,7 +609,7 @@ void CAnimation::SetInitialCondition()
     ResetAnimation();
 }
 
-void CAnimation::Create(const TiXmlElement *node, const CRect &rect, int context, bool isItemLayout)
+void CAnimation::Create(const TiXmlElement *node, const CRect &rect, int context)
 {
   if (!node || !node->FirstChild())
     return;
@@ -629,28 +629,20 @@ void CAnimation::Create(const TiXmlElement *node, const CRect &rect, int context
   if (effect) // new layout
     type = node->Attribute("type");
 
-  if(!isItemLayout)
+  if (type.Left(7).Equals("visible")) m_type = ANIM_TYPE_VISIBLE;
+  else if (type.Equals("hidden")) m_type = ANIM_TYPE_HIDDEN;
+  else if (type.Equals("focus"))  m_type = ANIM_TYPE_FOCUS;
+  else if (type.Equals("unfocus"))  m_type = ANIM_TYPE_UNFOCUS;
+  else if (type.Equals("windowopen"))  m_type = ANIM_TYPE_WINDOW_OPEN;
+  else if (type.Equals("windowclose"))  m_type = ANIM_TYPE_WINDOW_CLOSE;
+  else if (type.Equals("itemremove")) m_type = ANIM_TYPE_REMOVE;
+  else if (type.Equals("itemadd")) m_type = ANIM_TYPE_ADD;
+  else 
   {
-    if (type.Left(7).Equals("visible")) m_type = ANIM_TYPE_VISIBLE;
-    else if (type.Equals("hidden")) m_type = ANIM_TYPE_HIDDEN;
-    else if (type.Equals("focus"))  m_type = ANIM_TYPE_FOCUS;
-    else if (type.Equals("unfocus"))  m_type = ANIM_TYPE_UNFOCUS;
-    else if (type.Equals("windowopen"))  m_type = ANIM_TYPE_WINDOW_OPEN;
-    else if (type.Equals("windowclose"))  m_type = ANIM_TYPE_WINDOW_CLOSE;
+    CLog::Log(LOGERROR, "Only valid animation types for itemlayouts are: itemremove, itemmoveup, itemmovedown, itemadd");
+    return;
   }
-  else
-  {
-    if      (type.Equals("itemremove")) m_type = ANIM_TYPE_REMOVE;
-    else if (type.Equals("itemmoveup")) m_type = ANIM_TYPE_MOVE_UP;
-    else if (type.Equals("itemmovedown")) m_type = ANIM_TYPE_MOVE_DOWN;
-    else if (type.Equals("itemadd")) m_type = ANIM_TYPE_ADD;
-    else 
-    {
-      CLog::Log(LOGERROR, "Only valid animation types for itemlayouts are: itemremove, itemmoveup, itemmovedown, itemadd");
-      return;
-    }
-    m_reversible = false;
-  }
+  
   // sanity check
   if (m_type == ANIM_TYPE_CONDITIONAL)
   {

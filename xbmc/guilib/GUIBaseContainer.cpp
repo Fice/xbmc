@@ -259,7 +259,7 @@ void CGUIBaseContainer::Render()
 void CGUIBaseContainer::RenderItem(float posX, float posY, CGUIListItem *item, bool focused)
 {
   if (!m_focusedLayout || !m_layout) return;
-
+  
   // set the origin
   g_graphicsContext.SetOrigin(posX, posY);
 
@@ -409,22 +409,29 @@ bool CGUIBaseContainer::OnMessage(CGUIMessage& message)
     if (message.GetMessage() == GUI_MSG_ITEM_REMOVE)
     {
       int toRemove = message.GetParam1();
-      bool isVisible = (toRemove > GetItemOffset() && toRemove < GetItemOffset() + m_itemsPerPage); //Check if the selected item is currently visible
+      if(toRemove<0 || toRemove >= (int)m_items.size())
+        return false;
+      
+      CGUIListItemPtr item = m_items[toRemove];
+      if(!item)
+        return false; //not sure this can happen, but better safe than sry
+      
+      bool isVisible = (toRemove >= GetItemOffset() && toRemove <= GetItemOffset() + m_itemsPerPage); //Check if the selected item is currently visible
       CGUIListItemLayout* animatedLayout = NULL;
       if(isVisible)
       {
-        if(GetSelectedItem() == toRemove && m_focusedLayout && m_focusedLayout->HasAnimationOfType(ANIM_TYPE_REMOVE))
-          animatedLayout = m_focusedLayout;
-        else if(m_layout && m_layout->HasAnimationOfType(ANIM_TYPE_REMOVE))
-          animatedLayout = m_layout;
+        if(GetSelectedItem() == toRemove && item->GetFocusedLayout()!=NULL && item->GetFocusedLayout()->HasAnimationOfType(ANIM_TYPE_REMOVE, true))
+          animatedLayout = item->GetFocusedLayout();
+        else if(m_layout && m_layout->HasAnimationOfType(ANIM_TYPE_REMOVE, true))
+          animatedLayout = item->GetLayout();
+        
         MarkDirtyRegion();
       }
-      if(animatedLayout!=NULL)
+      if(animatedLayout!=NULL && !animatedLayout->IsRemoving())
+        animatedLayout->StartRemoving();
+      else //not visible. Do it directly
       {
-      }
-      else //No skin animations, or not visible. Do it directly
-      {
-        m_items.erase(m_items.begin()+message.GetParam1());
+        m_items.erase(m_items.begin()+toRemove);
         
         UpdateScrollByLetter();
       }
