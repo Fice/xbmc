@@ -77,6 +77,28 @@ void CGUIBaseContainer::DoProcess(unsigned int currentTime, CDirtyRegionList &di
 
 void CGUIBaseContainer::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
+  std::list<CGUIListItemPtr>::iterator it=m_removingItems.begin();
+  while(it!=m_removingItems.end())
+  {
+    CGUIListItemPtr item = *it;
+    CGUIListItemLayout* normal = item->GetLayout();
+    CGUIListItemLayout* focus = item->GetFocusedLayout();
+    if(  (normal!=NULL && !normal->IsAnimating(ANIM_TYPE_REMOVE) && normal->IsRemoving()) 
+       ||(focus !=NULL && ! focus->IsAnimating(ANIM_TYPE_REMOVE) &&  focus->IsRemoving()))
+    {
+      std::vector<CGUIListItemPtr>::iterator toDelete = std::find(m_items.begin(), m_items.end(), item);
+      if(toDelete!=m_items.end())
+        m_items.erase(toDelete);
+      
+      it = m_removingItems.erase(it);
+    }
+    else 
+    {
+      ++it;
+    }
+
+  }
+  
   ValidateOffset();
 
   if (m_bInvalidated)
@@ -418,19 +440,34 @@ bool CGUIBaseContainer::OnMessage(CGUIMessage& message)
       
       bool isVisible = (toRemove >= GetItemOffset() && toRemove <= GetItemOffset() + m_itemsPerPage); //Check if the selected item is currently visible
       CGUIListItemLayout* animatedLayout = NULL;
-      if(isVisible)
-      {
-        if(GetSelectedItem() == toRemove && item->GetFocusedLayout()!=NULL && item->GetFocusedLayout()->HasAnimationOfType(ANIM_TYPE_REMOVE, true))
-          animatedLayout = item->GetFocusedLayout();
-        else if(m_layout && m_layout->HasAnimationOfType(ANIM_TYPE_REMOVE, true))
-          animatedLayout = item->GetLayout();
         
-        MarkDirtyRegion();
-      }
+        CLog::Log(LOGDEBUG, "REMOVAL: selected: %s, focusedLayout: %s, HasAnimation: %s",
+                  (GetSelectedItem() == toRemove) ? "true" : "false",
+                  (item->GetFocusedLayout()!=NULL) ? "true" : "false",
+                  (item->GetFocusedLayout()!=NULL && item->GetFocusedLayout()->HasAnimationOfType(ANIM_TYPE_REMOVE, true)) ? "true" : "false");
+        if(GetSelectedItem() == toRemove && item->GetFocusedLayout()!=NULL && item->GetFocusedLayout()->HasAnimationOfType(ANIM_TYPE_REMOVE, true))
+        {
+          CLog::Log(LOGDEBUG, "REMOVAL: using focused layout");
+          animatedLayout = item->GetFocusedLayout();
+        }
+        else if(item->GetLayout() && item->GetLayout()->HasAnimationOfType(ANIM_TYPE_REMOVE, true))
+        {
+          CLog::Log(LOGDEBUG, "REMOVAL: usign normal layout");
+          animatedLayout = item->GetLayout();
+        }
+      
       if(animatedLayout!=NULL && !animatedLayout->IsRemoving())
-        animatedLayout->StartRemoving();
-      else //not visible. Do it directly
       {
+        CLog::Log(LOGDEBUG, "REMOVAL: Animated");
+        animatedLayout->StartRemoving();
+        m_removingItems.push_back(item);
+      }
+      else //not animated. Do it directly
+      {
+        
+        CLog::Log(LOGDEBUG, "REMOVAL: Instant, because animatedLayout: %s, IsRemoving: %s",
+                  (animatedLayout!=NULL) ? "true" : "false",
+                  (animatedLayout->IsRemoving()) ? "true" : "false");
         m_items.erase(m_items.begin()+toRemove);
         
         UpdateScrollByLetter();

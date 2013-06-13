@@ -38,6 +38,7 @@ CGUIListItemLayout::CGUIListItemLayout()
   m_focused = false;
   m_invalidated = true;
   m_group.SetPushUpdates(true);
+  m_removing = false;
 }
 
 CGUIListItemLayout::CGUIListItemLayout(const CGUIListItemLayout &from)
@@ -48,6 +49,7 @@ CGUIListItemLayout::CGUIListItemLayout(const CGUIListItemLayout &from)
   m_focused = from.m_focused;
   m_condition = from.m_condition;
   m_invalidated = true;
+  m_removing = false;
 }
 
 CGUIListItemLayout::~CGUIListItemLayout()

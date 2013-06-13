@@ -149,6 +149,7 @@ protected:
   void UpdateScrollOffset(unsigned int currentTime);
 
   CScroller m_scroller;
+  std::list<CGUIListItemPtr> m_removingItems; 
 
   bool m_staticContent;
   bool m_staticDefaultAlways;

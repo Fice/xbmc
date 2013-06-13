@@ -642,6 +642,10 @@ void CAnimation::Create(const TiXmlElement *node, const CRect &rect, int context
     CLog::Log(LOGERROR, "Only valid animation types for itemlayouts are: itemremove, itemmoveup, itemmovedown, itemadd");
     return;
   }
+  if(m_type == ANIM_TYPE_ADD || m_type == ANIM_TYPE_REMOVE)
+  {
+    int i;
+  }
   
   // sanity check
   if (m_type == ANIM_TYPE_CONDITIONAL)
