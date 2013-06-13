@@ -427,19 +427,18 @@ bool CGUIBaseContainer::OnMessage(CGUIMessage& message)
         SetPageControlRange();
         return true;
       }
-    }
-    if (message.GetMessage() == GUI_MSG_ITEM_REMOVE)
-    {
-      int toRemove = message.GetParam1();
-      if(toRemove<0 || toRemove >= (int)m_items.size())
-        return false;
-      
-      CGUIListItemPtr item = m_items[toRemove];
-      if(!item)
-        return false; //not sure this can happen, but better safe than sry
-      
-      bool isVisible = (toRemove >= GetItemOffset() && toRemove <= GetItemOffset() + m_itemsPerPage); //Check if the selected item is currently visible
-      CGUIListItemLayout* animatedLayout = NULL;
+      else if (message.GetMessage() == GUI_MSG_ITEM_REMOVE)
+      {
+        int toRemove = message.GetParam1();
+        if(toRemove<0 || toRemove >= (int)m_items.size())
+          return false;
+        
+        CGUIListItemPtr item = m_items[toRemove];
+        if(!item)
+          return false; //not sure this can happen, but better safe than sry
+        
+        bool isVisible = (toRemove >= GetItemOffset() && toRemove <= GetItemOffset() + m_itemsPerPage); //Check if the selected item is currently visible
+        CGUIListItemLayout* animatedLayout = NULL;
         
         CLog::Log(LOGDEBUG, "REMOVAL: selected: %s, focusedLayout: %s, HasAnimation: %s",
                   (GetSelectedItem() == toRemove) ? "true" : "false",
@@ -455,24 +454,25 @@ bool CGUIBaseContainer::OnMessage(CGUIMessage& message)
           CLog::Log(LOGDEBUG, "REMOVAL: usign normal layout");
           animatedLayout = item->GetLayout();
         }
-      
-      if(animatedLayout!=NULL && !animatedLayout->IsRemoving())
-      {
-        CLog::Log(LOGDEBUG, "REMOVAL: Animated");
-        animatedLayout->StartRemoving();
-        m_removingItems.push_back(item);
-      }
-      else //not animated. Do it directly
-      {
         
-        CLog::Log(LOGDEBUG, "REMOVAL: Instant, because animatedLayout: %s, IsRemoving: %s",
-                  (animatedLayout!=NULL) ? "true" : "false",
-                  (animatedLayout->IsRemoving()) ? "true" : "false");
-        m_items.erase(m_items.begin()+toRemove);
-        
-        UpdateScrollByLetter();
+        if(animatedLayout!=NULL && !animatedLayout->IsRemoving())
+        {
+          CLog::Log(LOGDEBUG, "REMOVAL: Animated");
+          animatedLayout->StartRemoving();
+          m_removingItems.push_back(item);
+        }
+        else //not animated. Do it directly
+        {
+          
+          CLog::Log(LOGDEBUG, "REMOVAL: Instant, because animatedLayout: %s, IsRemoving: %s",
+                    (animatedLayout!=NULL) ? "true" : "false",
+                    (animatedLayout->IsRemoving()) ? "true" : "false");
+          m_items.erase(m_items.begin()+toRemove);
+          
+          UpdateScrollByLetter();
+        }
+        return true;
       }
-      return true;
     }
     if (message.GetMessage() == GUI_MSG_ITEM_SELECT)
     {
