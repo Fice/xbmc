@@ -637,16 +637,13 @@ void CAnimation::Create(const TiXmlElement *node, const CRect &rect, int context
   else if (type.Equals("windowclose"))  m_type = ANIM_TYPE_WINDOW_CLOSE;
   else if (type.Equals("itemremove")) m_type = ANIM_TYPE_REMOVE;
   else if (type.Equals("itemadd")) m_type = ANIM_TYPE_ADD;
+  else if (type.Equals("conditional")) m_type = ANIM_TYPE_CONDITIONAL;
   else 
   {
-    CLog::Log(LOGERROR, "Only valid animation types for itemlayouts are: itemremove, itemmoveup, itemmovedown, itemadd");
+    CLog::Log(LOGERROR, "Invalid animation type %s", type.c_str());
     return;
   }
-  if(m_type == ANIM_TYPE_ADD || m_type == ANIM_TYPE_REMOVE)
-  {
-    int i;
-  }
-  
+ 
   // sanity check
   if (m_type == ANIM_TYPE_CONDITIONAL)
   {

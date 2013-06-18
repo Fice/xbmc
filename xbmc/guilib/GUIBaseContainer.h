@@ -149,6 +149,12 @@ protected:
   void UpdateScrollOffset(unsigned int currentTime);
 
   CScroller m_scroller;
+  struct RemovingItemInfo
+  {
+    CGUIListItemPtr item;
+    int startToMove;
+    CScroller scroller;
+  };
   std::list<CGUIListItemPtr> m_removingItems; 
 
   bool m_staticContent;

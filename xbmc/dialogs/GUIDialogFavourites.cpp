@@ -167,14 +167,17 @@ void CGUIDialogFavourites::OnDelete(int item)
 {
   if (item < 0 || item >= m_favourites->Size())
     return;
-  m_favourites->Remove(item);
+  
   CFavouritesDirectory::Save(*m_favourites);
 
   CGUIMessage message(GUI_MSG_ITEM_SELECT, GetID(), FAVOURITES_LIST, item < m_favourites->Size() ? item : item - 1);
   OnMessage(message);
   
-  CGUIMessage message2(GUI_MSG_ITEM_REMOVE, GetID(), FAVOURITES_LIST, item);
+  CFileItemList itemsToRemove;
+  itemsToRemove.AddFront((*m_favourites)[item], 0);
+  CGUIMessage message2(GUI_MSG_ITEM_REMOVE, GetID(), FAVOURITES_LIST, 0, 0, &itemsToRemove);
   OnMessage(message2);
+  m_favourites->Remove(item);
 }
 
 void CGUIDialogFavourites::OnRename(int item)
