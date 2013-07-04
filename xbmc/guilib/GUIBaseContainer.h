@@ -88,6 +88,8 @@ public:
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif
+  
+  typedef std::vector<int> IndicesList;
 protected:
   virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   bool OnClick(int actionID);

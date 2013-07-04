@@ -403,16 +403,6 @@ bool CGUIBaseContainer::OnAction(const CAction &action)
   return false;
 }
 
-struct ItemFinder : public std::binary_function<CGUIListItemPtr, CFileItemPtr, bool>
-{
-  bool operator()(const CGUIListItemPtr& a, const CFileItemPtr& b) const
-  {
-    if(a->IsFileItem())
-      return (CFileItem)(*a)==(*b);
-    return false;
-  }
-};
-
 bool CGUIBaseContainer::OnMessage(CGUIMessage& message)
 {
   if (message.GetControlId() == GetID() )
@@ -438,15 +428,13 @@ bool CGUIBaseContainer::OnMessage(CGUIMessage& message)
       }
       else if (message.GetMessage() == GUI_MSG_ITEM_REMOVE && message.GetPointer())
       {
-        CFileItemList *removedItems = (CFileItemList *)message.GetPointer();
-        int size = removedItems->Size();
+        IndicesList *itemsToRemove = (IndicesList *)message.GetPointer();
+        int size = itemsToRemove->size();
         for(int i=0; i<size; ++i)
         {
           
         
-          std::vector<CGUIListItemPtr>::iterator item = std::find_if(m_items.begin(), m_items.end(), std::bind2nd(ItemFinder(), removedItems->Get(i)));
-          if(item==m_items.end())
-            continue; //not sure this can happen, but better safe than sry
+          std::vector<CGUIListItemPtr>::iterator item = m_items.begin() + (*itemsToRemove)[i];
         
           CGUIListItemLayout* animatedLayout = NULL;
         
