@@ -45,7 +45,6 @@ enum ANIMATION_TYPE
   ANIM_TYPE_VISIBLE,
   ANIM_TYPE_FOCUS,
   ANIM_TYPE_ADD,
-  ANIM_TYPE_POSITION_UPDATE,
   ANIM_TYPE_CONDITIONAL       // for animations triggered by a condition change
 };
 
