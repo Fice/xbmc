@@ -280,7 +280,7 @@ void CGUIBaseContainer::Render()
 void CGUIBaseContainer::RenderItem(float posX, float posY, CGUIListItem *item, bool focused)
 {
   if (!m_focusedLayout || !m_layout) return;
-  
+
   // set the origin
   g_graphicsContext.SetOrigin(posX, posY);
 
