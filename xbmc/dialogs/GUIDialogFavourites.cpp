@@ -173,9 +173,10 @@ void CGUIDialogFavourites::OnDelete(int item)
   CGUIMessage message(GUI_MSG_ITEM_SELECT, GetID(), FAVOURITES_LIST, item < m_favourites->Size() ? item : item - 1);
   OnMessage(message);
   
-  CFileItemList itemsToRemove;
-  itemsToRemove.AddFront((*m_favourites)[item], 0);
-  CGUIMessage message2(GUI_MSG_ITEM_REMOVE, GetID(), FAVOURITES_LIST, 0, 0, &itemsToRemove);
+  std::vector<int> itemsToRemove;
+  itemsToRemove.push_back(item);
+  CGUIMessage message2(GUI_MSG_ITEM_REMOVE, GetID(), FAVOURITES_LIST, 0, 0);
+  message2.SetPointer(&itemsToRemove);
   OnMessage(message2);
   m_favourites->Remove(item);
 }
