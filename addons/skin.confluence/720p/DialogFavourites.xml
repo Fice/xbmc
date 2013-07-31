@@ -62,6 +62,7 @@
 						<width>370</width>
 						<height>40</height>
 						<texture border="5">button-nofocus.png</texture>
+						<animation effect="fade" time="400">itemremove</animation>
 					</control>
 					<control type="label">
 						<posx>10</posx>
@@ -73,6 +74,9 @@
 						<aligny>center</aligny>
 						<selectedcolor>selected</selectedcolor>
 						<info>ListItem.Label</info>
+						
+						<animation effect="slide" end="-350,0">itemremove</animation>
+						<animation effect="fade" delay="400" time="400">itemremove</animation>
 					</control>
 				</itemlayout>
 				<focusedlayout height="40">
@@ -83,6 +87,7 @@
 						<height>40</height>
 						<visible>!Control.HasFocus(450)</visible>
 						<texture border="3">button-nofocus.png</texture>
+						<animation effect="fade" time="400">itemremove</animation>
 					</control>
 					<control type="image">
 						<posx>0</posx>
@@ -91,6 +96,7 @@
 						<height>40</height>
 						<visible>Control.HasFocus(450)</visible>
 						<texture border="3">button-focus.png</texture>
+						<animation effect="fade" time="1500">itemremove</animation>
 					</control>
 					<control type="label">
 						<posx>10</posx>
