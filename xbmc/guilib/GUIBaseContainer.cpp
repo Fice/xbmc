@@ -405,6 +405,27 @@ bool CGUIBaseContainer::OnMessage(CGUIMessage& message)
         SetPageControlRange();
         return true;
       }
+      else if (message.GetMessage() == GUI_MSG_ITEM_START_REMOVING)
+      {
+        int itemToRemove = message.GetParam1();
+        
+        int selected = GetSelectedItem();
+        if (selected >= itemToRemove && selected!=0)
+          SetCursor(GetCursor()-1);
+        m_items.erase(m_items.begin() + itemToRemove);
+        
+        CGUIMessage message(GUI_MSG_ITEM_REMOVED, GetParentID(), message.GetSenderId(), itemToRemove, 0);
+        g_windowManager.SendMessage(message);
+        
+        return true;
+      }
+      else if (message.GetMessage() == GUI_MSG_ITEM_ADD)
+      {
+        int position = message.GetParam1();
+        CFileItemPtr* item = (CFileItemPtr*)message.GetPointer();
+        m_items.insert(m_items.begin() + position, *item);
+        return true;
+      }
     }
     if (message.GetMessage() == GUI_MSG_ITEM_SELECT)
     {

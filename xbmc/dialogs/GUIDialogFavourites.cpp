@@ -79,6 +79,12 @@ bool CGUIDialogFavourites::OnMessage(CGUIMessage &message)
     m_favourites->Clear();
     return true;
   }
+  else if (message.GetMessage() == GUI_MSG_ITEM_REMOVED)
+  {
+    int itemToRemove = message.GetParam1();
+    m_favourites->Remove(itemToRemove);
+    CFavouritesDirectory::Save(*m_favourites);
+  }
   return CGUIDialog::OnMessage(message);
 }
 
@@ -154,26 +160,45 @@ void CGUIDialogFavourites::OnMoveItem(int item, int amount)
   int nextItem = (item + amount) % m_favourites->Size();
   if (nextItem < 0) nextItem += m_favourites->Size();
 
-  m_favourites->Swap(item, nextItem);
-  CFavouritesDirectory::Save(*m_favourites);
+    //m_favourites->Swap(item, nextItem);
+    //CFavouritesDirectory::Save(*m_favourites);
 
+  CFileItemPtr copy = m_favourites->Get(item);
+  
+  
+  if(nextItem>item)
+  {
+    ++nextItem;
+  }
+  else
+    ++item;
+  
+  CGUIMessage msg2(GUI_MSG_ITEM_ADD, GetID(), FAVOURITES_LIST, nextItem, 0);
+  msg2.SetPointer(&copy);
+  OnMessage(msg2);
+  m_favourites->AddFront(copy, nextItem);
+  
   CGUIMessage message(GUI_MSG_ITEM_SELECT, GetID(), FAVOURITES_LIST, nextItem);
   OnMessage(message);
-
-  UpdateList();
+  
+  CGUIMessage msg1(GUI_MSG_ITEM_START_REMOVING, GetID(), FAVOURITES_LIST, item, 0);
+  OnMessage(msg1);
+  
+  
+  
+    //UpdateList();
 }
 
 void CGUIDialogFavourites::OnDelete(int item)
 {
   if (item < 0 || item >= m_favourites->Size())
     return;
-  m_favourites->Remove(item);
-  CFavouritesDirectory::Save(*m_favourites);
-
+  
   CGUIMessage message(GUI_MSG_ITEM_SELECT, GetID(), FAVOURITES_LIST, item < m_favourites->Size() ? item : item - 1);
   OnMessage(message);
-
-  UpdateList();
+  
+  CGUIMessage msg(GUI_MSG_ITEM_START_REMOVING, GetID(), FAVOURITES_LIST, item, 0);
+  OnMessage(msg);
 }
 
 void CGUIDialogFavourites::OnRename(int item)
