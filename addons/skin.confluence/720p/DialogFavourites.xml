@@ -102,6 +102,10 @@
 						<aligny>center</aligny>
 						<selectedcolor>selected</selectedcolor>
 						<info>ListItem.Label</info>
+						<animation type="itemremove">
+							<effect type="slide" end="-350,0" time="1000" />
+    						<effect effect="fade" time="1000" start="100" end="0" />
+    					</animation>
 					</control>
 				</focusedlayout>
 			</control>

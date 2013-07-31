@@ -1144,17 +1144,25 @@ int64_t CGUIWindowFileManager::CalculateFolderSize(const CStdString &strDirector
 
 void CGUIWindowFileManager::OnJobComplete(unsigned int jobID, bool success, CJob *job)
 {
+  CFileOperationJob* fileJob = (CFileOperationJob*)job;
   if(!success)
   {
-    CFileOperationJob* fileJob = (CFileOperationJob*)job;
     CGUIDialogOK::ShowAndGetInput(fileJob->GetHeading(),
                                   fileJob->GetLine(), 16200, 0);
   }
 
   if (IsActive())
   {
-    CGUIMessage msg(GUI_MSG_NOTIFY_ALL, GetID(), 0, GUI_MSG_UPDATE);
-    CApplicationMessenger::Get().SendGUIMessage(msg, GetID(), false);
+    if(fileJob->GetAction()==CFileOperationJob::ActionDelete) //deletion!
+    {
+      const CFileItemList& deletedItems = fileJob->GetItems();
+        //TODO: Send GUI_MSG_REMOVE_ITEM!
+    }
+    else 
+    {
+      CGUIMessage msg(GUI_MSG_NOTIFY_ALL, GetID(), 0, GUI_MSG_UPDATE);
+      CApplicationMessenger::Get().SendGUIMessage(msg, GetID(), false);
+    }
   }
 
   CJobQueue::OnJobComplete(jobID, success, job);

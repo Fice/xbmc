@@ -1698,6 +1698,15 @@ void CFileItemList::Remove(int iItem)
   }
 }
 
+void CFileItemList::Remove(const vector<int>& itemsToRemove)
+{
+  int size = itemsToRemove.size();
+  for(int i=0; i<size; ++i)
+  {
+    Remove(itemsToRemove[i]);
+  }
+}
+
 void CFileItemList::Append(const CFileItemList& itemlist)
 {
   CSingleLock lock(m_lock);

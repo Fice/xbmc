@@ -76,7 +76,7 @@ void CGUIBaseContainer::DoProcess(unsigned int currentTime, CDirtyRegionList &di
 }
 
 void CGUIBaseContainer::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
-{
+{ 
   ValidateOffset();
 
   if (m_bInvalidated)

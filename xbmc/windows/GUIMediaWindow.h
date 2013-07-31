@@ -116,17 +116,17 @@ protected:
   /* \brief Retrieve the filtered item list
    \param filter filter to apply
    \param items CFileItemList to filter
+   \param removedItems The items from the input list, that did not satisfie the filter
    \sa OnFilterItems
    */
-  virtual bool GetFilteredItems(const CStdString &filter, CFileItemList &items);
+  virtual bool GetFilteredItems(const CStdString &filter, CFileItemList &items, CFileItemList &removedItems);
 
   /* \brief Retrieve the advance filtered item list
   \param items CFileItemList to filter
-  \param hasNewItems Whether the filtered item list contains new items
-                     which were not present in the original list
+  \param removed CFileItemList containing all the FileItems from the original list that do not satisfy the filter
   \sa GetFilteredItems
   */
-  virtual bool GetAdvanceFilteredItems(CFileItemList &items);
+  virtual bool GetAdvanceFilteredItems(CFileItemList &items, CFileItemList &removed);
 
   // check for a disc or connection
   virtual bool HaveDiscOrConnection(const CStdString& strPath, int iDriveType);

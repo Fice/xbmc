@@ -545,9 +545,9 @@ void CGUIWindowVideoNav::UpdateButtons()
   SET_CONTROL_SELECTED(GetID(),CONTROL_BTNFLATTEN, CSettings::Get().GetBool("myvideos.flatten"));
 }
 
-bool CGUIWindowVideoNav::GetFilteredItems(const CStdString &filter, CFileItemList &items)
+bool CGUIWindowVideoNav::GetFilteredItems(const CStdString &filter, CFileItemList &items, CFileItemList &removed)
 {
-  bool listchanged = CGUIMediaWindow::GetFilteredItems(filter, items);
+  bool listchanged = CGUIMediaWindow::GetFilteredItems(filter, items, removed);
   listchanged |= ApplyWatchedFilter(items);
 
   return listchanged;

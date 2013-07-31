@@ -64,7 +64,7 @@ namespace XBMCAddon
           if (id.empty() || !ADDON::CAddonMgr::Get().GetAddon(id.c_str(), pAddon))
             throw AddonException("Could not get AddonPtr!");
           else
-            CLog::Log(LOGERROR,"Use of deprecated functionality. Please to not assume that \"os.getcwd\" will return the script directory.");
+            CLog::Log(LOGERROR,"Use of deprecated functionality. Please do not assume that \"os.getcwd\" will return the script directory.");
         }
         else
         {

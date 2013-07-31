@@ -55,6 +55,10 @@ public:
   bool MoveLeft();
   bool MoveRight();
 
+  bool HasAnimationOfType(ANIMATION_TYPE type, bool checkChildren);
+  
+  void StartRemoving();
+  inline bool IsRemoving() { return m_removing; }
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif
@@ -69,7 +73,9 @@ protected:
   float m_height;
   bool m_focused;
   bool m_invalidated;
-
+  bool m_removing;                //true if we are currently removing
+  
+  std::vector<CAnimation> m_animations;
   unsigned int m_condition;
   CGUIInfoBool m_isPlaying;
 };

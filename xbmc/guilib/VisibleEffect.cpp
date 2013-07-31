@@ -635,6 +635,15 @@ void CAnimation::Create(const TiXmlElement *node, const CRect &rect, int context
   else if (type.Equals("unfocus"))  m_type = ANIM_TYPE_UNFOCUS;
   else if (type.Equals("windowopen"))  m_type = ANIM_TYPE_WINDOW_OPEN;
   else if (type.Equals("windowclose"))  m_type = ANIM_TYPE_WINDOW_CLOSE;
+  else if (type.Equals("itemremove")) m_type = ANIM_TYPE_REMOVE;
+  else if (type.Equals("itemadd")) m_type = ANIM_TYPE_ADD;
+  else if (type.Equals("conditional")) m_type = ANIM_TYPE_CONDITIONAL;
+  else 
+  {
+    CLog::Log(LOGERROR, "Invalid animation type %s", type.c_str());
+    return;
+  }
+ 
   // sanity check
   if (m_type == ANIM_TYPE_CONDITIONAL)
   {

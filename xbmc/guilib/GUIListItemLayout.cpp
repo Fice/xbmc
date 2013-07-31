@@ -38,6 +38,7 @@ CGUIListItemLayout::CGUIListItemLayout()
   m_focused = false;
   m_invalidated = true;
   m_group.SetPushUpdates(true);
+  m_removing = false;
 }
 
 CGUIListItemLayout::CGUIListItemLayout(const CGUIListItemLayout &from)
@@ -48,6 +49,7 @@ CGUIListItemLayout::CGUIListItemLayout(const CGUIListItemLayout &from)
   m_focused = from.m_focused;
   m_condition = from.m_condition;
   m_invalidated = true;
+  m_removing = false;
 }
 
 CGUIListItemLayout::~CGUIListItemLayout()
@@ -190,6 +192,27 @@ void CGUIListItemLayout::LoadLayout(TiXmlElement *layout, int context, bool focu
   // ensure width and height are valid
   m_width = std::max(1.0f, m_width);
   m_height = std::max(1.0f, m_height);
+  CRect animRect; //TODO:
+  CGUIControlFactory::GetAnimations(layout, animRect, context, m_animations);
+}
+
+bool CGUIListItemLayout::HasAnimationOfType(ANIMATION_TYPE type, bool checkChildren)
+{
+    // check for conditional animations
+  for (unsigned int i = 0; i < m_animations.size(); i++)
+  {
+    if (m_animations[i].GetType() == type)
+      return true;
+  }
+  if(checkChildren)
+    return m_group.HasAnimation(type);
+  return false;
+}
+
+void CGUIListItemLayout::StartRemoving() 
+{
+  m_removing = true; 
+  m_group.QueueAnimation(ANIM_TYPE_REMOVE);
 }
 
 //#ifdef PRE_SKIN_VERSION_9_10_COMPATIBILITY

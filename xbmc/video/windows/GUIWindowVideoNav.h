@@ -61,7 +61,7 @@ protected:
   void OnChooseFanart(const CFileItem &videoItem);
 
   bool ApplyWatchedFilter(CFileItemList &items);
-  virtual bool GetFilteredItems(const CStdString &filter, CFileItemList &items);
+  virtual bool GetFilteredItems(const CStdString &filter, CFileItemList &items, CFileItemList &removed);
 
   virtual void OnItemLoaded(CFileItem* pItem) {};
   void OnLinkMovieToTvShow(int itemnumber, bool bRemove);

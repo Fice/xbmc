@@ -1690,7 +1690,8 @@ void CGUIMediaWindow::OnFilterItems(const CStdString &filter)
   CFileItemList items;
   items.Copy(*m_vecItems, false); // use the original path - it'll likely be relied on for other things later.
   items.Append(*m_unfilteredItems);
-  bool filtered = GetFilteredItems(filter, items);
+  CFileItemList removed;
+  bool filtered = GetFilteredItems(filter, items, removed);
 
   m_vecItems->ClearItems();
   // we need to clear the sort state and re-sort the items
@@ -1773,11 +1774,11 @@ void CGUIMediaWindow::OnFilterItems(const CStdString &filter)
   UpdateButtons();
 }
 
-bool CGUIMediaWindow::GetFilteredItems(const CStdString &filter, CFileItemList &items)
+bool CGUIMediaWindow::GetFilteredItems(const CStdString &filter, CFileItemList &items, CFileItemList &removedItems)
 {
   bool result = false;
   if (m_canFilterAdvanced)
-    result = GetAdvanceFilteredItems(items);
+    result = GetAdvanceFilteredItems(items, removedItems);
 
   CStdString trimmedFilter(filter);
   trimmedFilter.TrimLeft().ToLower();
@@ -1814,6 +1815,8 @@ bool CGUIMediaWindow::GetFilteredItems(const CStdString &filter, CFileItemList &
     size_t pos = StringUtils::FindWords(match.c_str(), trimmedFilter.c_str());
     if (pos != CStdString::npos)
       filteredItems.Add(item);
+    else 
+      removedItems.Add(item);
   }
 
   items.ClearItems();
@@ -1822,7 +1825,7 @@ bool CGUIMediaWindow::GetFilteredItems(const CStdString &filter, CFileItemList &
   return items.GetObjectCount() > 0;
 }
 
-bool CGUIMediaWindow::GetAdvanceFilteredItems(CFileItemList &items)
+bool CGUIMediaWindow::GetAdvanceFilteredItems(CFileItemList &items, CFileItemList &removed)
 {
   // don't run the advanced filter if the filter is empty
   // and there hasn't been a filter applied before which
@@ -1871,6 +1874,10 @@ bool CGUIMediaWindow::GetAdvanceFilteredItems(CFileItemList &items)
       // remove the item from the lists
       resultItems.Remove(itItem->second.get());
       lookup.erase(itItem);
+    }
+    else
+    {
+      removed.Add(item);
     }
   }
 
