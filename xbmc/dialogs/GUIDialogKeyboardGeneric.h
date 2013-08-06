@@ -47,6 +47,7 @@ class CGUIDialogKeyboardGeneric : public CGUIDialog, public CGUIKeyboard
     void SetHiddenInput(bool hiddenInput) { m_hiddenInput = hiddenInput; };
     void Character(WCHAR wch);
     void OnPasteClipboard(void);
+    virtual void GetAutoComplete(const std::string &typedString);
 
   protected:
     virtual void OnInitWindow();

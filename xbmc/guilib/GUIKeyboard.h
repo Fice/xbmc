@@ -32,6 +32,33 @@ typedef void (*char_callback_t) (CGUIKeyboard *ref, const std::string &typedStri
 #pragma warning(disable: 4355)
 #endif
 
+class AutoCompleteDataProvider
+{
+public:
+  virtual void GetProposals(const CStdString& entered, CFileItemList& result)=0;
+};
+typedef boost::shared_ptr<AutoCompleteDataProvider> AutoCompleteDataProviderPtr;
+
+
+#include "FileItem.h"
+class DummyDataProvider : public AutoCompleteDataProvider
+{
+public:
+  virtual void GetProposals(const CStdString& entered, CFileItemList& result)
+  {
+    result.Add(CFileItemPtr(new CFileItem(entered+"a")));
+    result.Add(CFileItemPtr(new CFileItem(entered+"b")));
+    result.Add(CFileItemPtr(new CFileItem(entered+"c")));
+    result.Add(CFileItemPtr(new CFileItem(entered+"d")));
+    result.Add(CFileItemPtr(new CFileItem(entered+"e")));
+    result.Add(CFileItemPtr(new CFileItem(entered+"f")));
+    result.Add(CFileItemPtr(new CFileItem(entered+"g")));
+    result.Add(CFileItemPtr(new CFileItem(entered+"h")));
+    result.Add(CFileItemPtr(new CFileItem(entered+"i")));
+    result.Add(CFileItemPtr(new CFileItem(entered+"j")));
+  }
+};
+
 class CGUIKeyboard : public ITimerCallback
 {
   public:
@@ -83,7 +110,13 @@ class CGUIKeyboard : public ITimerCallback
       if (m_idleTimer.IsRunning()) 
         m_idleTimer.Restart();
     }
+  
+    void SetAutoCompleteProvider(AutoCompleteDataProviderPtr dataProvider) { m_autocomplete = dataProvider; }
+    virtual void GetAutoComplete(const std::string &typedString) {}
     
+  protected:
+    AutoCompleteDataProviderPtr m_autocomplete;
+
   private:
     CTimer m_idleTimer;
 };

@@ -56,6 +56,8 @@ static char symbol_map[37] = ")!@#$%^&*([]{}-_=+;:\'\",.<>/?\\|`~    ";
 
 #define CTL_BUTTON_BACKSPACE    8
 
+#define CTL_AUTOCOMPLETE_LIST 312
+
 static char symbolButtons[] = "._-@/\\";
 #define NUM_SYMBOLS sizeof(symbolButtons) - 1
 
@@ -105,6 +107,10 @@ void CGUIDialogKeyboardGeneric::OnInitWindow()
   }
   g_Windowing.EnableTextInput(true);
 
+  CFileItemList list;
+  CGUIMessage msg(GUI_MSG_LABEL_BIND, GetID(), CTL_AUTOCOMPLETE_LIST, 0, 0, &list);
+  g_windowManager.SendMessage(msg);
+  
   CVariant data;
   data["title"] = m_strHeading;
   data["type"] = !m_hiddenInput ? "keyboard" : "password";
@@ -770,5 +776,33 @@ void CGUIDialogKeyboardGeneric::OnPasteClipboard(void)
     m_strEdit.append(right_end);
     UpdateLabel();
     MoveCursor(unicode_text.length());
+  }
+}
+
+void CGUIDialogKeyboardGeneric::GetAutoComplete(const std::string &typedString)
+{
+  if(!m_autocomplete || typedString.empty())
+  {
+    CONTROL_DISABLE(CTL_AUTOCOMPLETE_LIST);
+    return;
+  }
+  
+  CFileItemList list;
+  m_autocomplete->GetProposals(typedString, list);
+  
+  if (list.Size()==0)
+  {
+    CONTROL_DISABLE(CTL_AUTOCOMPLETE_LIST);
+  }
+  else 
+  {
+    CONTROL_ENABLE(CTL_AUTOCOMPLETE_LIST);
+    while (list.Size()>10)
+    {
+      list.Remove(10);
+    }
+  
+    CGUIMessage msg(GUI_MSG_LABEL_BIND, GetID(), CTL_AUTOCOMPLETE_LIST, 0, 0, &list);
+    g_windowManager.SendMessage(msg);
   }
 }

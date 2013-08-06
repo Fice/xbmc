@@ -64,6 +64,7 @@ void CGUIKeyboardFactory::keyTypedCB(CGUIKeyboard *ref, const std::string &typed
       case FILTERING_NONE:
         break;
     }
+    ref->GetAutoComplete(typedString);
     ref->resetAutoCloseTimer();
   }
 }
@@ -96,6 +97,7 @@ bool CGUIKeyboardFactory::ShowAndGetInput(CStdString& aTextString, const CVarian
   if(kb)
   {
     kb->startAutoCloseTimer(autoCloseMs);
+    kb->SetAutoCompleteProvider(AutoCompleteDataProviderPtr(new DummyDataProvider()));
     confirmed = kb->ShowAndGetInput(keyTypedCB, aTextString, aTextString, headingStr, hiddenInput);
     if(needsFreeing)
       delete kb;
