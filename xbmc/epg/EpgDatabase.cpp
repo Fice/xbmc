@@ -74,7 +74,6 @@ bool CEpgDatabase::CreateTables(void)
           "iFirstAired     integer, "
           "iParentalRating integer, "
           "iStarRating     integer, "
-          "bNotify         bool, "
           "iSeriesId       integer, "
           "iEpisodeId      integer, "
           "iEpisodePart    integer, "
@@ -378,12 +377,12 @@ int CEpgDatabase::Persist(const CEpgInfoTag &tag, bool bSingleUpdate /* = true *
   {
     strQuery = FormatSQL("REPLACE INTO epgtags (idEpg, iStartTime, "
         "iEndTime, sTitle, sPlotOutline, sPlot, iGenreType, iGenreSubType, sGenre, "
-        "iFirstAired, iParentalRating, iStarRating, bNotify, iSeriesId, "
+        "iFirstAired, iParentalRating, iStarRating, iSeriesId, "
         "iEpisodeId, iEpisodePart, sEpisodeName, iBroadcastUid) "
-        "VALUES (%u, %u, %u, '%s', '%s', '%s', %i, %i, '%s', %u, %i, %i, %i, %i, %i, %i, '%s', %i);",
+        "VALUES (%u, %u, %u, '%s', '%s', '%s', %i, %i, '%s', %u, %i, %i, %i, %i, %i, '%s', %i);",
         tag.EpgID(), iStartTime, iEndTime,
         tag.Title(true).c_str(), tag.PlotOutline(true).c_str(), tag.Plot(true).c_str(), tag.GenreType(), tag.GenreSubType(), strGenre.c_str(),
-        iFirstAired, tag.ParentalRating(), tag.StarRating(), tag.Notify(),
+        iFirstAired, tag.ParentalRating(), tag.StarRating(),
         tag.SeriesNum(), tag.EpisodeNum(), tag.EpisodePart(), tag.EpisodeName().c_str(),
         tag.UniqueBroadcastID());
   }
@@ -391,12 +390,12 @@ int CEpgDatabase::Persist(const CEpgInfoTag &tag, bool bSingleUpdate /* = true *
   {
     strQuery = FormatSQL("REPLACE INTO epgtags (idEpg, iStartTime, "
         "iEndTime, sTitle, sPlotOutline, sPlot, iGenreType, iGenreSubType, sGenre, "
-        "iFirstAired, iParentalRating, iStarRating, bNotify, iSeriesId, "
+        "iFirstAired, iParentalRating, iStarRating, iSeriesId, "
         "iEpisodeId, iEpisodePart, sEpisodeName, iBroadcastUid, idBroadcast) "
-        "VALUES (%u, %u, %u, '%s', '%s', '%s', %i, %i, '%s', %u, %i, %i, %i, %i, %i, %i, '%s', %i, %i);",
+        "VALUES (%u, %u, %u, '%s', '%s', '%s', %i, %i, '%s', %u, %i, %i, %i, %i, %i, '%s', %i, %i);",
         tag.EpgID(), iStartTime, iEndTime,
         tag.Title(true).c_str(), tag.PlotOutline(true).c_str(), tag.Plot(true).c_str(), tag.GenreType(), tag.GenreSubType(), strGenre.c_str(),
-        iFirstAired, tag.ParentalRating(), tag.StarRating(), tag.Notify(),
+        iFirstAired, tag.ParentalRating(), tag.StarRating(),
         tag.SeriesNum(), tag.EpisodeNum(), tag.EpisodePart(), tag.EpisodeName().c_str(),
         tag.UniqueBroadcastID(), iBroadcastId);
   }

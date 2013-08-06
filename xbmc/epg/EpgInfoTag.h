@@ -288,13 +288,13 @@ namespace EPG
      * @brief Change the value of notify on start.
      * @param bNotify The new value.
      */
-    void SetNotify(bool bNotify);
+      //void SetNotify(bool bNotify);
 
     /*!
      * @brief Notify on start if true.
      * @return Notify on start.
      */
-    bool Notify(void) const;
+      //bool Notify(void) const;
 
     /*!
      * @brief Change the series number of this event.

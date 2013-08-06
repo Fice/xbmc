@@ -629,28 +629,6 @@ int CEpgInfoTag::StarRating(void) const
   return m_iStarRating;
 }
 
-void CEpgInfoTag::SetNotify(bool bNotify)
-{
-  bool bUpdate(false);
-  {
-    CSingleLock lock(m_critSection);
-    if (m_bNotify != bNotify)
-    {
-      m_bNotify = bNotify;
-      m_bChanged = true;
-      bUpdate = true;
-    }
-  }
-  if (bUpdate)
-    UpdatePath();
-}
-
-bool CEpgInfoTag::Notify(void) const
-{
-  CSingleLock lock(m_critSection);
-  return m_bNotify;
-}
-
 void CEpgInfoTag::SetSeriesNum(int iSeriesNum)
 {
   bool bUpdate(false);
@@ -852,7 +830,6 @@ void CEpgInfoTag::Update(const EPG_TAG &tag)
   SetGenre(tag.iGenreType, tag.iGenreSubType, tag.strGenreDescription);
   SetParentalRating(tag.iParentalRating);
   SetUniqueBroadcastID(tag.iUniqueBroadcastId);
-  SetNotify(tag.bNotify);
   SetFirstAiredFromUTC(tag.firstAired + g_advancedSettings.m_iPVRTimeCorrection);
   SetEpisodeNum(tag.iEpisodeNumber);
   SetEpisodePart(tag.iEpisodePartNumber);
