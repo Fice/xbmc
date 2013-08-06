@@ -3,29 +3,103 @@
 	<defaultcontrol always="true">300</defaultcontrol>
 	<include>dialogeffect</include>
 	<coordinates>
-		<system>2</system>
+		<system>1</system>
 		<posx>255</posx>
-		<posy>145</posy>
+		<posy>0</posy>
 	</coordinates>
 	<controls>
 		<control type="group">
-			<include>VisibleFadeEffect</include>
-			<visible>!Window.IsVisible(numericinput)</visible>
-			<control type="image">
-				<posx>0</posx>
-				<posy>0</posy>
-				<width>760</width>
-				<height>430</height>
-				<texture border="40">DialogBack.png</texture>
-			</control>
-			<control type="image">
-				<description>Dialog Header image</description>
-				<posx>40</posx>
-				<posy>16</posy>
-				<width>680</width>
-				<height>40</height>
-				<texture>dialogheader.png</texture>
-			</control>
+		    <include name="keyboardgenerics">
+		        <control type="image">
+    				<description>Dialog Header image</description>
+    				<posx>40</posx>
+    				<posy>16</posy>
+    				<width>680</width>
+    				<height>40</height>
+    				<texture>dialogheader.png</texture>
+    			</control>
+		    </include>
+		    <control type="list" id="312">
+		        <posx>0</posx>
+		        <posy>0</posy>
+				<width>450</width>
+				<height>380</height>
+				<pagecontrol>-</pagecontrol>
+		        <itemlayout height="40">
+		            <control type="image">
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>370</width>
+						<height>40</height>
+						<texture border="5">button-nofocus.png</texture>
+					</control>
+					<control type="label">
+						<posx>10</posx>
+						<posy>0</posy>
+						<width>350</width>
+						<height>40</height>
+						<font>font12_title</font>
+						<align>left</align>
+						<aligny>center</aligny>
+						<selectedcolor>selected</selectedcolor>
+						<info>ListItem.Label</info>
+					</control>
+		        </itemlayout>
+		        <focusedlayout height="40">
+					<control type="image">
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>370</width>
+						<height>40</height>
+						<visible>!Control.HasFocus(450)</visible>
+						<texture border="3">button-nofocus.png</texture>
+					</control>
+					<control type="image">
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>370</width>
+						<height>40</height>
+						<visible>Control.HasFocus(450)</visible>
+						<texture border="3">button-focus.png</texture>
+					</control>
+					<control type="label">
+						<posx>10</posx>
+						<posy>0</posy>
+						<width>350</width>
+						<height>40</height>
+						<font>font12_title</font>
+						<align>left</align>
+						<aligny>center</aligny>
+						<selectedcolor>selected</selectedcolor>
+						<info>ListItem.Label</info>
+					</control>
+				</focusedlayout>
+		    </control>
+		    
+		    <control type="group">
+		        <visible>Control.IsEnabled(312)</visible>
+		        <posy>145</posy>
+		        <posx>0</posx>
+		        <control type="image">
+    			    <posx>0</posx>
+    			    <posy>0</posy>
+    			    <width>760</width>
+    			    <height>430</height>
+    			    <texture border="40">DialogBack.png</texture>
+    		    </control>
+    		    <include>keyboardgenerics</include>
+		    </control>
+		    <control type="group">
+		        <posy>245</posy>
+		        <posx>0</posx>
+		        
+			    <include>VisibleFadeEffect</include>
+			    <visible>!Window.IsVisible(numericinput)</visible>
+			    
+    		    <include>keyboardgenerics</include>
+			    
+			    
+			
 			<control type="label" id="311">
 				<description>header label</description>
 				<posx>40</posx>
@@ -868,6 +942,7 @@
 					<ondown>56</ondown>
 				</control>
 			</control>
+	        </control>
 		</control>
 	</controls>
 </window>
