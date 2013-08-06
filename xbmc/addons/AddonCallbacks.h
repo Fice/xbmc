@@ -161,6 +161,7 @@ typedef void        (*GUIListItem_SetPath)(void *addonData, GUIHANDLE handle, co
 typedef void        (*GUIRenderAddon_SetCallbacks)(void *addonData, GUIHANDLE handle, GUIHANDLE clienthandle, bool (*createCB)(GUIHANDLE,int,int,int,int,void*), void (*renderCB)(GUIHANDLE), void (*stopCB)(GUIHANDLE), bool (*dirtyCB)(GUIHANDLE));
 typedef void        (*GUIRenderAddon_Delete)(void *addonData, GUIHANDLE handle);
 typedef void        (*GUIRenderAddon_MarkDirty)(void *addonData, GUIHANDLE handle);
+typedef bool        (*GUIOnKeyboardAutocomplete)(const void* addonData, const char *strText);
 
 typedef struct CB_GUILib
 {
