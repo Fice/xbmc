@@ -70,18 +70,31 @@ IContextItem::IContextItem(const cp_extension_t *ext)
     else 
       m_label = labelStr;
   }
+    
+  m_parent = CAddonMgr::Get().GetExtValue(ext->configuration, "@parent");
 }
 
 void IContextItem::Register()
 {
   ContextAddonPtr ptr = boost::dynamic_pointer_cast<IContextItem, IAddon>(shared_from_this());
-  BaseContextMenuManager::Get().RegisterContextItem(ptr);
+  
+  if (m_parent.empty())
+    BaseContextMenuManager::Get().RegisterContextItem(ptr);
+  else if (m_parent == MANAGE_CATEGORY_NAME)
+    CGUIDialogVideoInfo::manageContextAddonsMgr.RegisterContextItem(ptr);
 }
 
 void IContextItem::Unregister()
 {
   ContextAddonPtr ptr = boost::dynamic_pointer_cast<IContextItem, IAddon>(shared_from_this());
+  
+  //always try to unregister from main, because thats our fallback.
   BaseContextMenuManager::Get().UnregisterContextItem(ptr);
+
+  if (m_parent == MANAGE_CATEGORY_NAME)
+  {
+    CGUIDialogVideoInfo::manageContextAddonsMgr.UnregisterContextItem(ptr);
+  }
 }
   
 bool IContextItem::operator()(const CFileItemPtr item) 

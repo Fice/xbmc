@@ -984,6 +984,10 @@ int CGUIDialogVideoInfo::ManageVideoItem(const CFileItemPtr &item)
       item->GetVideoInfoTag()->m_iBookmarkId > 0)
     buttons.Add(CONTEXT_BUTTON_UNLINK_BOOKMARK, 20405);
 
+  std::list<ADDON::ContextAddonPtr> additional_context_items;
+  manageContextAddonsMgr.GetVisibleContextItems(0, item, additional_context_items);
+  std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(buttons), ConvertFromContextItem());    
+  
   bool result = false;
   int button = CGUIDialogContextMenu::ShowAndGetChoice(buttons);
   if (button >= 0)
@@ -1373,3 +1377,5 @@ bool CGUIDialogVideoInfo::LinkMovieToTvShow(const CFileItemPtr &item, bool bRemo
 
   return false;
 }
+
+ContextMenuManager CGUIDialogVideoInfo::manageContextAddonsMgr;
