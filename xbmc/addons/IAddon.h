@@ -120,8 +120,6 @@ namespace ADDON
   private:
     friend class CAddonMgr;
     virtual bool IsAddonLibrary() =0;
-    virtual void Enable() =0;
-    virtual void Disable() =0;
     virtual bool LoadStrings() =0;
     virtual void ClearStrings() =0;
   };

@@ -218,8 +218,6 @@ private:
 
   virtual bool IsAddonLibrary() { return false; }
 
-  void Enable() { LoadStrings(); m_enabled = true; }
-  void Disable() { m_enabled = false; ClearStrings();}
 
   virtual bool LoadStrings();
   
