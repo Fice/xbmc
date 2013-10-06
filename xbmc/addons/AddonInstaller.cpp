@@ -631,7 +631,7 @@ bool CAddonInstallJob::DownloadPackage(const std::string &path, const std::strin
 
 bool CAddonInstallJob::OnPreInstall()
 {
-  if (m_update && (m_addon->Type() == ADDON_CONTEXT_ITEM || m_addon->Type() == ADDON_CONTEXT_CATEGORY))
+  if (m_update && (m_addon->Type() == ADDON_CONTEXT_ITEM))
   {
     boost::shared_ptr<IContextItem> context = boost::dynamic_pointer_cast<IContextItem>(m_addon);
     if (context)

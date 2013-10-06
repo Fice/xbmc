@@ -1020,6 +1020,8 @@ int CGUIDialogVideoInfo::ManageVideoItem(const CFileItemPtr &item)
 
   buttons.Add(CONTEXT_BUTTON_DELETE, 646);
 
+  manageContextAddonsMgr.AppendVisibleContextItems(item, buttons);
+
   bool result = false;
   int button = CGUIDialogContextMenu::ShowAndGetChoice(buttons);
   if (button >= 0)
@@ -1985,3 +1987,5 @@ bool CGUIDialogVideoInfo::OnGetFanart(const CFileItemPtr &videoItem)
 
   return true;
 }
+
+ContextMenuManager CGUIDialogVideoInfo::manageContextAddonsMgr;

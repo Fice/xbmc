@@ -30,14 +30,7 @@ class ContextMenuManager
 {
 public:
   virtual ~ContextMenuManager() {};
-  /*! Get a context menu item (or a category) by its addon id.
-    Goes trough all subcategories recursively
-    \param string - the addons string id to find
-    \return the addon or NULL
-  */
-  ADDON::ContextAddonPtr GetContextItemByID(const std::string& strID);
-  /*! Get a context menu item (or a category) by its assigned message id.
-     NOTE: does not go recursively through subcategories
+  /*! Get a context menu item by its assigned message id.
    \param unsigned int - msg id of the context item
    \return the addon or NULL
    */
@@ -94,6 +87,7 @@ public:
 
   /*!
    \brief Finds out where the given Context Item belongs to and registers it to the appropriate ContextMenuManager.
+   It checks if it belongs in the root or the core 'manage' submenu
    NOTE: if a context item has changed, just register it again and it will overwrite the old one
    NOTE: only 'enabled' context addons should be registered
    \param the context item to register

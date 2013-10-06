@@ -61,11 +61,6 @@ namespace ADDON
              or the id of a ContextCategoryItem
      */
     const std::string& GetParent() const { return m_parent; }
-    /*! \brief returns the item with the given addon id
-     \param strID - the addons ID we are looking for
-     \return either this, a child context item (only on ContextCategoryAddon) or NULL if not found
-     */
-    virtual ContextAddonPtr GetChildWithID(const std::string& strID) = 0;
     /*! \brief returns true if this item should be visible.
      NOTE:  defaults to true, if no visibility expression was set.
      \return true if this item should be visible
@@ -108,7 +103,6 @@ namespace ADDON
     bool IsVisible(const CFileItemPtr item) const;
     virtual void AddIfVisible(const CFileItemPtr item, CContextButtons &visible);
     virtual bool Execute(const CFileItemPtr itemPath);
-    virtual ADDON::ContextAddonPtr GetChildWithID(const std::string& strID) { return ADDON::ContextAddonPtr(); }
   protected:
     INFO::InfoPtr m_VisibleId;
   };

@@ -48,7 +48,6 @@
 #include "Skin.h"
 #include "Service.h"
 #include "ContextItemAddon.h"
-#include "ContextCategoryAddon.h"
 #include "pvr/PVRManager.h"
 #include "pvr/addons/PVRClients.h"
 #include "Util.h"
