@@ -102,6 +102,7 @@ void CGUIWindowPVRGuide::GetContextButtons(int itemNumber, CContextButtons &butt
     buttons.Add(CONTEXT_BUTTON_MENU_HOOKS, 19195);      /* PVR client specific action */
 
   CGUIWindowPVRBase::GetContextButtons(itemNumber, buttons);
+  BaseContextMenuManager::Get().AppendVisibleContextItems(pItem, buttons);
 }
 
 void CGUIWindowPVRGuide::UpdateSelectedItemPath()

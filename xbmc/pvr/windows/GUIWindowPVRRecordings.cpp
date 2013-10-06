@@ -143,6 +143,7 @@ void CGUIWindowPVRRecordings::GetContextButtons(int itemNumber, CContextButtons 
     buttons.Add(CONTEXT_BUTTON_MENU_HOOKS, 19195);      /* PVR client specific action */
 
   CGUIWindowPVRBase::GetContextButtons(itemNumber, buttons);
+  BaseContextMenuManager::Get().AppendVisibleContextItems(pItem, buttons);
 }
 
 bool CGUIWindowPVRRecordings::OnAction(const CAction &action)
