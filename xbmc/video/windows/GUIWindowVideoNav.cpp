@@ -1030,6 +1030,10 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
         buttons.Add(CONTEXT_BUTTON_PLUGIN_SETTINGS, 1045);
     }
   }
+
+  std::list<ADDON::ContextAddonPtr> additional_context_items;
+  BaseContextMenuManager::Get().GetVisibleContextItems(0, item, additional_context_items);
+  std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(buttons), ConvertFromContextItem()); 
 }
 
 // predicate used by sorting and set_difference

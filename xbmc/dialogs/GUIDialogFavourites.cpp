@@ -152,6 +152,10 @@ void CGUIDialogFavourites::OnPopupMenu(int item)
     OnRename(item);
   else if (button == 5)
     OnSetThumb(item);
+  
+  ADDON::ContextAddonPtr context_item = BaseContextMenuManager::Get().GetContextItemByID(button);
+  if (context_item != 0)
+    (*context_item)(itemPtr); //execute our context item logic
 }
 
 void CGUIDialogFavourites::OnMoveItem(int item, int amount)
