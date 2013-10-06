@@ -221,7 +221,6 @@ void CGUIDialogAddonInfo::OnEnable(bool enable)
   if (!m_localAddon.get())
     return;
 
-  CStdString xbmcPath = CSpecialProtocol::TranslatePath("special://xbmc/addons");
   CAddonDatabase database;
   database.Open();
   database.DisableAddon(m_localAddon->ID(), !enable);
