@@ -179,6 +179,7 @@ void CGUIDialogAddonInfo::OnUpdate()
 void CGUIDialogAddonInfo::OnInstall()
 {
   CAddonInstaller::Get().Install(m_addon->ID());
+  ((IContextItem*)m_localAddon.get())->Unregister();
   Close();
 }
 
