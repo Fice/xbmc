@@ -38,6 +38,7 @@
 #include "utils/URIUtils.h"
 #include "addons/AddonInstaller.h"
 #include "pvr/PVRManager.h"
+#include "ContextItemAddon.h"
 
 #define CONTROL_BTN_INSTALL          6
 #define CONTROL_BTN_ENABLE           7

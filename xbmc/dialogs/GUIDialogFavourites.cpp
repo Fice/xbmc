@@ -32,6 +32,7 @@
 #include "storage/MediaManager.h"
 
 using namespace XFILE;
+using ADDON::ContextAddonPtr;
 
 #define FAVOURITES_LIST 450
 
@@ -129,6 +130,12 @@ void CGUIDialogFavourites::OnPopupMenu(int item)
   choices.Add(3, 15015);
   choices.Add(4, 118);
   choices.Add(5, 20019);
+  
+  CFileItemPtr itemPtr = m_favourites->Get(item);
+  
+  std::list<ContextAddonPtr> additional_context_items;
+  BaseContextMenuManager::Get().GetVisibleContextItems(0, itemPtr, additional_context_items);
+  std::transform(additional_context_items.begin(), additional_context_items.end(), back_inserter(choices), ConvertFromContextItem());      
   
   int button = CGUIDialogContextMenu::ShowAndGetChoice(choices);
 

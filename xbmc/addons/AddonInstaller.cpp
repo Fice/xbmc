@@ -41,6 +41,7 @@
 #include "dialogs/GUIDialogProgress.h"
 #include "URL.h"
 #include "pvr/PVRManager.h"
+#include "ContextItemAddon.h"
 
 using namespace std;
 using namespace XFILE;
@@ -569,6 +570,17 @@ bool CAddonInstallJob::DownloadPackage(const CStdString &path, const CStdString 
 
 bool CAddonInstallJob::OnPreInstall()
 {
+    //during an update the context item could get a new parent...
+    //so it is safer to remove it now from the old parent
+    //and add it to the correct one in PostInstall()
+  if (m_update && (m_addon->Type() == ADDON_CONTEXT_ITEM || m_addon->Type() == ADDON_CONTEXT_CATEGORY))
+  {
+    boost::shared_ptr<IContextItem> context = boost::dynamic_pointer_cast<IContextItem>(m_addon);
+    if (context)
+      context->Unregister();
+  }
+     
+  
   // check whether this is an active skin - we need to unload it if so
   if (CSettings::Get().GetString("lookandfeel.skin") == m_addon->ID())
   {
@@ -723,6 +735,15 @@ void CAddonInstallJob::OnPostInstall(bool reloadAddon)
         service->Start();
     }
   }
+  
+  if (m_addon->Type() == ADDON_CONTEXT_ITEM || m_addon->Type() == ADDON_CONTEXT_CATEGORY)
+  {
+    AddonPtr addon; 
+    CAddonMgr::Get().GetAddon(m_addon->ID(), addon);
+    boost::shared_ptr<IContextItem> context = boost::dynamic_pointer_cast<IContextItem>(addon);
+    if (context)
+      context->Register();
+  }
 
   if (m_addon->Type() == ADDON_REPOSITORY)
   {
@@ -801,6 +822,12 @@ bool CAddonUnInstallJob::DoWork()
     if (service)
       service->Stop();
   }
+  if (m_addon->Type() == ADDON_CONTEXT_ITEM || m_addon->Type() == ADDON_CONTEXT_CATEGORY)
+  {
+    boost::shared_ptr<IContextItem> context = boost::dynamic_pointer_cast<IContextItem>(m_addon);
+    if (context)
+      context->Unregister();
+  }
 
   AddonPtr repoPtr = CAddonInstallJob::GetRepoForAddon(m_addon);
   RepositoryPtr therepo = boost::dynamic_pointer_cast<CRepository>(repoPtr);
@@ -826,7 +853,8 @@ bool CAddonUnInstallJob::DoWork()
 
 void CAddonUnInstallJob::OnPostUnInstall()
 {
-  if (m_addon->Type() == ADDON_REPOSITORY)
+  ADDON::TYPE type = m_addon->Type(); 
+  if (type == ADDON_REPOSITORY)
   {
     CAddonDatabase database;
     database.Open();
@@ -848,7 +876,7 @@ void CAddonUnInstallJob::OnPostUnInstall()
   if (bSave)
     CFavouritesDirectory::Save(items);
 
-  if (m_addon->Type() == ADDON_PVRDLL)
+  if (type == ADDON_PVRDLL)
   {
     if (CSettings::Get().GetBool("pvrmanager.enabled"))
       PVR::CPVRManager::Get().Start(true);

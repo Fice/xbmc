@@ -26,6 +26,7 @@
 #include "addons/Service.h"
 #include "dbwrappers/dataset.h"
 #include "pvr/PVRManager.h"
+#include "addons/ContextItemAddon.h"
 
 using namespace ADDON;
 using namespace std;
@@ -583,6 +584,9 @@ bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = t
         else if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_PVRDLL, false) && addon &&
             PVR::CPVRManager::Get().IsStarted())
           PVR::CPVRManager::Get().Start(true);
+        else if((CAddonMgr::Get().GetAddon(addonID, addon, ADDON_CONTEXT_ITEM, false) && addon) 
+             || (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_CONTEXT_CATEGORY, false) && addon))
+          ((IContextItem*)addon.get())->Unregister();
 
         return true;
       }
@@ -605,6 +609,9 @@ bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = t
       // (re)start the pvr manager when enabling a pvr add-on
       else if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_PVRDLL, false) && addon)
         PVR::CPVRManager::Get().Start(true);
+      else if((CAddonMgr::Get().GetAddon(addonID, addon, ADDON_CONTEXT_ITEM, false) && addon) 
+           || (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_CONTEXT_CATEGORY, false) && addon))
+        ((IContextItem*)addon.get())->Register();
     }
     return true;
   }

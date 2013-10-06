@@ -44,6 +44,7 @@
 #include "TextureCache.h"
 #include "video/windows/GUIWindowVideoBase.h"
 #include "URL.h"
+#include "GUIContextMenuManager.h"
 
 #ifdef TARGET_WINDOWS
 #include "WIN32Util.h"
@@ -70,6 +71,13 @@ void CContextButtons::Add(unsigned int button, const CStdString &label)
 void CContextButtons::Add(unsigned int button, int label)
 {
   push_back(pair<unsigned int, CStdString>(button, g_localizeStrings.Get(label)));
+}
+
+std::pair<unsigned int, CStdString> ConvertFromContextAddon::operator()(ADDON::ContextAddonPtr& input)
+{
+  CStdString label = input->getLabel();
+  unsigned int id= input->getMsgID();
+  return std::pair<unsigned int, CStdString>(id, label);
 }
 
 CGUIDialogContextMenu::CGUIDialogContextMenu(void)
