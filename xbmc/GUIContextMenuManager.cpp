@@ -89,9 +89,18 @@ void ContextMenuManager::GetVisibleContextItems(int context, const CFileItemPtr 
 void BaseContextMenuManager::Init()
 {
   //Make sure we load all context items on first usage...
+  ADDON::VECADDONS categories;
+  ADDON::CAddonMgr::Get().GetAddons(ADDON::ADDON_CONTEXT_CATEGORY, categories);
+  ADDON::VECADDONS::iterator i;
+  ADDON::VECADDONS::iterator end = categories.end();
+  for (i = categories.begin(); i != end; ++i) 
+  {
+    boost::static_pointer_cast<ADDON::IContextItem>(*i)->Register();
+  }
+  
   ADDON::VECADDONS items;
   ADDON::CAddonMgr::Get().GetAddons(ADDON::ADDON_CONTEXT_ITEM, items);
-  ADDON::VECADDONS::iterator end = items.end();
+  end = items.end();
   for (i = items.begin(); i != end; ++i) 
   {
     boost::static_pointer_cast<ADDON::IContextItem>(*i)->Register();

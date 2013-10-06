@@ -79,6 +79,7 @@ static const TypeMapping types[] =
    {"xbmc.python.library",               ADDON_SCRIPT_LIBRARY,      24014, "" },
    {"xbmc.python.module",                ADDON_SCRIPT_MODULE,           0, "" },
    {"xbmc.context.item",                 ADDON_CONTEXT_ITEM,        24024, "" }, //TODO: Context: add default image
+   {"xbmc.context.category",             ADDON_CONTEXT_CATEGORY,        0, "" },
    {"xbmc.gui.skin",                     ADDON_SKIN,                  166, "DefaultAddonSkin.png" },
    {"xbmc.gui.webinterface",             ADDON_WEB_INTERFACE,         199, "DefaultAddonWebSkin.png" },
    {"xbmc.addon.repository",             ADDON_REPOSITORY,          24011, "DefaultAddonRepository.png" },

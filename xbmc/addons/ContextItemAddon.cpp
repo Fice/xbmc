@@ -82,6 +82,20 @@ void IContextItem::Register()
     BaseContextMenuManager::Get().RegisterContextItem(ptr);
   else if (m_parent == MANAGE_CATEGORY_NAME)
     CGUIDialogVideoInfo::manageContextAddonsMgr.RegisterContextItem(ptr);
+  else 
+  {
+    AddonPtr parentPtr = BaseContextMenuManager::Get().GetContextItemByID(m_parent);
+    if (parentPtr)
+    {
+      boost::shared_ptr<CContextCategoryAddon> parentCat = boost::static_pointer_cast<CContextCategoryAddon>(parentPtr);
+      parentCat->RegisterContextItem(ptr);
+    }
+    else
+    { //fallback... add it to the root menu!
+      CLog::Log(LOGWARNING, "ADDON: %s - specified parent category '%s' not found. Context item will show up in root.", ID().c_str(), m_parent.c_str());
+      BaseContextMenuManager::Get().RegisterContextItem(ptr);
+    }
+  }
 }
 
 void IContextItem::Unregister()
@@ -94,6 +108,19 @@ void IContextItem::Unregister()
   if (m_parent == MANAGE_CATEGORY_NAME)
   {
     CGUIDialogVideoInfo::manageContextAddonsMgr.UnregisterContextItem(ptr);
+  }
+  else 
+  {
+    AddonPtr parentPtr;
+    CAddonMgr::Get().GetAddon(m_parent, parentPtr, ADDON_CONTEXT_CATEGORY); 
+    if (parentPtr)
+    {
+      boost::shared_ptr<CContextCategoryAddon> parentCat = boost::static_pointer_cast<CContextCategoryAddon>(parentPtr);
+      if (parentCat)
+      {
+        parentCat->UnregisterContextItem(ptr);
+      }
+    }
   }
 }
   
