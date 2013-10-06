@@ -28,6 +28,15 @@
 		0E3036EC1760F68A00D93596 /* FavouritesDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3036EA1760F68A00D93596 /* FavouritesDirectory.cpp */; };
 		0E3036ED1760F68A00D93596 /* FavouritesDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3036EA1760F68A00D93596 /* FavouritesDirectory.cpp */; };
 		0E3036EE1760F68A00D93596 /* FavouritesDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3036EA1760F68A00D93596 /* FavouritesDirectory.cpp */; };
+		0E44BA5E17FB348F009AF93A /* ContextItemAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E44BA5C17FB348F009AF93A /* ContextItemAddon.cpp */; };
+		0E44BA5F17FB348F009AF93A /* ContextItemAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E44BA5C17FB348F009AF93A /* ContextItemAddon.cpp */; };
+		0E44BA6017FB348F009AF93A /* ContextItemAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E44BA5C17FB348F009AF93A /* ContextItemAddon.cpp */; };
+		0E44BAE517FC50BC009AF93A /* GUIContextMenuManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E44BAE317FC50BC009AF93A /* GUIContextMenuManager.cpp */; };
+		0E44BAE617FC50BC009AF93A /* GUIContextMenuManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E44BAE317FC50BC009AF93A /* GUIContextMenuManager.cpp */; };
+		0E44BAE817FC50BC009AF93A /* GUIContextMenuManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E44BAE317FC50BC009AF93A /* GUIContextMenuManager.cpp */; };
+		0E44BAF617FC54AB009AF93A /* ContextCategoryAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E44BAF417FC54AB009AF93A /* ContextCategoryAddon.cpp */; };
+		0E44BAF717FC54AB009AF93A /* ContextCategoryAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E44BAF417FC54AB009AF93A /* ContextCategoryAddon.cpp */; };
+		0E44BAF817FC54AB009AF93A /* ContextCategoryAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E44BAF417FC54AB009AF93A /* ContextCategoryAddon.cpp */; };
 		180F6C8117CE9A5700127892 /* smc.c in Sources */ = {isa = PBXBuildFile; fileRef = 180F6C8017CE9A5700127892 /* smc.c */; };
 		183FDF8A11AF0B0500B81E9C /* PluginSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 183FDF8811AF0B0500B81E9C /* PluginSource.cpp */; };
 		18404DA61396C31B00863BBA /* SlingboxLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18404DA51396C31B00863BBA /* SlingboxLib.a */; };
@@ -3184,6 +3193,12 @@
 		0E30286C1759FCC200D93596 /* SettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsManager.h; sourceTree = "<group>"; };
 		0E3036EA1760F68A00D93596 /* FavouritesDirectory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FavouritesDirectory.cpp; sourceTree = "<group>"; };
 		0E3036EB1760F68A00D93596 /* FavouritesDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FavouritesDirectory.h; sourceTree = "<group>"; };
+		0E44BA5C17FB348F009AF93A /* ContextItemAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContextItemAddon.cpp; sourceTree = "<group>"; };
+		0E44BA5D17FB348F009AF93A /* ContextItemAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContextItemAddon.h; sourceTree = "<group>"; };
+		0E44BAE317FC50BC009AF93A /* GUIContextMenuManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIContextMenuManager.cpp; sourceTree = "<group>"; };
+		0E44BAEC17FC5168009AF93A /* GUIContextMenuManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIContextMenuManager.h; sourceTree = "<group>"; };
+		0E44BAF417FC54AB009AF93A /* ContextCategoryAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContextCategoryAddon.cpp; sourceTree = "<group>"; };
+		0E44BAF517FC54AB009AF93A /* ContextCategoryAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContextCategoryAddon.h; sourceTree = "<group>"; };
 		180F6C7F17CE9A5700127892 /* smc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smc.h; sourceTree = "<group>"; };
 		180F6C8017CE9A5700127892 /* smc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smc.c; sourceTree = "<group>"; };
 		18308CB41303370800AA309E /* stat_utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stat_utf8.h; sourceTree = "<group>"; };
@@ -5712,6 +5727,10 @@
 				F52BFFD9115D5574004B1D66 /* AddonStatusHandler.h */,
 				18B700DF13A6A5750009C1AF /* AddonVersion.cpp */,
 				18B700E013A6A5750009C1AF /* AddonVersion.h */,
+				0E44BAF417FC54AB009AF93A /* ContextCategoryAddon.cpp */,
+				0E44BAF517FC54AB009AF93A /* ContextCategoryAddon.h */,
+				0E44BA5C17FB348F009AF93A /* ContextItemAddon.cpp */,
+				0E44BA5D17FB348F009AF93A /* ContextItemAddon.h */,
 				18B49FF61152BFA5001AF8A6 /* DllAddon.h */,
 				18B7C38612942090009E7A26 /* GUIDialogAddonInfo.cpp */,
 				18B7C38712942090009E7A26 /* GUIDialogAddonInfo.h */,
@@ -7221,6 +7240,8 @@
 				E38E16930D25F9FA00618676 /* FileItem.h */,
 				DFBB4317178B5E6F006CC20A /* GitRevision.cpp */,
 				DFBB4318178B5E6F006CC20A /* GitRevision.h */,
+				0E44BAE317FC50BC009AF93A /* GUIContextMenuManager.cpp */,
+				0E44BAEC17FC5168009AF93A /* GUIContextMenuManager.h */,
 				E38E1E3E0D25F9FD00618676 /* GUIInfoManager.cpp */,
 				E38E1E3F0D25F9FD00618676 /* GUIInfoManager.h */,
 				E38E17EE0D25F9FA00618676 /* GUILargeTextureManager.cpp */,
@@ -10624,6 +10645,9 @@
 				DFD882F817DD1A5B001516FE /* AddonPythonInvoker.cpp in Sources */,
 				DFD882E917DD189E001516FE /* StringValidation.cpp in Sources */,
 				F500E35617F3412C004FC217 /* WinEvents.cpp in Sources */,
+				0E44BA5E17FB348F009AF93A /* ContextItemAddon.cpp in Sources */,
+				0E44BAE517FC50BC009AF93A /* GUIContextMenuManager.cpp in Sources */,
+				0E44BAF617FC54AB009AF93A /* ContextCategoryAddon.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11654,6 +11678,9 @@
 				DFD882F617DD1A5B001516FE /* AddonPythonInvoker.cpp in Sources */,
 				DFD882E717DD189E001516FE /* StringValidation.cpp in Sources */,
 				F500E35817F3412C004FC217 /* WinEvents.cpp in Sources */,
+				0E44BA6017FB348F009AF93A /* ContextItemAddon.cpp in Sources */,
+				0E44BAE817FC50BC009AF93A /* GUIContextMenuManager.cpp in Sources */,
+				0E44BAF817FC54AB009AF93A /* ContextCategoryAddon.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12686,6 +12713,9 @@
 				DFD882F717DD1A5B001516FE /* AddonPythonInvoker.cpp in Sources */,
 				DFD882E817DD189E001516FE /* StringValidation.cpp in Sources */,
 				F500E35717F3412C004FC217 /* WinEvents.cpp in Sources */,
+				0E44BA5F17FB348F009AF93A /* ContextItemAddon.cpp in Sources */,
+				0E44BAE617FC50BC009AF93A /* GUIContextMenuManager.cpp in Sources */,
+				0E44BAF717FC54AB009AF93A /* ContextCategoryAddon.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
