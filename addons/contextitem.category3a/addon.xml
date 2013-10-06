@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="contextitem.category3a"
+       name="ContextItem Category 3a"
+       version="1.0.0"
+       provider-name="Fice">
+  <extension point="xbmc.context.item" library="addon.py" parent="contextcategory.test3" label="Should show up in category! (a)">
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary>Category test with only one element</summary>
+    <description>
+    </description>
+  </extension>
+</addon>

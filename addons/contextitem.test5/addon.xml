@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="contextitem.test5"
+       name="ContextItem Test 5"
+       version="1.0.0"
+       provider-name="Fice">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension point="xbmc.context.item" library="addon.py" visible="addon.hassetting(enable_this_item)" label="only visible when enabled in settings">
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary>Testcase 5 for Context Item Addons</summary>
+    <description>
+    </description>
+  </extension>
+</addon>
