@@ -1539,22 +1539,6 @@ void CGUIMediaWindow::GetContextButtons(int itemNumber, CContextButtons &buttons
   if (!item)
     return;
 
-  // user added buttons
-  CStdString label;
-  CStdString action;
-  for (int i = CONTEXT_BUTTON_USER1; i <= CONTEXT_BUTTON_USER10; i++)
-  {
-    label.Format("contextmenulabel(%i)", i - CONTEXT_BUTTON_USER1);
-    if (item->GetProperty(label).empty())
-      break;
-
-    action.Format("contextmenuaction(%i)", i - CONTEXT_BUTTON_USER1);
-    if (item->GetProperty(action).empty())
-      break;
-
-    buttons.Add((CONTEXT_BUTTON)i, item->GetProperty(label).asString());
-  }
-
   if (item->GetProperty("pluginreplacecontextitems").asBoolean())
     return;
 
@@ -1602,22 +1586,6 @@ bool CGUIMediaWindow::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CFileItemPtr item = m_vecItems->Get(itemNumber);
       if(Update(item->GetPath()))
         return true;
-      return true;
-    }
-  case CONTEXT_BUTTON_USER1:
-  case CONTEXT_BUTTON_USER2:
-  case CONTEXT_BUTTON_USER3:
-  case CONTEXT_BUTTON_USER4:
-  case CONTEXT_BUTTON_USER5:
-  case CONTEXT_BUTTON_USER6:
-  case CONTEXT_BUTTON_USER7:
-  case CONTEXT_BUTTON_USER8:
-  case CONTEXT_BUTTON_USER9:
-  case CONTEXT_BUTTON_USER10:
-    {
-      CStdString action;
-      action.Format("contextmenuaction(%i)", button - CONTEXT_BUTTON_USER1);
-      CApplicationMessenger::Get().ExecBuiltIn(m_vecItems->Get(itemNumber)->GetProperty(action).asString());
       return true;
     }
   default:
