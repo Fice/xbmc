@@ -189,7 +189,6 @@ public:
   void set_asInt64(const int64_t i);
 
   fType get_field_type();
-  std::string gft();
 };
 
 struct field_prop {
@@ -201,6 +200,8 @@ struct field_prop {
   unsigned int field_flags;
   int idx;
 };
+
+std::string FTypeToTypeString(fType);
 
 struct field {
   field_prop props;
