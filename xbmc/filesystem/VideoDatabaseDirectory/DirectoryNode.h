@@ -96,8 +96,8 @@ namespace XFILE
 
     private:
       void AddQueuingFolder(CFileItemList& items) const;
+      CDirectoryNode();
 
-    private:
       NODE_TYPE m_Type;
       std::string m_strName;
       CDirectoryNode* m_pParent;
