@@ -701,8 +701,8 @@ void field_value::set_asInt64(const int64_t i) {
 fType field_value::get_field_type() {
   return field_type;}
 
-  
-string field_value::gft() {
+
+string FTypeToTypeString(fType field_type) {
     string tmp;
     switch (field_type) {
     case ft_String: {
