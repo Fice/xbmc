@@ -56,6 +56,11 @@ CDirectoryNode::CDirectoryNode(NODE_TYPE Type, const std::string& strName, CDire
   m_pParent=pParent;
 }
 
+CDirectoryNode::CDirectoryNode()
+{
+  m_pParent = NULL;
+}
+
 CDirectoryNode::~CDirectoryNode()
 {
   delete m_pParent;
