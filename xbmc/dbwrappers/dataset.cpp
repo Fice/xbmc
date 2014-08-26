@@ -39,7 +39,7 @@ using namespace std;
 namespace dbiplus {
 //************* Database implementation ***************
 
-Database::Database() {
+Database::Database( CDatabase* Db) {
   active = false;	// No connection yet
   error = "";//S_NO_CONNECTION;
   host = "";
@@ -48,6 +48,7 @@ Database::Database() {
   login = "";
   passwd = "";
   sequence_table = "db_sequence";
+  pDb = Db;
 }
 
 Database::~Database() {

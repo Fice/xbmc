@@ -20,14 +20,20 @@
  *
  */
 
+#include <map>
+#include <list>
+#include <vector>
+
 namespace dbiplus {
   class Database;
   class Dataset;
+  struct field_prop;
+  typedef std::vector<field_prop> record_prop;
 }
+class Changesets;
 
 #include <memory>
 #include <string>
-#include <vector>
 
 class DatabaseSettings; // forward
 class CDbUrl;
@@ -157,10 +163,32 @@ public:
    */
   bool CommitInsertQueries();
 
+  bool HasNewChangesets(int timestamp, const std::string& upnpGUID="") const;
+  bool GetChangesets(Changesets& result, int timestamp, const std::string& upnpGUID="") const;
+  bool ApplyChangesets(Changesets& cs);
+
   virtual bool GetFilter(CDbUrl &dbUrl, Filter &filter, SortDescription &sorting) { return true; }
   virtual bool BuildSQL(const std::string &strBaseDir, const std::string &strQuery, Filter &filter, std::string &strSQL, CDbUrl &dbUrl);
   virtual bool BuildSQL(const std::string &strBaseDir, const std::string &strQuery, Filter &filter, std::string &strSQL, CDbUrl &dbUrl, SortDescription &sorting);
 
+
+  typedef std::map<std::string, std::string> ChangelogData;
+  bool ApplyChangeset(const std::string& tablename,
+                      const ChangelogData& changelog,
+                      const std::string& changelogGUID,
+                      const std::string& originGUID);
+  virtual bool IsChangelogged() const { return false; }
+  virtual bool GetChangelogedTables(std::list<std::string> &changeloggedTables) { return false; }
+
+  //TODO:
+  //When we upgrading our DB (adding a new column or an entire table), chances are that the user already upgraded another
+  //kodi instance first. That kodi instance might have send us changesets that contain changes for the new columns.
+  //we threw away that data, because how could we have known what to do with it.
+  //That means we will be out of sync on those new columns and the UPnP Sync Service will not automatically deal with this.
+  //That's why we somehow need to fetch those data again.
+  void GetDataForNewColumne(const std::string& tablename, const std::vector<std::string>& column) {}
+
+  void GetChangesets(std::string DeviceUUID, Changesets& result);
 protected:
   friend class CDatabaseManager;
   bool Update(const DatabaseSettings &db);
@@ -198,6 +226,19 @@ protected:
    */
   virtual int GetSchemaVersion() const=0;
   virtual const char *GetBaseDBName() const=0;
+
+  bool CreateMirrorTable(const std::string& tablename, const dbiplus::record_prop& tableDefinition);
+  /* \brief Responsible for Calling */
+  bool CreateChangelogTrigger(const std::string& tablename,
+                              const std::string& eventname,
+                              const std::string& columns,
+                              const std::string& values);
+  bool CheckChangelogTable(const std::string& tablename);
+
+  /* \brief Should add the names of all changelogged tables to the param 'changeloggedTables'
+   */
+  void SetupChangelogTables();
+  bool SetupChangelogTrigger();
 
   int GetDBVersion();
   bool UpdateVersion(const std::string &dbName);

@@ -38,7 +38,7 @@
 #include <stdarg.h>
 
 
-
+class CDatabase;
 
 namespace dbiplus {
 class Dataset;		// forward declaration of class Dataset
@@ -73,10 +73,10 @@ protected:
     sequence_table, //Sequence table for nextid
     default_charset, //Default character set
     key, cert, ca, capath, ciphers; //SSL - Encryption info
-
+  CDatabase* pDb;
 public:
 /* constructor */
-  Database();
+  Database( CDatabase* Db );
 /* destructor */
   virtual ~Database();
   virtual Dataset *CreateDataset() const = 0;
@@ -117,6 +117,17 @@ public:
     ciphers = newCiphers;
   }
 
+  /**
+  param: tablename: the table where this trigger should be applied
+         event: the event where this trigger should be applied. Values can be: "update"/"insert"/"delete"
+         toDo: this is the part that will be placed inside "FOR EARCH ROW BEGIN {{toDO}} END"
+   **/
+  virtual std::string CreateChangelogTriggerDefinition(const std::string &triggername,
+                                                       const std::string &tablename,
+                                                       const std::string &event,
+                                                       const std::string &toDo) const=0;
+  virtual void DeactivateChangelogTriggers() =0;
+  virtual void ActivateChangelogTriggers() =0;
 /* virtual methods that must be overloaded in derived classes */
 
   virtual int init(void) { return DB_COMMAND_OK; }
@@ -135,6 +146,7 @@ public:
   virtual int drop(void) { return DB_COMMAND_OK; }
   virtual long nextid(const char* seq_name)=0;
 
+  virtual bool RegisterChangeCallback() { return false; }
 /* \brief copy database */
   virtual int copy(const char *new_name) { return -1; }
 
