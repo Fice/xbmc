@@ -9274,7 +9274,7 @@ bool CVideoDatabase::SetSingleValue(const std::string &table, const std::string 
     sql = PrepareSQL("UPDATE %s SET %s='%s'", table.c_str(), fieldName.c_str(), strValue.c_str());
     if (!conditionName.empty())
       sql += PrepareSQL(" WHERE %s=%u", conditionName.c_str(), conditionValue);
-    if (m_pDS->exec(sql.c_str()) == 0)
+    if (m_pDS->exec(sql) == 0)
       return true;
   }
   catch (...)
