@@ -45,10 +45,11 @@ protected:
   sqlite3 *conn;
   bool _in_transaction;
   int last_err;
-
+  bool new_changeset;
+  bool changelogTriggers;
 public:
 /* default constructor */
-  SqliteDatabase();
+  SqliteDatabase(CDatabase* Db);
 /* destructor */
   ~SqliteDatabase();
 
@@ -65,7 +66,16 @@ public:
   virtual void setHostName(const char *newHost);
 /* sets a database name */
   virtual void setDatabase(const char *newDb);
-
+  std::string CreateChangelogTriggerDefinition(const std::string &triggername,
+                                               const std::string &tablename,
+                                               const std::string &event,
+                                               const std::string &toDo) const;
+  virtual void DeactivateChangelogTriggers() { changelogTriggers = false; }
+  virtual void ActivateChangelogTriggers() { changelogTriggers = true; }
+  bool ChangelogTriggersActivated() const { return changelogTriggers; }
+  bool HasNewChangesets() const { return new_changeset; }
+  virtual bool RegisterChangeCallback();
+  void CommitHook();
 /* func. connects to database-server */
 
   virtual int connect(bool create);
@@ -97,6 +107,8 @@ public:
 
   bool in_transaction() {return _in_transaction;}; 	
 
+  void UpdateHook(const std::string &tablename);
+  void RollbackHook();
 };
 
 
