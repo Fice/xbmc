@@ -178,6 +178,8 @@ void CMusicDatabase::CreateTables()
   CLog::Log(LOGINFO, "create art table");
   m_pDS->exec("CREATE TABLE art(art_id INTEGER PRIMARY KEY, media_id INTEGER, media_type TEXT, type TEXT, url TEXT)");
 
+  SetupChangelogTables();
+
   // Add 'Karaoke' genre
   AddGenre( "Karaoke" );
 }
@@ -3921,11 +3923,20 @@ void CMusicDatabase::UpdateTables(int version)
     m_pDS->exec("UPDATE karaokedata SET strKaraLyrFileCRC=NULL");
     m_pDS->exec("UPDATE album SET idThumb=NULL");
   }
+  if (version < 49)
+    SetupChangelogTables();
 }
 
 int CMusicDatabase::GetSchemaVersion() const
 {
-  return 48;
+  return 49;
+}
+
+bool CMusicDatabase::GetChangelogedTables(std::list<std::string> &changeloggedTables)
+{
+  changeloggedTables.push_back("song");
+  changeloggedTables.push_back("album");
+  return true;
 }
 
 unsigned int CMusicDatabase::GetSongIDs(const Filter &filter, vector<pair<int,int> > &songIDs)
