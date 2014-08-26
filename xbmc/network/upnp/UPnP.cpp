@@ -48,6 +48,7 @@
 #include "video/VideoInfoTag.h"
 #include "guilib/Key.h"
 #include "Util.h"
+#include "UPnPSyncCtrlPoint.h"
 
 using namespace std;
 using namespace UPNP;
@@ -551,6 +552,11 @@ CUPnP::StartClient()
         CSettings::Get().GetBool("services.upnpserver")) {
         m_MediaController = new CMediaController(m_CtrlPointHolder->m_CtrlPoint);
     }
+    if (CSettings::Get().GetBool("services.upnpsync")) //TODO: setting
+    {
+      m_syncCtrlPoint = std::auto_ptr<CUPnPSyncCtrlPoint>(new CUPnPSyncCtrlPoint(m_CtrlPointHolder->m_CtrlPoint));
+      m_CtrlPointHolder->m_CtrlPoint->AddListener(m_syncCtrlPoint.get());
+    }
 }
 
 /*----------------------------------------------------------------------
@@ -579,7 +585,8 @@ CUPnP::CreateServer(int port /* = 0 */)
     CUPnPServer* device =
         new CUPnPServer(g_infoManager.GetLabel(SYSTEM_FRIENDLY_NAME),
                         CUPnPSettings::Get().GetServerUUID().length() ? CUPnPSettings::Get().GetServerUUID().c_str() : NULL,
-                        port);
+                        port,
+                        m_CtrlPointHolder->m_CtrlPoint);
 
     // trying to set optional upnp values for XP UPnP UI Icons to detect us
     // but it doesn't work anyways as it requires multicast for XP to detect us

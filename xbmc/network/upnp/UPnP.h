@@ -23,7 +23,9 @@
  */
 #pragma once
 
+#include <memory.h>
 #include "utils/StdString.h"
+#include "UPnPSyncCtrlPoint.h"
 
 class NPT_LogHandler;
 class PLT_UPnP;
@@ -78,6 +80,8 @@ public:
 
     static void RegisterUserdata(void* ptr);
     static void UnregisterUserdata(void* ptr);
+
+    CUPnPSyncCtrlPoint* GetSyncControl() { return m_syncCtrlPoint.get(); }
 private:
     // methods
     CUPnPRenderer* CreateRenderer(int port = 0);
@@ -95,6 +99,7 @@ private:
     CRendererReferenceHolder*   m_RendererHolder;
     CCtrlPointReferenceHolder*  m_CtrlPointHolder;
 
+    std::auto_ptr<CUPnPSyncCtrlPoint> m_syncCtrlPoint;
 
     static CUPnP* upnp;
 };

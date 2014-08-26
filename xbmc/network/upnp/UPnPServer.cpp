@@ -21,6 +21,7 @@
 
 #include "UPnPServer.h"
 #include "UPnPInternal.h"
+#include "UPnPContentSyncService.h"
 #include "Application.h"
 #include "view/GUIViewState.h"
 #include "video/VideoThumbLoader.h"
@@ -67,10 +68,11 @@ const char* video_containers[] = { "library://video/movies/titles.xml/", "librar
 /*----------------------------------------------------------------------
 |   CUPnPServer::CUPnPServer
 +---------------------------------------------------------------------*/
-CUPnPServer::CUPnPServer(const char* friendly_name, const char* uuid /*= NULL*/, int port /*= 0*/) :
+CUPnPServer::CUPnPServer(const char* friendly_name, const char* uuid /*= NULL*/, int port /*= 0*/, PLT_CtrlPointReference ctrlPointHolder /*= PLT_CtrlPointReference() */) :
     PLT_MediaConnect(friendly_name, false, uuid, port),
     PLT_FileMediaConnectDelegate("/", "/"),
-    m_scanning(g_application.IsMusicScanning() || g_application.IsVideoScanning())
+    m_scanning(g_application.IsMusicScanning() || g_application.IsVideoScanning()),
+    m_CtrlPointHolder(ctrlPointHolder)
 {
 }
 
@@ -98,6 +100,12 @@ CUPnPServer::ProcessGetSCPD(PLT_Service*                  service,
 NPT_Result
 CUPnPServer::SetupServices()
 {
+  if (CSettings::Get().GetBool("services.upnpsync"))
+  {
+    ASSERT(!m_CtrlPointHolder.IsNull());
+    syncService = new PLT_ContentSyncService(this, NPT_Reference<PLT_ContentSyncDelegate>(new CUPnPContentSyncService()), m_CtrlPointHolder);
+  }
+
     PLT_MediaConnect::SetupServices();
     PLT_Service* service = NULL;
     NPT_Result result = FindServiceById("urn:upnp-org:serviceId:ContentDirectory", service);
@@ -220,6 +228,21 @@ CUPnPServer::SetupIcons()
         PLT_DeviceIcon("image/png", 16, 16, 8, "/icon16x16.png"),
         file_root);
     return NPT_SUCCESS;
+}
+
+NPT_Result CUPnPServer::Stop(PLT_SsdpListenTask* task)
+{
+  syncService = NULL; //PLT_DeviceHost::Stop will delete that pointer
+  return PLT_MediaConnect::Stop(task);
+}
+
+NPT_Result CUPnPServer::OnAction(PLT_ActionReference& action, const PLT_HttpRequestContext& context)
+{
+  if (syncService!=NULL)
+    if(NPT_SUCCEEDED(syncService->OnAction(action, context)))
+      return NPT_SUCCESS;
+  return (PLT_MediaConnect::OnAction(action, context));
+
 }
 
 /*----------------------------------------------------------------------

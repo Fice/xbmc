@@ -405,6 +405,11 @@ BuildObject(CFileItem&                    item,
         // duration of zero is invalid
         if (resource.m_Duration == 0) resource.m_Duration = -1;
 
+
+
+        resource.m_SyncInfo.syncAllowed = "ALL";
+        resource.m_SyncInfo.resModified = 0; //TODO:
+
         // Set the resource file size
         resource.m_Size = item.m_dwSize;
         if(resource.m_Size == 0)
