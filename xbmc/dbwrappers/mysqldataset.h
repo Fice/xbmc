@@ -41,7 +41,7 @@ protected:
 
 public:
 /* default constructor */
-  MysqlDatabase();
+  MysqlDatabase(CDatabase* Db);
 /* destructor */
   ~MysqlDatabase();
 
@@ -54,7 +54,13 @@ public:
   virtual int setErr(int err_code,const char * qry);
 /* func. returns error message if error occurs */
   virtual const char *getErrorMsg();
-
+    //TODO:
+  std::string CreateChangelogTriggerDefinition(const std::string &triggername,
+                                               const std::string &tablename,
+                                               const std::string &event,
+                                               const std::string &toDo) const { return ""; }
+  virtual void DeactivateChangelogTriggers();
+  virtual void ActivateChangelogTriggers();
 /* func. connects to database-server */
   virtual int connect(bool create);
 /* func. disconnects from database-server */

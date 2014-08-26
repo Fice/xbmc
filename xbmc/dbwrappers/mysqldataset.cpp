@@ -44,7 +44,7 @@ namespace dbiplus {
 
 //************* MysqlDatabase implementation ***************
 
-MysqlDatabase::MysqlDatabase() {
+  MysqlDatabase::MysqlDatabase(CDatabase* Db) : Database(Db){
 
   active = false;
   _in_transaction = false;     // for transaction
@@ -106,6 +106,15 @@ int MysqlDatabase::setErr(int err_code, const char * qry) {
 
 const char *MysqlDatabase::getErrorMsg() {
    return error.c_str();
+}
+
+void MysqlDatabase::DeactivateChangelogTriggers()
+{
+  ASSERT(false);
+}
+void MysqlDatabase::ActivateChangelogTriggers()
+{
+  ASSERT(false);
 }
 
 int MysqlDatabase::connect(bool create_new) {
