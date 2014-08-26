@@ -181,6 +181,9 @@ PLT_MediaItemResource::PLT_MediaItemResource()
     m_NbAudioChannels = (NPT_UInt32)-1;
     m_Resolution      = "";
     m_ColorDepth      = (NPT_UInt32)-1;
+
+    m_SyncInfo.syncAllowed = "PROHIBITED"; //TODO: set to METADATA_ONLY if the resource is not local
+    m_SyncInfo.resModified = false;
 }
 
 /*----------------------------------------------------------------------
@@ -524,6 +527,16 @@ PLT_MediaObject::ToDidl(NPT_UInt64 mask, NPT_String& didl)
                 didl += NPT_String::FromIntegerU(m_Resources[i].m_NbAudioChannels);
                 didl += "\"";
             }
+      if ((mask & PLT_FILTER_MASK_RES_SYNC_ALLOWED)) {
+                didl += " avcs:syncAllowed=\"";
+                didl += m_Resources[i].m_SyncInfo.syncAllowed;
+                didl += "\"";
+            }
+      if ((mask & PLT_FILTER_MASK_RES_RES_MODIFIED)) {
+                didl += " avcs:resModified=\"";
+                didl += NPT_String::FromInteger(m_Resources[i].m_SyncInfo.resModified);
+                didl += "\"";
+            }
             
             didl += " protocolInfo=\"";
             PLT_Didl::AppendXmlEscape(didl, m_Resources[i].m_ProtocolInfo.ToString());
@@ -756,6 +769,19 @@ PLT_MediaObject::FromDidl(NPT_XmlElementNode* entry)
                 PLT_XmlHelper::SetAttribute(children[i], "duration", str); 
             }
         }    
+
+        if (NPT_SUCCEEDED(PLT_XmlHelper::GetAttribute(children[i], "avcs:syncAllowed", resource.m_SyncInfo.syncAllowed, "", 256))) {
+
+          if (resource.m_SyncInfo.syncAllowed.Compare("ALL", true) != 0 &&
+              resource.m_SyncInfo.syncAllowed.Compare("METADATA_ONLY", true) != 0) {
+            resource.m_SyncInfo.syncAllowed = "PROHIBITED";
+          }
+        }
+
+        if (NPT_SUCCEEDED(PLT_XmlHelper::GetAttribute(children[i], "avcs:resModified", str, "", 256))) {
+          if (NPT_FAILED(str.ToInteger32(resource.m_SyncInfo.resModified))) resource.m_SyncInfo.resModified = (NPT_Size)-1;
+        }
+
         m_Resources.Add(resource);
     }
 

@@ -100,6 +100,9 @@
 #define PLT_FILTER_MASK_XBMC_VOTES                  NPT_UINT64_C(0x0000300000000000)
 #define PLT_FILTER_MASK_XBMC_ARTWORK                NPT_UINT64_C(0x0000400000000000)
 
+#define PLT_FILTER_MASK_RES_SYNC_ALLOWED            NPT_UINT64_C(0x0000800000000000)
+#define PLT_FILTER_MASK_RES_RES_MODIFIED            NPT_UINT64_C(0x0001000000000000)
+
 #define PLT_FILTER_FIELD_TITLE                      "dc:title"
 #define PLT_FILTER_FIELD_CREATOR                    "dc:creator"
 #define PLT_FILTER_FIELD_DATE                       "dc:date"
@@ -148,6 +151,9 @@
 #define PLT_FILTER_FIELD_XBMC_RATING                "xbmc:rating"
 #define PLT_FILTER_FIELD_XBMC_VOTES                 "xbmc:votes"
 #define PLT_FILTER_FIELD_XBMC_ARTWORK               "xbmc:artwork"
+
+#define PLT_FILTER_FIELD_AVCS_SYNC_ALLOWED          "res@avcs:syncAllowed"
+#define PLT_FILTER_FIELD_AVCS_RES_MODIFIED          "res@avcs:resModified"
 
 extern const char* didl_header;
 extern const char* didl_footer;

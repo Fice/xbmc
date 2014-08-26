@@ -136,6 +136,11 @@ typedef struct {
 } PLT_MiscInfo;
 
 typedef struct {
+  NPT_UInt32 resModified;
+  NPT_String syncAllowed;
+} PLT_ContentSyncInfo;
+
+typedef struct {
     NPT_UInt64 total;
     NPT_UInt64 used;
     NPT_UInt64 free;
@@ -191,6 +196,9 @@ public:
     NPT_UInt32       m_NbAudioChannels;
     NPT_String       m_Resolution;
     NPT_UInt32       m_ColorDepth;
+
+    /* content sync properties*/
+    PLT_ContentSyncInfo m_SyncInfo;
 };
 
 /*----------------------------------------------------------------------
