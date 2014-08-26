@@ -69,6 +69,7 @@ PLT_MediaBrowser::OnDeviceAdded(PLT_DeviceDataReference& device)
     // verify the device implements the function we need
     PLT_Service* serviceCDS;
     PLT_Service* serviceCMR;
+    PLT_Service* serviceCSS = NULL;
     NPT_String   type;
 
     if (!device->GetType().StartsWith("urn:schemas-upnp-org:device:MediaServer"))
@@ -96,6 +97,11 @@ PLT_MediaBrowser::OnDeviceAdded(PLT_DeviceDataReference& device)
         serviceCMR->ForceVersion(1);
     }
     
+    type = "urn:schemas-upnp-org:service:ContentSync:*";
+    if (NPT_SUCCEEDED(device->FindServiceByType(type, serviceCSS))) {
+      serviceCSS->ForceVersion(1);
+    }
+
     {
         NPT_AutoLock lock(m_MediaServers);
 
@@ -116,6 +122,8 @@ PLT_MediaBrowser::OnDeviceAdded(PLT_DeviceDataReference& device)
     if (m_Delegate && m_Delegate->OnMSAdded(device)) {
         m_CtrlPoint->Subscribe(serviceCDS);
         m_CtrlPoint->Subscribe(serviceCMR);
+        if (serviceCSS)
+          m_CtrlPoint->Subscribe(serviceCSS);
     }
     
     return NPT_SUCCESS;

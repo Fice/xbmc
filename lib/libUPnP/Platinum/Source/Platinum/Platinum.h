@@ -104,6 +104,9 @@ cross-platform logging system.
 #include "PltMediaCache.h"
 #include "PltMediaItem.h"
 #include "PltSyncMediaBrowser.h"
+#include "ContentSync/PltSyncData.h"
+#include "ContentSync/PltSyncPolicy.h"
+#include "PltContentSyncService.h"
 
 #include "PltXbox360.h"
 #include "PltMediaConnect.h"
