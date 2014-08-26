@@ -1955,6 +1955,14 @@
           <default>false</default>
           <control type="toggle" />
         </setting>
+	    <setting id="services.upnpsync" type="boolean" label="36013" help="36014">
+          <level>1</level>
+          <default>false</default>
+	      <dependencies>
+            <dependency type="enable" setting="services.upnpserver">true</dependency>
+          </dependencies>
+          <control type="toggle" />
+        </setting>
         <setting id="services.upnpannounce" type="boolean" parent="services.upnpserver" label="20188" help="36324">
           <level>2</level>
           <default>true</default>
