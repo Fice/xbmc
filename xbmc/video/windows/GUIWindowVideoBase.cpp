@@ -64,6 +64,7 @@
 #include "utils/FileUtils.h"
 #include "interfaces/AnnouncementManager.h"
 #include "network/upnp/UPnP.h"
+#include "network/upnp/UPnPSyncCtrlPoint.h"
 #include "pvr/PVRManager.h"
 #include "pvr/recordings/PVRRecordings.h"
 #include "utils/URIUtils.h"
@@ -76,6 +77,7 @@
 #include "GUIInfoManager.h"
 #include "utils/GroupUtils.h"
 #include "filesystem/File.h"
+#include "dialogs/GUIDialogKaiToast.h"
 
 using namespace std;
 using namespace XFILE;
@@ -1348,6 +1350,42 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_SET_CONTENT:
     {
       OnAssignContent(item->HasVideoInfoTag() && !item->GetVideoInfoTag()->m_strPath.empty() ? item->GetVideoInfoTag()->m_strPath : item->GetPath());
+      return true;
+    }
+  case CONTEXT_BUTTON_ADD_UPNP_SYNC:
+    {
+      if (!CSettings::Get().GetBool("services.upnpsync"))
+        return false;
+      CURL path(item->GetPath());
+      UPNP::CUPnPSyncCtrlPoint* syncControl = UPNP::CUPnP::GetInstance()->GetSyncControl();
+      if (syncControl && syncControl->CreateSyncRelationship(path))
+      {
+        //TODO: remove this line, because the actual response is async... we need a better way to tell the user it succeeded
+        CGUIDialogKaiToast::QueueNotification("upnp sync", "worked");
+      }
+      else
+      {
+        //TODO: localize
+        CGUIDialogKaiToast::QueueNotification("upnp sync", "failed");
+      }
+      return true;
+    }
+  case CONTEXT_BUTTON_REMOVE_UPNP_SYNC:
+    {
+      if (!CSettings::Get().GetBool("services.upnpsync"))
+        return false;
+      CURL path(item->GetPath());
+      UPNP::CUPnPSyncCtrlPoint* syncControl = UPNP::CUPnP::GetInstance()->GetSyncControl();
+      if (syncControl && syncControl->RemoveSyncRelationship(path))
+      {
+        //TODO: remove this line, because the actual response is async... we need a better way to tell the user it succeeded
+        CGUIDialogKaiToast::QueueNotification("upnp sync", "worked");
+      }
+      else
+      {
+        //TODO: localize
+        CGUIDialogKaiToast::QueueNotification("upnp sync", "failed");
+      }
       return true;
     }
   case CONTEXT_BUTTON_PLAY_PART:
