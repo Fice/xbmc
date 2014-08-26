@@ -1679,40 +1679,59 @@ remove_sub:
     return res;
 }
 
+NPT_Result
+PLT_CtrlPoint::CreateActionThread(PLT_ActionReference& action,
+                                  void*                userdata,
+                                  PLT_CtrlPointInvokeActionTask** task)
+{
+  if (!m_Started) NPT_CHECK_WARNING(NPT_ERROR_INVALID_STATE);
+
+  PLT_Service* service = action->GetActionDesc().GetService();
+
+    // create the request
+  NPT_HttpUrl url(service->GetControlURL(true));
+  NPT_HttpRequest* request = new NPT_HttpRequest(url, "POST", NPT_HTTP_PROTOCOL_1_1);
+
+    // create a memory stream for our request body
+  NPT_MemoryStreamReference stream(new NPT_MemoryStream);
+  action->FormatSoapRequest(*stream);
+
+    // set the request body
+  NPT_HttpEntity* entity = NULL;
+  PLT_HttpHelper::SetBody(*request, (NPT_InputStreamReference)stream, &entity);
+
+  entity->SetContentType("text/xml; charset=\"utf-8\"");
+  NPT_String service_type = service->GetServiceType();
+  NPT_String action_name  = action->GetActionDesc().GetName();
+  request->GetHeaders().SetHeader("SOAPAction", "\"" + service_type + "#" + action_name + "\"");
+
+    // create a task to post the request
+  *task = new PLT_CtrlPointInvokeActionTask(
+                                            request,
+                                            this,
+                                            action,
+                                            userdata);
+
+  return NPT_SUCCESS;
+}
+
+NPT_Result PLT_CtrlPoint::InvokeAction(PLT_CtrlPointInvokeActionTask* task)
+{
+  // queue the request
+  m_TaskManager->StartTask(task);
+
+  return NPT_SUCCESS;
+}
+
 /*----------------------------------------------------------------------
 |   PLT_CtrlPoint::InvokeAction
 +---------------------------------------------------------------------*/
 NPT_Result
-PLT_CtrlPoint::InvokeAction(PLT_ActionReference& action, 
+PLT_CtrlPoint::InvokeAction(PLT_ActionReference& action,
                             void*                userdata)
 {
-    if (!m_Started) NPT_CHECK_WARNING(NPT_ERROR_INVALID_STATE);
-    
-    PLT_Service* service = action->GetActionDesc().GetService();
-    
-    // create the request
-    NPT_HttpUrl url(service->GetControlURL(true));
-    NPT_HttpRequest* request = new NPT_HttpRequest(url, "POST", NPT_HTTP_PROTOCOL_1_1);
-    
-    // create a memory stream for our request body
-    NPT_MemoryStreamReference stream(new NPT_MemoryStream);
-    action->FormatSoapRequest(*stream);
-
-    // set the request body
-    NPT_HttpEntity* entity = NULL;
-    PLT_HttpHelper::SetBody(*request, (NPT_InputStreamReference)stream, &entity);
-
-    entity->SetContentType("text/xml; charset=\"utf-8\"");
-    NPT_String service_type = service->GetServiceType();
-    NPT_String action_name  = action->GetActionDesc().GetName();
-    request->GetHeaders().SetHeader("SOAPAction", "\"" + service_type + "#" + action_name + "\"");
-
-    // create a task to post the request
-    PLT_CtrlPointInvokeActionTask* task = new PLT_CtrlPointInvokeActionTask(
-        request,
-        this, 
-        action, 
-        userdata);
+    PLT_CtrlPointInvokeActionTask* task;
+    NPT_CHECK(CreateActionThread(action, userdata, &task));
 
     // queue the request
     m_TaskManager->StartTask(task);

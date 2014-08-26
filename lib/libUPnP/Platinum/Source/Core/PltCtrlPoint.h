@@ -56,6 +56,7 @@ class PLT_SsdpSearchTask;
 class PLT_SsdpListenTask;
 class PLT_CtrlPointGetSCPDsTask;
 class PLT_CtrlPointGetSCPDRequest;
+class PLT_CtrlPointInvokeActionTask;
 
 /*----------------------------------------------------------------------
 |   PLT_CtrlPointListener class
@@ -129,6 +130,10 @@ public:
                                 const char*              service_type,
                                 const char*              action_name,
                                 PLT_ActionReference&     action);
+    virtual NPT_Result CreateActionThread(PLT_ActionReference& action,
+                                          void*                userdata,
+                                          PLT_CtrlPointInvokeActionTask** task);
+    virtual NPT_Result InvokeAction(PLT_CtrlPointInvokeActionTask* task);
     virtual NPT_Result InvokeAction(PLT_ActionReference& action,
                                     void*                userdata = NULL);
 
