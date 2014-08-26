@@ -31,6 +31,9 @@
 #include "sqlitedataset.h"
 #include "DatabaseManager.h"
 #include "DbUrl.h"
+#include <algorithm>
+#include <functional>
+#include <stdexcept>
 
 #ifdef HAS_MYSQL
 #include "mysqldataset.h"
@@ -426,12 +429,12 @@ bool CDatabase::Connect(const std::string &dbName, const DatabaseSettings &dbSet
   // create the appropriate database structure
   if (dbSettings.type.Equals("sqlite3"))
   {
-    m_pDB.reset( new SqliteDatabase() ) ;
+    m_pDB.reset( new SqliteDatabase(this) ) ;
   }
 #ifdef HAS_MYSQL
   else if (dbSettings.type.Equals("mysql"))
   {
-    m_pDB.reset( new MysqlDatabase() ) ;
+    m_pDB.reset( new MysqlDatabase(this) ) ;
   }
 #endif
   else
@@ -502,7 +505,227 @@ bool CDatabase::Connect(const std::string &dbName, const DatabaseSettings &dbSet
   }
 
   m_openCount = 1; // our database is open
+
+  if(IsChangelogged()) //TODO: && (HasUPnP Sources || SomeUsesUsesUsAsUpnpSource)
+  {
+    if(!m_pDB->RegisterChangeCallback())
+    {
+        //TODO: check if we can implement such a callback for mysql... if not, perhabs implement a background job that pulls the changesets periodically
+      CLog::Log(LOGINFO, "%s unable to register a change callback. We will not be able to automatically start a sync with UPnP Devices", __FUNCTION__);
+    }
+  }
+
   return true;
+}
+
+bool CDatabase::ApplyChangeset(const std::string& tablename,
+                               const ChangelogData& changelog,
+                               const std::string& changelogGUID,
+                               const std::string& originGUID)
+{
+  ASSERT(IsChangelogged());
+
+  try {
+    BeginTransaction();
+    m_pDB->DeactivateChangelogTriggers();
+
+      //Apply data...
+      //TODO:
+
+    m_pDB->ActivateChangelogTriggers();
+    CommitTransaction();
+  }
+  catch (...) {
+    return false;
+  }
+  return true;
+}
+
+struct FieldFinder
+{
+  FieldFinder(const std::string &fieldName) : fieldName(fieldName) {}
+  bool operator() (const field_prop& fp)
+  {
+    return fp.name==fieldName;
+  }
+private:
+  std::string fieldName;
+};
+
+bool CDatabase::CreateMirrorTable(const std::string& tablename, const record_prop& tableDefinition)
+{
+  std::string mirroredTablename = tablename + "_changesets";
+  std::string strSQL = PrepareSQL("SELECT * FROM %s LIMIT 1", mirroredTablename.c_str());
+  bool doesntExist = false;
+
+  try
+  {
+    m_pDS2->query(strSQL.c_str());
+  }
+  catch(DbErrors &e)
+  {
+      //Mirrored table definition doesn't exist yet, recreate it!
+    CLog::Log(LOGINFO, "%s - Mirrored changelogtable for %s doesn't exist. Creating one", __FUNCTION__, tablename.c_str());
+    doesntExist = true;
+  }
+
+  const record_prop& mirrored_tableDefinition = m_pDS2->get_result_set().record_header;
+  if(mirrored_tableDefinition.empty())
+    doesntExist = true;
+
+  record_prop::const_iterator i = tableDefinition.begin(),
+                              end = tableDefinition.end();
+
+  std::vector<std::string> columnNames;
+  columnNames.reserve(tableDefinition.size());
+
+  if(doesntExist)
+  {
+    std::string strColumnValues;
+    for (; i != end; ++i)
+    {
+      std::string name = i->name;
+      strColumnValues += ", old" + name+" NONE, new" + name+" NONE";
+      columnNames.push_back(name);
+    }
+    std::string query = "CREATE TABLE "+mirroredTablename+" "
+                        "(id INTEGER PRIMARY KEY NOT NULL, chagesetId INTEGER UNIQUE NOT NULL "+strColumnValues+");";
+    if (m_pDS2->exec(query) != SQLITE_OK)
+    {
+      CLog::Log(LOGERROR, "%s - creating mirrored changelog table failed: %s", __FUNCTION__, query.c_str());
+      return false;
+    }
+  }
+  else
+  {
+    record_prop::const_iterator mtdBegin = mirrored_tableDefinition.begin(),
+                                mtdEnd   = mirrored_tableDefinition.end();
+    for (; i != end; ++i)
+    {
+      if (std::find_if(mtdBegin, mtdEnd, FieldFinder(i->name))==mtdEnd)
+      { //This column does not exist in the mirrored table!
+        //Let's create it
+        columnNames.push_back(i->name);
+
+        std::string query = "ALTER TABLE "+mirroredTablename+" ADD COLUMN "+i->name+" NONE";
+        CLog::Log(LOGERROR, "%s - mirrored table %s is missing the field: %s", __FUNCTION__, mirroredTablename.c_str(), i->name.c_str());
+        if (m_pDS2->exec(query) != SQLITE_OK)
+        {
+          CLog::Log(LOGERROR, "%s - error creating the missing field %s", __FUNCTION__, query.c_str());
+          return false;
+        }
+      }
+    }
+  }
+
+  if(!columnNames.empty())
+    GetDataForNewColumne(tablename, columnNames);
+
+  return true;
+}
+
+bool CDatabase::CreateChangelogTrigger(const std::string& tablename,
+                                       const std::string& eventname,
+                                       const std::string& columns,
+                                       const std::string& values)
+{
+  std::string strTriggerTablename = "tr_" + eventname + "_" + tablename;
+
+  m_pDS->exec("DROP TRIGGER IF EXISTS " + strTriggerTablename);
+
+  std::string toDo = "INSERT INTO changelog"
+                     "       (type           , origin) "
+                     "VALUES ('"+tablename+"', 'local'); "
+                     "INSERT INTO "+tablename+"_changesets"
+                     "       (chagesetId "+columns+") "
+                     "VALUES (last_insert_rowid() "+values+"); ";
+
+  std::string strTrigger = m_pDB->CreateChangelogTriggerDefinition(strTriggerTablename,
+                                                                   tablename,
+                                                                   eventname,
+                                                                   toDo);
+
+  CLog::Log(LOGINFO, "%s - creating changelog triggers for table %s. EVENT: %s\n%s", __FUNCTION__, tablename.c_str(), eventname.c_str(), strTrigger.c_str());
+  try
+  {
+    if (m_pDS->exec(strTrigger) != SQLITE_OK)
+    {
+      CLog::Log(LOGERROR, "%s - creating changelog trigger failed: %s", __FUNCTION__, strTrigger.c_str());
+      return false;
+    }
+  } catch(DbErrors& e)
+  {
+    CLog::Log(LOGERROR, "%s - DbError: %s", __FUNCTION__, e.getMsg());
+    return false;
+  }
+  return true;
+}
+
+bool CDatabase::CheckChangelogTable(const std::string& tablename)
+{
+  std::string strSQL = PrepareSQL("SELECT * FROM %s LIMIT 1", tablename.c_str());
+  m_pDS->query(strSQL.c_str());
+
+  const record_prop& tableDefinition = m_pDS->get_result_set().record_header;
+  if(tableDefinition.empty())
+    return false;
+
+  if(!CreateMirrorTable(tablename, tableDefinition))
+    return false;
+
+  std::string strOldColumnNames; // ', old{COLUMN_NAME1}, old{COLUMN_NAME2}'
+  std::string strNewColumnNames; // ', new{COLUMN_NAME1}, new{COLUMN_NAME2}'
+  std::string strOldColumnValues;// ', old.{COLUMN_NAME1}, old.{COLUMN_NAME2}'
+  std::string strNewColumnValues;// ', new.{COLUMN_NAME1}, new.{COLUMN_NAME2}'
+
+  record_prop::const_iterator i   = tableDefinition.begin(),
+  end = tableDefinition.end();
+  for (; i != end; ++i)
+  {
+    std::string name = i->name;
+    std::string type = FTypeToTypeString(i->type);
+
+    strOldColumnNames  += ",old"  + name;
+    strNewColumnNames  += ",new"  + name;
+    strOldColumnValues += ",old." + name;
+    strNewColumnValues += ",new." + name;
+  }
+
+  return (CreateChangelogTrigger(tablename, "insert", strNewColumnNames,                   strNewColumnValues) &&
+          CreateChangelogTrigger(tablename, "update", strNewColumnNames+strOldColumnNames, strNewColumnValues+strOldColumnValues) &&
+          CreateChangelogTrigger(tablename, "delete", strOldColumnNames,                   strOldColumnValues));
+}
+
+bool CDatabase::SetupChangelogTrigger()
+{
+  BeginTransaction();
+
+  std::list<std::string> changeloggedTables;
+  if(!GetChangelogedTables(changeloggedTables))
+  {
+    RollbackTransaction();
+    return false;
+  }
+
+  std::list<std::string>::iterator i,
+                                   begin = changeloggedTables.begin(),
+                                   end = changeloggedTables.end();
+  for(i = begin; i != end; ++i)
+  {
+    if(!CheckChangelogTable(*i))
+    {
+      RollbackTransaction();
+      return false;
+    }
+  }
+  CommitTransaction();
+
+  return true;
+}
+
+void CDatabase::SetupChangelogTables()
+{
+    //TODO: remove?!? i guess
 }
 
 int CDatabase::GetDBVersion()
@@ -546,6 +769,10 @@ bool CDatabase::UpdateVersion(const std::string &dbName)
       return false;
     }
     CommitTransaction();
+
+    if(IsChangelogged() && !SetupChangelogTrigger())
+      CLog::Log(LOGERROR, "Creation of changelog Triggers failed. Automatic changelog creation will not be available");
+
     CLog::Log(LOGINFO, "Update to version %i successful", GetSchemaVersion());
   }
   else if (version > GetSchemaVersion())
@@ -685,6 +912,7 @@ bool CDatabase::CreateDatabase()
 
     CreateTables();
     CreateAnalytics();
+    SetupChangelogTables();
   }
   catch (...)
   {
