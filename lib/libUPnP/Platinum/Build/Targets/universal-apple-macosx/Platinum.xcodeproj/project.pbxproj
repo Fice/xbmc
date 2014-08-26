@@ -100,6 +100,11 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		0E2AE5F1192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE5F0192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp */; };
+		0E2AE5F2192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE5F0192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp */; };
+		0E2AE5F3192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE5F0192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp */; };
+		0E2AE5F4192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE5F0192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp */; };
+		0E2AE5F5192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE5F0192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp */; };
 		E40F7503176C5F4900023CDC /* NptAutomaticCleaner.h in Headers */ = {isa = PBXBuildFile; fileRef = E4A6CA9A1724AC8C003A8778 /* NptAutomaticCleaner.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E40F7504176C5F5B00023CDC /* NptAutomaticCleaner.h in Headers */ = {isa = PBXBuildFile; fileRef = E4A6CA9A1724AC8C003A8778 /* NptAutomaticCleaner.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E40F7505176C5F6000023CDC /* NptAutomaticCleaner.h in Headers */ = {isa = PBXBuildFile; fileRef = E4A6CA9A1724AC8C003A8778 /* NptAutomaticCleaner.h */; };
@@ -1505,6 +1510,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0E2AE5F0192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContentSyncServiceSCPD.cpp; sourceTree = "<group>"; };
 		E402C7541297CECB00565B76 /* ContentDirectorySCPD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContentDirectorySCPD.cpp; sourceTree = "<group>"; };
 		E40C699E11E6ED710024CAD4 /* PltFrameBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PltFrameBuffer.cpp; sourceTree = "<group>"; };
 		E40C699F11E6ED710024CAD4 /* PltFrameBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PltFrameBuffer.h; sourceTree = "<group>"; };
@@ -2319,6 +2325,7 @@
 				E402C7541297CECB00565B76 /* ContentDirectorySCPD.cpp */,
 				E4A7DB82108596E400E6ADE2 /* ConnectionManagerSCPD.cpp */,
 				E4A7DB83108596E400E6ADE2 /* ContentDirectorywSearchSCPD.cpp */,
+				0E2AE5F0192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp */,
 				E43155A80D6FFE4C00899579 /* PltDidl.cpp */,
 				E43155A90D6FFE4C00899579 /* PltDidl.h */,
 				E43155AA0D6FFE4C00899579 /* PltFileMediaServer.cpp */,
@@ -4190,6 +4197,7 @@
 				E457ADE6144AA4A000C34B69 /* tls1_clnt.c in Sources */,
 				E457ADE9144AA4A000C34B69 /* tls1_svr.c in Sources */,
 				E457ADEF144AA4A000C34B69 /* x509.c in Sources */,
+				0E2AE5F5192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4329,6 +4337,7 @@
 				E48F8A761632007E009E46A5 /* NptAppleAutoreleasePool.mm in Sources */,
 				E48F8A771632007E009E46A5 /* NptCocoaEnviroment.mm in Sources */,
 				E4A6CA9D1724AEBD003A8778 /* NptAutomaticCleaner.cpp in Sources */,
+				0E2AE5F3192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4468,6 +4477,7 @@
 				E448216B151011270069F573 /* NptAppleAutoreleasePool.mm in Sources */,
 				E46E95B8153F9D2100ED95D5 /* NptCocoaEnviroment.mm in Sources */,
 				E4A6CA9C1724AEBC003A8778 /* NptAutomaticCleaner.cpp in Sources */,
+				0E2AE5F2192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4606,6 +4616,7 @@
 				E43E5F8C163FAC6D008A39D8 /* PltThreadTask.cpp in Sources */,
 				E43E5F8E163FAC6D008A39D8 /* PltUPnP.cpp in Sources */,
 				E4A6CA9E1724AEC0003A8778 /* NptAutomaticCleaner.cpp in Sources */,
+				0E2AE5F4192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4747,6 +4758,7 @@
 				E46E95B5153F92F100ED95D5 /* NptNullAutoreleasePool.cpp in Sources */,
 				E46E95BC153F9D3800ED95D5 /* NptStdcConsole.cpp in Sources */,
 				E4A6CA9B1724AEBC003A8778 /* NptAutomaticCleaner.cpp in Sources */,
+				0E2AE5F1192E8EA2000DF1E2 /* ContentSyncServiceSCPD.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

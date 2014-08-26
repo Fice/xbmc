@@ -28,6 +28,33 @@
 		0E3036EC1760F68A00D93596 /* FavouritesDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3036EA1760F68A00D93596 /* FavouritesDirectory.cpp */; };
 		0E3036ED1760F68A00D93596 /* FavouritesDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3036EA1760F68A00D93596 /* FavouritesDirectory.cpp */; };
 		0E3036EE1760F68A00D93596 /* FavouritesDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3036EA1760F68A00D93596 /* FavouritesDirectory.cpp */; };
+		0EA0020519A4D21C007FE750 /* UPnPContentSyncService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA0020319A4D21C007FE750 /* UPnPContentSyncService.cpp */; settings = {COMPILER_FLAGS = "-I$SRCROOT/lib/libUPnP -I$SRCROOT/lib/libUPnP/Neptune/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Platinum  -I$SRCROOT/lib/libUPnP/Platinum/Source/Extras -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaServer -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaConnect -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaRenderera"; }; };
+		0EA0020619A4D21C007FE750 /* UPnPContentSyncService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA0020319A4D21C007FE750 /* UPnPContentSyncService.cpp */; };
+		0EA0020719A4D21C007FE750 /* UPnPContentSyncService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA0020319A4D21C007FE750 /* UPnPContentSyncService.cpp */; };
+		0EA0020A19A4D22D007FE750 /* UPnPSyncCtrlPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA0020819A4D22D007FE750 /* UPnPSyncCtrlPoint.cpp */; };
+		0EA0020B19A4D22D007FE750 /* UPnPSyncCtrlPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA0020819A4D22D007FE750 /* UPnPSyncCtrlPoint.cpp */; };
+		0EA0020C19A4D22D007FE750 /* UPnPSyncCtrlPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA0020819A4D22D007FE750 /* UPnPSyncCtrlPoint.cpp */; };
+		0EA002EB19A4E1C7007FE750 /* PltSyncPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA002EA19A4E1C7007FE750 /* PltSyncPolicy.cpp */; };
+		0EA002EC19A4E1C7007FE750 /* PltSyncPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA002EA19A4E1C7007FE750 /* PltSyncPolicy.cpp */; };
+		0EA002ED19A4E1C7007FE750 /* PltSyncPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA002EA19A4E1C7007FE750 /* PltSyncPolicy.cpp */; };
+		0EA002F019A4E354007FE750 /* PltContentSyncService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE586192E6ABB000DF1E2 /* PltContentSyncService.cpp */; };
+		0EA002F119A4E356007FE750 /* PltContentSyncService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE586192E6ABB000DF1E2 /* PltContentSyncService.cpp */; };
+		0EA002F219A4E357007FE750 /* PltContentSyncService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE586192E6ABB000DF1E2 /* PltContentSyncService.cpp */; };
+		0EA002F619A4E41F007FE750 /* PltSyncData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE5B6192E8A75000DF1E2 /* PltSyncData.cpp */; };
+		0EA002F719A4E420007FE750 /* PltSyncData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE5B6192E8A75000DF1E2 /* PltSyncData.cpp */; };
+		0EA002F819A4E421007FE750 /* PltSyncData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE5B6192E8A75000DF1E2 /* PltSyncData.cpp */; };
+		0EA0032019A4E97A007FE750 /* ContentSyncServiceSCPD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE588192E6ACB000DF1E2 /* ContentSyncServiceSCPD.cpp */; };
+		0EA0032119A4E97B007FE750 /* ContentSyncServiceSCPD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE588192E6ACB000DF1E2 /* ContentSyncServiceSCPD.cpp */; };
+		0EA0032219A4E97C007FE750 /* ContentSyncServiceSCPD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2AE588192E6ACB000DF1E2 /* ContentSyncServiceSCPD.cpp */; };
+		0EA004BD19A603A9007FE750 /* UPnPSyncPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA004BB19A603A9007FE750 /* UPnPSyncPolicy.cpp */; };
+		0EA004BE19A603A9007FE750 /* UPnPSyncPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA004BB19A603A9007FE750 /* UPnPSyncPolicy.cpp */; };
+		0EA004BF19A603A9007FE750 /* UPnPSyncPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA004BB19A603A9007FE750 /* UPnPSyncPolicy.cpp */; };
+		0EA0077219A9184B007FE750 /* UPnPDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA0077019A9184B007FE750 /* UPnPDatabase.cpp */; };
+		0EA0077319A9184B007FE750 /* UPnPDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA0077019A9184B007FE750 /* UPnPDatabase.cpp */; };
+		0EA0077419A9184B007FE750 /* UPnPDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EA0077019A9184B007FE750 /* UPnPDatabase.cpp */; };
+		0EAD5F20193F46260002C606 /* changeset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EAD5F1E193F46260002C606 /* changeset.cpp */; };
+		0EAD5F21193F46260002C606 /* changeset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EAD5F1E193F46260002C606 /* changeset.cpp */; };
+		0EAD5F22193F46260002C606 /* changeset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EAD5F1E193F46260002C606 /* changeset.cpp */; };
 		180F6C8117CE9A5700127892 /* smc.c in Sources */ = {isa = PBXBuildFile; fileRef = 180F6C8017CE9A5700127892 /* smc.c */; };
 		183FDF8A11AF0B0500B81E9C /* PluginSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 183FDF8811AF0B0500B81E9C /* PluginSource.cpp */; };
 		18404DA61396C31B00863BBA /* SlingboxLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18404DA51396C31B00863BBA /* SlingboxLib.a */; };
@@ -1175,7 +1202,7 @@
 		DF0ABB75183A94A30018445D /* Utf8Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0ABB71183A94A30018445D /* Utf8Utils.cpp */; };
 		DF0DF15C13A3ADA7008ED511 /* NFSDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0DF15913A3ADA7008ED511 /* NFSDirectory.cpp */; };
 		DF2345E115FA639500A934F6 /* UPnP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF2345D915FA639500A934F6 /* UPnP.cpp */; settings = {COMPILER_FLAGS = "-I$SRCROOT/lib/libUPnP -I$SRCROOT/lib/libUPnP/Neptune/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Platinum  -I$SRCROOT/lib/libUPnP/Platinum/Source/Extras -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaServer -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaConnect -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaRenderer"; }; };
-		DF2345E215FA639500A934F6 /* UPnPInternal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF2345DB15FA639500A934F6 /* UPnPInternal.cpp */; settings = {COMPILER_FLAGS = "-I$SRCROOT/lib/libUPnP -I$SRCROOT/lib/libUPnP/Neptune/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Platinum  -I$SRCROOT/lib/libUPnP/Platinum/Source/Extras -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaServer -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaConnect -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaRenderer"; }; };
+		DF2345E215FA639500A934F6 /* UPnPInternal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF2345DB15FA639500A934F6 /* UPnPInternal.cpp */; settings = {COMPILER_FLAGS = "-I$SRCROOT/lib/libUPnP -I$SRCROOT/lib/libUPnP/Neptune/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Platinum  -I$SRCROOT/lib/libUPnP/Platinum/Source/Extras -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaServer -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaConnect -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaRenderera"; }; };
 		DF2345E315FA639500A934F6 /* UPnPRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF2345DD15FA639500A934F6 /* UPnPRenderer.cpp */; settings = {COMPILER_FLAGS = "-I$SRCROOT/lib/libUPnP -I$SRCROOT/lib/libUPnP/Neptune/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Platinum  -I$SRCROOT/lib/libUPnP/Platinum/Source/Extras -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaServer -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaConnect -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaRenderer"; }; };
 		DF2345E415FA639500A934F6 /* UPnPServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF2345DF15FA639500A934F6 /* UPnPServer.cpp */; settings = {COMPILER_FLAGS = "-I$SRCROOT/lib/libUPnP -I$SRCROOT/lib/libUPnP/Neptune/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Platinum  -I$SRCROOT/lib/libUPnP/Platinum/Source/Extras -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaServer -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaConnect -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaRenderer"; }; };
 		DF24A6B41406C7C500C7721E /* AFPDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF24A6B01406C7C500C7721E /* AFPDirectory.cpp */; };
@@ -2469,7 +2496,7 @@
 		E38E20C90D25F9FD00618676 /* GUIWindowSystemInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E18390D25F9FA00618676 /* GUIWindowSystemInfo.cpp */; };
 		E38E20CA0D25F9FD00618676 /* GUIWindowVideoBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E183B0D25F9FA00618676 /* GUIWindowVideoBase.cpp */; };
 		E38E20CC0D25F9FD00618676 /* GUIDialogVideoInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E183F0D25F9FA00618676 /* GUIDialogVideoInfo.cpp */; };
-		E38E20CD0D25F9FD00618676 /* GUIWindowVideoNav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E18410D25F9FA00618676 /* GUIWindowVideoNav.cpp */; };
+		E38E20CD0D25F9FD00618676 /* GUIWindowVideoNav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E18410D25F9FA00618676 /* GUIWindowVideoNav.cpp */; settings = {COMPILER_FLAGS = "-I$SRCROOT/lib/libUPnP -I$SRCROOT/lib/libUPnP/Neptune/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Core -I$SRCROOT/lib/libUPnP/Platinum/Source/Platinum  -I$SRCROOT/lib/libUPnP/Platinum/Source/Extras -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaServer -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaConnect -I$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaRenderer"; }; };
 		E38E20CE0D25F9FD00618676 /* GUIDialogVideoOverlay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E18430D25F9FA00618676 /* GUIDialogVideoOverlay.cpp */; };
 		E38E20CF0D25F9FD00618676 /* GUIWindowVideoPlaylist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E18450D25F9FA00618676 /* GUIWindowVideoPlaylist.cpp */; };
 		E38E20D00D25F9FD00618676 /* GUIWindowVisualisation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E18470D25F9FA00618676 /* GUIWindowVisualisation.cpp */; };
@@ -3702,8 +3729,26 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0E07C1E119386DD900537A3F /* PltSyncPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PltSyncPolicy.h; path = ContentSync/PltSyncPolicy.h; sourceTree = "<group>"; };
+		0E2AE586192E6ABB000DF1E2 /* PltContentSyncService.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PltContentSyncService.cpp; sourceTree = "<group>"; };
+		0E2AE587192E6ABB000DF1E2 /* PltContentSyncService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PltContentSyncService.h; sourceTree = "<group>"; };
+		0E2AE588192E6ACB000DF1E2 /* ContentSyncServiceSCPD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContentSyncServiceSCPD.cpp; sourceTree = "<group>"; };
+		0E2AE589192E6ACB000DF1E2 /* ContentSyncServiceSCPD.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ContentSyncServiceSCPD.xml; sourceTree = "<group>"; };
+		0E2AE5B2192E89BF000DF1E2 /* PltSyncData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PltSyncData.h; path = ContentSync/PltSyncData.h; sourceTree = "<group>"; };
+		0E2AE5B6192E8A75000DF1E2 /* PltSyncData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PltSyncData.cpp; path = ContentSync/PltSyncData.cpp; sourceTree = "<group>"; };
 		0E3036EA1760F68A00D93596 /* FavouritesDirectory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FavouritesDirectory.cpp; sourceTree = "<group>"; };
 		0E3036EB1760F68A00D93596 /* FavouritesDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FavouritesDirectory.h; sourceTree = "<group>"; };
+		0EA0020319A4D21C007FE750 /* UPnPContentSyncService.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UPnPContentSyncService.cpp; sourceTree = "<group>"; };
+		0EA0020419A4D21C007FE750 /* UPnPContentSyncService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UPnPContentSyncService.h; sourceTree = "<group>"; };
+		0EA0020819A4D22D007FE750 /* UPnPSyncCtrlPoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UPnPSyncCtrlPoint.cpp; sourceTree = "<group>"; };
+		0EA0020919A4D22D007FE750 /* UPnPSyncCtrlPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UPnPSyncCtrlPoint.h; sourceTree = "<group>"; };
+		0EA002EA19A4E1C7007FE750 /* PltSyncPolicy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PltSyncPolicy.cpp; path = ContentSync/PltSyncPolicy.cpp; sourceTree = "<group>"; };
+		0EA004BB19A603A9007FE750 /* UPnPSyncPolicy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UPnPSyncPolicy.cpp; sourceTree = "<group>"; };
+		0EA004BC19A603A9007FE750 /* UPnPSyncPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UPnPSyncPolicy.h; sourceTree = "<group>"; };
+		0EA0077019A9184B007FE750 /* UPnPDatabase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UPnPDatabase.cpp; sourceTree = "<group>"; };
+		0EA0077119A9184B007FE750 /* UPnPDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UPnPDatabase.h; sourceTree = "<group>"; };
+		0EAD5F1E193F46260002C606 /* changeset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = changeset.cpp; sourceTree = "<group>"; };
+		0EAD5F1F193F46260002C606 /* changeset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = changeset.h; sourceTree = "<group>"; };
 		180F6C7F17CE9A5700127892 /* smc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smc.h; sourceTree = "<group>"; };
 		180F6C8017CE9A5700127892 /* smc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smc.c; sourceTree = "<group>"; };
 		18308CB41303370800AA309E /* stat_utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stat_utf8.h; sourceTree = "<group>"; };
@@ -6393,6 +6438,17 @@
 			name = "System Libs and Frameworks";
 			sourceTree = "<group>";
 		};
+		0E2AE592192E8995000DF1E2 /* ContentSync */ = {
+			isa = PBXGroup;
+			children = (
+				0E2AE5B6192E8A75000DF1E2 /* PltSyncData.cpp */,
+				0E2AE5B2192E89BF000DF1E2 /* PltSyncData.h */,
+				0EA002EA19A4E1C7007FE750 /* PltSyncPolicy.cpp */,
+				0E07C1E119386DD900537A3F /* PltSyncPolicy.h */,
+			);
+			name = ContentSync;
+			sourceTree = "<group>";
+		};
 		18B49FF01152BEEB001AF8A6 /* addons */ = {
 			isa = PBXGroup;
 			children = (
@@ -7069,6 +7125,8 @@
 		4313773012D647BB00680C15 /* dbwrappers */ = {
 			isa = PBXGroup;
 			children = (
+				0EAD5F1E193F46260002C606 /* changeset.cpp */,
+				0EAD5F1F193F46260002C606 /* changeset.h */,
 				E38E16800D25F9FA00618676 /* Database.cpp */,
 				E38E16810D25F9FA00618676 /* Database.h */,
 				7C26126F1825B6340086E04D /* DatabaseQuery.cpp */,
@@ -7538,12 +7596,17 @@
 		7CCD9FEA192753E30074CF51 /* MediaServer */ = {
 			isa = PBXGroup;
 			children = (
+				0E2AE592192E8995000DF1E2 /* ContentSync */,
 				7CCD9FEB192753E30074CF51 /* ConnectionManagerSCPD.cpp */,
 				7CCD9FEE192753E30074CF51 /* ConnectionManagerSCPD.xml */,
 				7CCD9FEF192753E30074CF51 /* ContentDirectorySCPD.cpp */,
 				7CCD9FF2192753E30074CF51 /* ContentDirectorySCPD.xml */,
 				7CCD9FF3192753E30074CF51 /* ContentDirectorywSearchSCPD.cpp */,
 				7CCD9FF6192753E30074CF51 /* ContentDirectorywSearchSCPD.xml */,
+				0E2AE588192E6ACB000DF1E2 /* ContentSyncServiceSCPD.cpp */,
+				0E2AE589192E6ACB000DF1E2 /* ContentSyncServiceSCPD.xml */,
+				0E2AE586192E6ABB000DF1E2 /* PltContentSyncService.cpp */,
+				0E2AE587192E6ABB000DF1E2 /* PltContentSyncService.h */,
 				7CCD9FF7192753E30074CF51 /* PltDidl.cpp */,
 				7CCD9FF8192753E30074CF51 /* PltDidl.h */,
 				7CCD9FFB192753E30074CF51 /* PltFileMediaServer.cpp */,
@@ -8182,6 +8245,10 @@
 			children = (
 				DF2345D915FA639500A934F6 /* UPnP.cpp */,
 				DF2345DA15FA639500A934F6 /* UPnP.h */,
+				0EA0020319A4D21C007FE750 /* UPnPContentSyncService.cpp */,
+				0EA0020419A4D21C007FE750 /* UPnPContentSyncService.h */,
+				0EA0077019A9184B007FE750 /* UPnPDatabase.cpp */,
+				0EA0077119A9184B007FE750 /* UPnPDatabase.h */,
 				DF2345DB15FA639500A934F6 /* UPnPInternal.cpp */,
 				DF2345DC15FA639500A934F6 /* UPnPInternal.h */,
 				552840CA1626163B00ED1333 /* UPnPPlayer.cpp */,
@@ -8192,6 +8259,10 @@
 				DF2345E015FA639500A934F6 /* UPnPServer.h */,
 				F563529416E53FAB00D21BAD /* UPnPSettings.cpp */,
 				F563529516E53FAB00D21BAD /* UPnPSettings.h */,
+				0EA0020819A4D22D007FE750 /* UPnPSyncCtrlPoint.cpp */,
+				0EA0020919A4D22D007FE750 /* UPnPSyncCtrlPoint.h */,
+				0EA004BB19A603A9007FE750 /* UPnPSyncPolicy.cpp */,
+				0EA004BC19A603A9007FE750 /* UPnPSyncPolicy.h */,
 			);
 			path = upnp;
 			sourceTree = "<group>";
@@ -11812,6 +11883,15 @@
 				7C908894196358A8003D0619 /* auto_buffer.cpp in Sources */,
 				7CF34D9F1930264A00D543C5 /* AudioEncoder.cpp in Sources */,
 				7CF80DC919710DC2003B2B34 /* KeyboardLayout.cpp in Sources */,
+				0EAD5F20193F46260002C606 /* changeset.cpp in Sources */,
+				0EA0020519A4D21C007FE750 /* UPnPContentSyncService.cpp in Sources */,
+				0EA0020A19A4D22D007FE750 /* UPnPSyncCtrlPoint.cpp in Sources */,
+				0EA002EB19A4E1C7007FE750 /* PltSyncPolicy.cpp in Sources */,
+				0EA002F019A4E354007FE750 /* PltContentSyncService.cpp in Sources */,
+				0EA002F619A4E41F007FE750 /* PltSyncData.cpp in Sources */,
+				0EA0032019A4E97A007FE750 /* ContentSyncServiceSCPD.cpp in Sources */,
+				0EA004BD19A603A9007FE750 /* UPnPSyncPolicy.cpp in Sources */,
+				0EA0077219A9184B007FE750 /* UPnPDatabase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -13001,6 +13081,15 @@
 				7C908896196358A8003D0619 /* auto_buffer.cpp in Sources */,
 				7CF34DA11930264A00D543C5 /* AudioEncoder.cpp in Sources */,
 				7CF80DCB19710DC2003B2B34 /* KeyboardLayout.cpp in Sources */,
+				0EAD5F22193F46260002C606 /* changeset.cpp in Sources */,
+				0EA0020719A4D21C007FE750 /* UPnPContentSyncService.cpp in Sources */,
+				0EA0020C19A4D22D007FE750 /* UPnPSyncCtrlPoint.cpp in Sources */,
+				0EA002ED19A4E1C7007FE750 /* PltSyncPolicy.cpp in Sources */,
+				0EA002F219A4E357007FE750 /* PltContentSyncService.cpp in Sources */,
+				0EA002F819A4E421007FE750 /* PltSyncData.cpp in Sources */,
+				0EA0032219A4E97C007FE750 /* ContentSyncServiceSCPD.cpp in Sources */,
+				0EA004BF19A603A9007FE750 /* UPnPSyncPolicy.cpp in Sources */,
+				0EA0077419A9184B007FE750 /* UPnPDatabase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14192,6 +14281,15 @@
 				7C908895196358A8003D0619 /* auto_buffer.cpp in Sources */,
 				7CF34DA01930264A00D543C5 /* AudioEncoder.cpp in Sources */,
 				7CF80DCA19710DC2003B2B34 /* KeyboardLayout.cpp in Sources */,
+				0EAD5F21193F46260002C606 /* changeset.cpp in Sources */,
+				0EA0020619A4D21C007FE750 /* UPnPContentSyncService.cpp in Sources */,
+				0EA0020B19A4D22D007FE750 /* UPnPSyncCtrlPoint.cpp in Sources */,
+				0EA002EC19A4E1C7007FE750 /* PltSyncPolicy.cpp in Sources */,
+				0EA002F119A4E356007FE750 /* PltContentSyncService.cpp in Sources */,
+				0EA002F719A4E420007FE750 /* PltSyncData.cpp in Sources */,
+				0EA0032119A4E97B007FE750 /* ContentSyncServiceSCPD.cpp in Sources */,
+				0EA004BE19A603A9007FE750 /* UPnPSyncPolicy.cpp in Sources */,
+				0EA0077319A9184B007FE750 /* UPnPDatabase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14364,6 +14462,16 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					$SRCROOT/lib/libUPnP,
+					$SRCROOT/lib/libUPnP/Neptune/Source/Core,
+					$SRCROOT/lib/libUPnP/Platinum/Source/Core,
+					$SRCROOT/lib/libUPnP/Platinum/Source/Platinum,
+					$SRCROOT/lib/libUPnP/Platinum/Source/Extras,
+					$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaServer,
+					$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaConnect,
+					$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaRenderer,
+				);
 			};
 			name = Debug;
 		};
@@ -14374,6 +14482,16 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					$SRCROOT/lib/libUPnP,
+					$SRCROOT/lib/libUPnP/Neptune/Source/Core,
+					$SRCROOT/lib/libUPnP/Platinum/Source/Core,
+					$SRCROOT/lib/libUPnP/Platinum/Source/Platinum,
+					$SRCROOT/lib/libUPnP/Platinum/Source/Extras,
+					$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaServer,
+					$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaConnect,
+					$SRCROOT/lib/libUPnP/Platinum/Source/Devices/MediaRenderer,
+				);
 			};
 			name = Release;
 		};
