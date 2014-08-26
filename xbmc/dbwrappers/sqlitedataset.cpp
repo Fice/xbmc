@@ -33,6 +33,8 @@
 #include "utils/log.h"
 #include "system.h" // for Sleep(), OutputDebugString() and GetLastError()
 #include "utils/URIUtils.h"
+#include "Database.h"
+#include "changeset.h"
 
 #ifdef TARGET_WINDOWS
 #pragma comment(lib, "sqlite3.lib")
@@ -87,7 +89,7 @@ static int busy_callback(void*, int busyCount)
 
 //************* SqliteDatabase implementation ***************
 
-SqliteDatabase::SqliteDatabase() {
+  SqliteDatabase::SqliteDatabase(CDatabase* Db) : Database(Db) {
 
   active = false;  
   _in_transaction = false;    // for transaction
@@ -98,6 +100,8 @@ SqliteDatabase::SqliteDatabase() {
   db = "sqlite.db";
   login = "root";
   passwd = "";
+  new_changeset = false;
+  changelogTriggers = true;
 }
 
 SqliteDatabase::~SqliteDatabase() {
@@ -146,6 +150,81 @@ void SqliteDatabase::setDatabase(const char *newDb) {
 int SqliteDatabase::status(void) {
   if (active == false) return DB_CONNECTION_NONE;
   return DB_CONNECTION_OK;
+}
+
+void SqliteDatabase::DeactivateChangelogTriggers()
+{
+  if(!changelogTriggers)
+    return;
+
+  changelogTriggers = false;
+
+}
+void SqliteDatabase::ActivateChangelogTriggers()
+{
+  if(changelogTriggers)
+    return;
+
+  changelogTriggers = true;
+}
+
+std::string SqliteDatabase::CreateChangelogTriggerDefinition(const std::string &triggername,
+                                                             const std::string &tablename,
+                                                             const std::string &event,
+                                                             const std::string &toDo) const
+{
+  return "CREATE TRIGGER " + triggername + " "
+         "AFTER "+event+" ON " + tablename + " "
+         "FOR EACH ROW "
+         "BEGIN "
+            +toDo+ " "
+         "END ";
+}
+
+void update_hook(void * database, int type, char const * databasename, char const * tablename, sqlite3_int64 row_id)
+{
+  SqliteDatabase* pDatabase = (SqliteDatabase*)database;
+  pDatabase->UpdateHook(tablename);
+}
+
+void rollback_hook(void * database)
+{
+  SqliteDatabase* pDatabase = (SqliteDatabase*)database;
+  pDatabase->RollbackHook();
+}
+  /* TODO: remove if rly not needed!
+int commit_hook(void* database)
+{
+  SqliteDatabase* pDatabase = (SqliteDatabase*)database;
+  pDatabase->CommitHook();
+  return 0; //Everything except a zero will force a rollback for the current transaction
+}
+
+void SqliteDatabase::CommitHook()
+{
+  new_changeset = true;
+}*/
+
+void SqliteDatabase::UpdateHook(const std::string &tablename)
+{
+  std::list<std::string> changeloggedTables;
+  CLog::Log(LOGINFO, "changed tablename: %s", tablename.c_str());
+  if(pDb->GetChangelogedTables(changeloggedTables) &&
+     std::find(changeloggedTables.begin(), changeloggedTables.end(), tablename)!=changeloggedTables.end())
+    new_changeset = true;
+}
+
+void SqliteDatabase::RollbackHook()
+{
+  new_changeset = false;
+}
+
+bool SqliteDatabase::RegisterChangeCallback()
+{
+    //sqlite3_commit_hook(conn, commit_hook, this);
+  sqlite3_update_hook(conn, update_hook, this);
+  sqlite3_rollback_hook(conn, rollback_hook, this);
+  return true;
 }
 
 int SqliteDatabase::setErr(int err_code, const char * qry){
@@ -227,6 +306,7 @@ int SqliteDatabase::connect(bool create) {
         throw DbErrors(getErrorMsg());
       }
       active = true;
+
       return DB_CONNECTION_OK;
     }
 
@@ -621,7 +701,15 @@ int SqliteDataset::exec(const string &sql) {
   }
 
   if((res = db->setErr(sqlite3_exec(handle(),qry.c_str(),&callback,&exec_res,&errmsg),qry.c_str())) == SQLITE_OK)
+  {
+    if (((SqliteDatabase*)db)->HasNewChangesets()) //naaah
+    { //TODO: start the sync process!
+      /*ChangesetManager *cm = new ChangesetManager();
+      cm->OnPossibleSyncNeeded();
+      delete cm;*/
+    }
     return res;
+  }
   else
     {
       throw DbErrors(db->getErrorMsg());
