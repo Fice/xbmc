@@ -25,6 +25,9 @@
     <Filter Include="Neptune\System">
       <UniqueIdentifier>{13439c11-c8e5-4cc9-a335-e3b9ecb74c7a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Platinum\MediaServer\ContentSync">
+      <UniqueIdentifier>{734f6f08-6002-4841-a39d-ce0c018f268d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Platinum\Platinum.h">
@@ -303,6 +306,15 @@
     <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Core\PltUtilities.h">
       <Filter>Platinum\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ContentSync\PltSyncData.h">
+      <Filter>Platinum\MediaServer\ContentSync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ContentSync\PltSyncPolicy.h">
+      <Filter>Platinum\MediaServer\ContentSync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\PltContentSyncService.h">
+      <Filter>Platinum\MediaServer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Core\PltAction.cpp">
@@ -571,6 +583,18 @@
     </ClCompile>
     <ClCompile Include="..\..\lib\libUPnP\Neptune\Source\Core\NptDigest.cpp">
       <Filter>Neptune\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ContentSync\PltSyncData.cpp">
+      <Filter>Platinum\MediaServer\ContentSync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\PltContentSyncService.cpp">
+      <Filter>Platinum\MediaServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ContentSyncServiceSCPD.cpp">
+      <Filter>Platinum\MediaServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ContentSync\PltSyncPolicy.cpp">
+      <Filter>Platinum\MediaServer\ContentSync</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

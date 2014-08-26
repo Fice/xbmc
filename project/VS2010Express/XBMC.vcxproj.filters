@@ -3062,6 +3062,21 @@
     <ClCompile Include="..\..\xbmc\filesystem\win32\Win32SMBDirectory.cpp">
       <Filter>filesystem\win32</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\dbwrappers\changeset.cpp">
+      <Filter>dbwrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\network\upnp\UPnPContentSyncService.cpp">
+      <Filter>network\upnp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\network\upnp\UPnPSyncCtrlPoint.cpp">
+      <Filter>network\upnp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\network\upnp\UPnPSyncPolicy.cpp">
+      <Filter>network\upnp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\network\upnp\UPnPDatabase.cpp">
+      <Filter>network\upnp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -5985,6 +6000,21 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\utils\params_check_macros.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\dbwrappers\changeset.h">
+      <Filter>dbwrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\network\upnp\UPnPContentSyncService.h">
+      <Filter>network\upnp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\network\upnp\UPnPSyncCtrlPoint.h">
+      <Filter>network\upnp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\network\upnp\UPnPSyncPolicy.h">
+      <Filter>network\upnp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\network\upnp\UPnPDatabase.h">
+      <Filter>network\upnp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -102,6 +102,9 @@
     <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Core\PltMimeType.h" />
     <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Core\PltProtocolInfo.h" />
     <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Core\PltUtilities.h" />
+    <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ContentSync\PltSyncData.h" />
+    <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ContentSync\PltSyncPolicy.h" />
+    <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\PltContentSyncService.h" />
     <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Platinum\Platinum.h" />
     <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Core\PltAction.h" />
     <ClInclude Include="..\..\lib\libUPnP\Platinum\Source\Core\PltArgument.h" />
@@ -220,6 +223,10 @@
     <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ConnectionManagerSCPD.cpp" />
     <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ContentDirectorySCPD.cpp" />
     <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ContentDirectorywSearchSCPD.cpp" />
+    <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ContentSyncServiceSCPD.cpp" />
+    <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ContentSync\PltSyncData.cpp" />
+    <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\ContentSync\PltSyncPolicy.cpp" />
+    <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\PltContentSyncService.cpp" />
     <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\PltDidl.cpp" />
     <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\PltFileMediaServer.cpp" />
     <ClCompile Include="..\..\lib\libUPnP\Platinum\Source\Devices\MediaServer\PltMediaBrowser.cpp" />
