@@ -101,6 +101,7 @@ public:
   bool LookupCDDBInfo(bool bRequery=false);
   void DeleteCDDBInfo();
 
+  virtual bool IsChangelogged() const { return true; }
   /////////////////////////////////////////////////
   // Song CRUD
   /////////////////////////////////////////////////
@@ -469,6 +470,7 @@ protected:
   virtual void CreateAnalytics();
   virtual int GetMinSchemaVersion() const { return 18; }
   virtual int GetSchemaVersion() const;
+  bool GetChangelogedTables(std::list<std::string> &changeloggedTables);
 
   const char *GetBaseDBName() const { return "MyMusic"; };
 
