@@ -236,6 +236,8 @@ void CVideoDatabase::CreateTables()
 
   CLog::Log(LOGINFO, "create taglinks table");
   m_pDS->exec("CREATE TABLE taglinks (idTag integer, idMedia integer, media_type TEXT)");
+
+  SetupChangelogTables();
 }
 
 void CVideoDatabase::CreateAnalytics()
@@ -376,6 +378,17 @@ void CVideoDatabase::CreateAnalytics()
               "END");
 
   CreateViews();
+}
+
+bool CVideoDatabase::GetChangelogedTables(std::list<std::string> &changeloggedTables)
+{
+  changeloggedTables.push_back("movie");
+  changeloggedTables.push_back("tvshow");
+  changeloggedTables.push_back("seasons");
+  changeloggedTables.push_back("episode");
+  changeloggedTables.push_back("musicvideo");
+  changeloggedTables.push_back("files");
+  return true;
 }
 
 void CVideoDatabase::CreateViews()
@@ -4792,6 +4805,8 @@ void CVideoDatabase::UpdateTables(int iVersion)
     m_pDS->exec("DELETE from art WHERE media_type='tvshow' AND NOT EXISTS (SELECT 1 FROM tvshow WHERE tvshow.idShow = art.media_id)");
     m_pDS->exec("DELETE from art WHERE media_type='season' AND NOT EXISTS (SELECT 1 FROM seasons WHERE seasons.idSeason = art.media_id)");
   }
+  if (iVersion < 88)
+    SetupChangelogTables();
 }
 
 int CVideoDatabase::GetSchemaVersion() const

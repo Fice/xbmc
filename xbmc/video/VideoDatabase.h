@@ -760,6 +760,7 @@ public:
   void ClearMovieSet(int idMovie);
   void SetMovieSet(int idMovie, int idSet);
 
+  virtual bool IsChangelogged() const { return true; }
 protected:
   friend class CEdenVideoArtUpdater;
   int GetMovieId(const CStdString& strFilenameAndPath);
@@ -854,7 +855,7 @@ private:
   virtual void CreateTables();
   virtual void CreateAnalytics();
   virtual void UpdateTables(int version);
-
+  bool GetChangelogedTables(std::list<std::string> &changeloggedTables);
   /*! \brief (Re)Create the generic database views for movies, tvshows,
      episodes and music videos
    */
