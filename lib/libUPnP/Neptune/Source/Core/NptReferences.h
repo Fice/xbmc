@@ -110,7 +110,7 @@ public:
 
     // overloaded cast operators
     template <typename U> operator NPT_Reference<U>() {
-        return NPT_Reference<U>(m_Object, m_Counter, m_Mutex, m_ThreadSafe);
+        return NPT_Reference<U>((U*)m_Object, m_Counter, m_Mutex, m_ThreadSafe);
     }
 
     // methods
