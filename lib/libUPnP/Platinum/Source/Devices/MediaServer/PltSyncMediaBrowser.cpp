@@ -411,7 +411,7 @@ PLT_SyncMediaBrowser::BrowseSync(PLT_DeviceDataReference&      device,
     list = NULL;
 
     // look into cache first
-    if (cache && NPT_SUCCEEDED(m_Cache.Get(device->GetUUID(), object_id, list))) return NPT_SUCCESS;
+    //TODO: reenable if (cache && NPT_SUCCEEDED(m_Cache.Get(device->GetUUID(), object_id, list))) return NPT_SUCCESS;
 
     do {	
         PLT_BrowseDataReference browse_data(new PLT_BrowseData());
