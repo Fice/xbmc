@@ -260,6 +260,7 @@ PLT_MediaObject::Reset()
     m_XbmcInfo.rating = 0.0f;
     m_XbmcInfo.votes = "";
     m_XbmcInfo.artwork.Clear();
+    m_XbmcInfo.sorttitle = "";
 
     m_Didl = "";
 
@@ -559,6 +560,15 @@ PLT_MediaObject::ToDidl(NPT_UInt64 mask, NPT_String& didl)
         m_XbmcInfo.artwork.ToDidl(didl, "artwork");
     }
 
+    if (mask & PLT_FILTER_MASK_XBMC_SORTTITLE) {
+        if (!m_XbmcInfo.sorttitle.IsEmpty())
+        {
+          didl += "<xbmc:sorttitle>";
+          PLT_Didl::AppendXmlEscape(didl, m_XbmcInfo.sorttitle);
+          didl += "</xbmc:sorttitle>";
+        }
+    }
+
     // class is required
     didl += "<upnp:class";
 	if (!m_ObjectClass.friendly_name.IsEmpty()) {
@@ -776,6 +786,8 @@ PLT_MediaObject::FromDidl(NPT_XmlElementNode* entry)
     m_XbmcInfo.rating = floatValue;
 
     PLT_XmlHelper::GetChildText(entry, "votes", m_XbmcInfo.votes, didl_namespace_xbmc, 256);
+
+    PLT_XmlHelper::GetChildText(entry, "sorttitle", m_XbmcInfo.sorttitle, didl_namespace_xbmc, 256);
 
     children.Clear();
     PLT_XmlHelper::GetChildren(entry, children, "artwork", didl_namespace_xbmc);
