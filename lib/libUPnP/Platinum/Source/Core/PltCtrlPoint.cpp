@@ -1466,6 +1466,11 @@ PLT_CtrlPoint::RenewSubscriber(PLT_EventSubscriberReference subscriber)
     NPT_AutoLock lock(m_Lock);
 
     PLT_DeviceDataReference root_device;
+    PLT_Service* service = subscriber->GetService();
+    if (service == NULL) //TODO: there shouldn't be a null pointer here... so somewhere my sync service gets removed... idk where :(
+      return NULL;
+    if (service->GetDevice() == NULL)
+      return NULL;
     if (NPT_FAILED(FindDevice(subscriber->GetService()->GetDevice()->GetUUID(),
                               root_device,
                               true))) {
