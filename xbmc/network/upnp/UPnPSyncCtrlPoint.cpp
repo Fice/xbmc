@@ -217,7 +217,37 @@ NPT_Result CUPnPSyncCtrlPoint::OnAddSyncDataResponse(NPT_Result res, PLT_ActionR
 
 NPT_Result CUPnPSyncCtrlPoint::OnGetSyncDataResponse(NPT_Result res, PLT_ActionReference& action, void* userdata)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  //TODO: remove this part... just for testing right now!
+  NPT_String syncData;
+  NPT_CHECK(action->GetArgumentValue("SyncData", syncData));
+  CLog::Log(LOGDEBUG, "%s - SyncData: %s", __FUNCTION__, syncData.GetChars());
+  return NPT_SUCCESS;
+}
+  
+NPT_Result CUPnPSyncCtrlPoint::OnExchangeSyncDataResponse(NPT_Result res, PLT_ActionReference& action, void* userdata)
+{
+    //We have successfully exchanged sync data with our partner... now it's time to start a sync, i guess?
+  /* TODO:  const char* deviceUUID = action->VerifyArguments device->GetUUID().GetChars();
+   const char* serviceID = serviceCDS->GetServiceID().GetChars();
+   
+   CUPnPDatabase db;
+   if (db.HasSyncRelationshipWith(deviceUUID, serviceID))
+   {
+   if (db.HasChanges(deviceUUID, serviceID))
+   {
+   //TODO: start a sync with that device
+   }
+   }
+   else
+   {
+   //Get SyncData
+   
+   //Check if that device syncs any items with a partner, that we also sync with
+   //if thats true:
+   //Auto add a sync relationship
+   //and add sync pair with all of the common items
+   }*/
+   return NPT_SUCCESS;
 }
 
 NPT_Result CUPnPSyncCtrlPoint::OnAddSyncPairResponse(NPT_Result res, PLT_ActionReference& action, void* userdata)

@@ -134,13 +134,52 @@ NPT_Result CUPnPContentSyncService::OnDeleteSyncData(const NPT_String& SyncID)
 
 NPT_Result CUPnPContentSyncService::GetSyncStructure(const NPT_String& SyncID, PLT_SyncStructureRef& SyncData)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  CUPnPDatabase db;
+  if(!db.Open())
+    return NPT_ERROR_INTERNAL;
+  if (SyncID.IsEmpty())
+    return NPT_ERROR_INTERNAL;
+
+  PLT_SyncRelationshipRef rel;
+  if (!db.GetSyncRelationship(SyncID.GetChars(), rel))
+  {
+    PLT_PartnershipRef partnership;
+    if (!db.GetSyncPartnership(SyncID.GetChars(), partnership))
+    {
+      PLT_PairGroupRef pairGroup;
+      if (!db.GetPairGroup(SyncID.GetChars(), pairGroup))
+        return NPT_ERROR_INTERNAL;
+      else
+        SyncData = PLT_SyncStructureRef(pairGroup);
+    }
+    else
+      SyncData = PLT_SyncStructureRef(partnership);
+  }
+  else
+    SyncData = PLT_SyncStructureRef(rel);
+
+  return NPT_SUCCESS;
 }
 
 NPT_Result CUPnPContentSyncService::OnGetSyncData(const NPT_String& SyncID,
                                                   PLT_SyncData*     SyncData)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  CUPnPDatabase db;
+  if(!db.Open())
+    return NPT_ERROR_INTERNAL;
+
+  if (SyncID.IsEmpty())
+  {
+    if (!db.GetAllSyncData(SyncData))
+      return NPT_ERROR_INTERNAL;
+  }
+  else
+  {
+    PLT_SyncStructureRef ref;
+    NPT_CHECK(GetSyncStructure(SyncID, ref));
+    SyncData->m_syncData.Add(PLT_SyncRelationshipRef(ref));
+  }
+  return NPT_SUCCESS;
 }
 
 NPT_Result CUPnPContentSyncService::OnExchangeSyncData(const PLT_SyncData& LocalSyncData)
