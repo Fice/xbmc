@@ -184,7 +184,7 @@ NPT_Result CUPnPContentSyncService::OnGetSyncData(const NPT_String& SyncID,
 
 NPT_Result CUPnPContentSyncService::OnExchangeSyncData(const PLT_SyncData& LocalSyncData)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  return NPT_SUCCESS; //libUPnP takes care of everything.
 }
 
 NPT_Result CUPnPContentSyncService::OnAddSyncPair(const NPT_String&    ObjectID,
