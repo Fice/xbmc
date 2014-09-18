@@ -728,6 +728,19 @@ void CDatabase::SetupChangelogTables()
     //TODO: remove?!? i guess
 }
 
+bool CDatabase::CreateSyncPairTable()
+{
+  CLog::Log(LOGINFO, "creating syncPair table");
+  m_pDS->exec("CREATE TABLE syncPair (id PRIMARY KEY, "
+                                     "syncRelationShip TEXT, "
+                                     "syncPartnership TEXT, "
+                                     "pairGroupTEXT, "
+                                     "remoteObjID TEXT, "
+                                     "remoteParentObjID TEXT, "
+                                     "virtualRemoteParentObjID TEXT)");
+  return true;
+}
+
 int CDatabase::GetDBVersion()
 {
   m_pDS->query("SELECT idVersion FROM version\n");

@@ -234,7 +234,7 @@ protected:
                               const std::string& columns,
                               const std::string& values);
   bool CheckChangelogTable(const std::string& tablename);
-
+  bool CreateSyncPairTable();
   /* \brief Should add the names of all changelogged tables to the param 'changeloggedTables'
    */
   void SetupChangelogTables();
