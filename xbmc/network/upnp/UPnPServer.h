@@ -35,7 +35,7 @@ class CUPnPServer : public PLT_MediaConnect,
                     public ANNOUNCEMENT::IAnnouncer
 {
 public:
-    CUPnPServer(const char* friendly_name, const char* uuid = NULL, int port = 0);
+  CUPnPServer(const char* friendly_name, const char* uuid = NULL, int port = 0, PLT_CtrlPointReference ctrlPointHolder = PLT_CtrlPointReference());
     ~CUPnPServer();
     virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
 
@@ -134,6 +134,7 @@ private:
 
     std::map<std::string, std::pair<bool, unsigned long> > m_UpdateIDs;
     bool m_scanning;
+  PLT_CtrlPointReference  m_CtrlPointHolder;
 public:
     // class members
     static NPT_UInt32 m_MaxReturnedItems;

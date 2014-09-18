@@ -590,7 +590,8 @@ CUPnP::CreateServer(int port /* = 0 */)
     CUPnPServer* device =
         new CUPnPServer(g_infoManager.GetLabel(SYSTEM_FRIENDLY_NAME),
                         CUPnPSettings::Get().GetServerUUID().length() ? CUPnPSettings::Get().GetServerUUID().c_str() : NULL,
-                        port);
+                        port,
+                        m_CtrlPointHolder->m_CtrlPoint);
 
     // trying to set optional upnp values for XP UPnP UI Icons to detect us
     // but it doesn't work anyways as it requires multicast for XP to detect us
@@ -617,6 +618,8 @@ bool
 CUPnP::StartServer()
 {
     if (!m_ServerHolder->m_Device.IsNull()) return false;
+
+    StartCtrlPoint();
 
     // load upnpserver.xml
     CStdString filename = URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(), "upnpserver.xml");
@@ -659,6 +662,9 @@ CUPnP::StartServer()
 void
 CUPnP::StopServer()
 {
+    //hmm... is there a situation where we only stop the server, and not the client?!? The client will still need the ctrl point. TODO: let's be smarter here
+    StopCtrlPoint();
+
     if (m_ServerHolder->m_Device.IsNull()) return;
 
     m_UPnP->RemoveDevice(m_ServerHolder->m_Device);

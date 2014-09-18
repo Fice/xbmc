@@ -23,6 +23,7 @@
  */
 #pragma once
 
+#include <memory.h>
 #include "utils/StdString.h"
 
 class NPT_LogHandler;

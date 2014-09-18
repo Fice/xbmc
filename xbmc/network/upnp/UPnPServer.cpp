@@ -67,10 +67,11 @@ const char* video_containers[] = { "library://video/movies/titles.xml/", "librar
 /*----------------------------------------------------------------------
 |   CUPnPServer::CUPnPServer
 +---------------------------------------------------------------------*/
-CUPnPServer::CUPnPServer(const char* friendly_name, const char* uuid /*= NULL*/, int port /*= 0*/) :
+CUPnPServer::CUPnPServer(const char* friendly_name, const char* uuid /*= NULL*/, int port /*= 0*/, PLT_CtrlPointReference ctrlPointHolder /*= PLT_CtrlPointReference() */) :
     PLT_MediaConnect(friendly_name, false, uuid, port),
     PLT_FileMediaConnectDelegate("/", "/"),
-    m_scanning(g_application.IsMusicScanning() || g_application.IsVideoScanning())
+    m_scanning(g_application.IsMusicScanning() || g_application.IsVideoScanning()),
+    m_CtrlPointHolder(ctrlPointHolder)
 {
 }
 
