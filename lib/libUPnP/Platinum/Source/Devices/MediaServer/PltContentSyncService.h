@@ -37,6 +37,14 @@ protected:
   bool syncDataExchanged;
 };
 
+struct PLT_SyncActionUserData {
+  PLT_SyncActionUserData() : finished(false) {}
+  PLT_SyncDeviceHolder device;
+  PLT_ActionReference  action;
+  bool finished;
+};
+typedef NPT_List<PLT_SyncActionUserData> PLT_SyncActionDataList;
+
 /*----------------------------------------------------------------------
 |   PLT_ContentSyncDelegate
 +-----------------------------------------------------------------------
@@ -235,8 +243,11 @@ protected:
                                              void*                userdata);
 
 private:
+  NPT_Result GetPartners(NPT_List<PLT_Partner>::Iterator items, PLT_SyncActionDataList& result, const NPT_String& deviceUUID);
   NPT_Result CompareSyncStructures(NPT_List<PLT_SyncStructureRef>::Iterator ourRelationship,
                                    const PLT_SyncData& remoteSyncData);
+  NPT_Result StopWaiting(PLT_ActionReference& action,
+                         void*                userdata);
 
   NPT_List<NPT_String> currentSyncIDs;
   PLT_ContentSyncCtrlPointReference m_CtrlPoint;

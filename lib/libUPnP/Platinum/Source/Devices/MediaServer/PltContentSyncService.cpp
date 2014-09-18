@@ -36,6 +36,61 @@ struct PLT_StringPair
   NPT_String right;
 };
 
+NPT_Result WaitForAllResult(PLT_SyncActionDataList::Iterator &iter)
+{
+  while (iter) //TODO: at some point we probably want to abort and assume the device has timed out (Error Code: 704)
+  {
+    if(iter->finished==true)
+    {
+      if(iter->action->GetErrorCode()!=0)
+        return NPT_ERROR_INTERNAL; //that one failed!
+
+      ++iter;
+    }
+    else
+      NPT_System::Sleep(NPT_TimeInterval(0.0));
+  }
+  return NPT_SUCCESS;
+}
+
+NPT_Result InvokeAction(PLT_SyncActionDataList::Iterator &iter, const NPT_String& serviceType, const NPT_String& actionName, NPT_Array<PLT_StringPair>& values, PLT_CtrlPointReference& ctrlPoint)
+{
+  while (iter)
+  {
+    NPT_CHECK(ctrlPoint->CreateAction(iter->device.device,
+                                        serviceType,
+                                        actionName,
+                                        iter->action));
+    for(NPT_Cardinal i=0;i<values.GetItemCount(); ++i)
+    {
+      NPT_CHECK(iter->action->SetArgumentValue(values[i].left, values[i].right));
+    }
+
+    iter->finished = false;
+    NPT_CHECK(ctrlPoint->InvokeAction(iter->action, &*iter));
+    ++iter;
+  }
+  return NPT_SUCCESS;
+}
+
+NPT_Result PLT_ContentSyncService::GetPartners(NPT_List<PLT_Partner>::Iterator item, PLT_SyncActionDataList& result, const NPT_String& deviceUUID)
+{
+  while(item)
+  {
+    PLT_SyncActionUserData currentActionData;
+    if (deviceUUID != item->m_strDeviceUDN)
+    {
+      if (NPT_FAILED(NPT_ContainerFind(m_ContentSyncDevices,
+                                       PLT_SyncDeviceDataFinder(item->m_strDeviceUDN), currentActionData.device)))
+        return NPT_ERROR_INTERNAL;
+      result.Add(currentActionData);
+    }
+    ++item;
+  }
+  if(result.GetItemCount()==0)
+    return NPT_ERROR_INTERNAL;
+  return NPT_SUCCESS;
+}
 
 NPT_Result PLT_ContentSyncCtrlPoint::InvokeAddSyncData(PLT_DeviceDataReference& device,
                                                        const NPT_String& actionCaller,
@@ -284,11 +339,59 @@ PLT_ContentSyncService::OnEventNotify(PLT_Service* service, NPT_List<PLT_StateVa
 }
 
 NPT_Result
+PLT_ContentSyncService::StopWaiting(PLT_ActionReference& action,
+                                    void*                userdata)
+{
+  NPT_String actionCaller;
+  action->GetArgumentValue("ActionCaller", actionCaller);
+  
+  if(userdata && !actionCaller.IsEmpty())
+  {
+    PLT_SyncActionUserData* data = (PLT_SyncActionUserData*)userdata;
+    data->action->SetError(action->GetErrorCode(), action->GetError());
+    data->finished = true;
+  }
+  return NPT_SUCCESS;
+}
+
+NPT_Result
 PLT_ContentSyncService::OnExchangeSyncDataResponse(NPT_Result           res,
                                                    PLT_ActionReference& action,
                                                    void*                userdata)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  if (action->GetErrorCode() >= 100)
+  {
+    NPT_LOG_WARNING_2("ExchangeSyncData failed with error (code: %i) - %s", action->GetErrorCode(), action->GetError());
+    return NPT_SUCCESS;
+  }
+  
+  NPT_String    strRemoteSyncData;
+  PLT_SyncData  localSyncData;
+  PLT_SyncData  remoteSyncData;
+  
+  if (NPT_FAILED(action->GetArgumentValue("RemoteSyncData", strRemoteSyncData)))
+  {
+    NPT_LOG_WARNING("Missing result arguments");
+    return NPT_ERROR_INTERNAL;
+  }
+  
+  NPT_XmlElementNode* remoteSyncNode;
+  NPT_CHECK(PLT_XmlHelper::Parse(strRemoteSyncData, remoteSyncNode));
+  NPT_CHECK(remoteSyncData.FromXml(remoteSyncNode, false));
+  
+    //we have the partners sync structure, let's get our own
+  NPT_CHECK(delegate->OnGetSyncData("", &localSyncData));
+  if (localSyncData.m_syncData.GetItemCount() == 0)
+    return NPT_SUCCESS; //nothing to do
+  
+    //compare the sync structures and remove or modify them as neccessary.
+  NPT_List<PLT_SyncStructureRef>::Iterator relationship = localSyncData.m_syncData.GetFirstItem();
+  NPT_CHECK(CompareSyncStructures(relationship, remoteSyncData));
+  
+    //We have dealt with everything, maybe the app wants to do some app specific stuff?
+  delegate->OnExchangeSyncData(remoteSyncData);
+  
+  return NPT_SUCCESS;
 }
 
 NPT_Result
@@ -296,7 +399,7 @@ PLT_ContentSyncService::OnAddSyncDataResponse(NPT_Result           res,
                                               PLT_ActionReference& action,
                                               void*                userdata)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  return StopWaiting(action, userdata);
 }
 
 NPT_Result
@@ -304,7 +407,7 @@ PLT_ContentSyncService::OnDeleteSyncDataResponse(NPT_Result           res,
                                                  PLT_ActionReference& action,
                                                  void*                userdata)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  return StopWaiting(action, userdata);
 }
 
 NPT_Result
@@ -312,7 +415,7 @@ PLT_ContentSyncService::OnModifySyncDataResponse(NPT_Result           res,
                                                  PLT_ActionReference& action,
                                                  void*                userdata)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  return StopWaiting(action, userdata);
 }
 
 NPT_Result
@@ -320,7 +423,7 @@ PLT_ContentSyncService::OnGetSyncDataResponse(NPT_Result           res,
                                               PLT_ActionReference& action,
                                               void*                userdata)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  return NPT_SUCCESS;
 }
 
 NPT_Result
@@ -328,7 +431,7 @@ PLT_ContentSyncService::OnAddSyncPairResponse(NPT_Result           res,
                                               PLT_ActionReference& action,
                                               void*                userdata)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  return StopWaiting(action, userdata);
 }
 
 NPT_Result
@@ -344,7 +447,7 @@ PLT_ContentSyncService::OnDeleteSyncPairResponse(NPT_Result           res,
                                                  PLT_ActionReference& action,
                                                  void*                userdata)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  return StopWaiting(action, userdata);
 }
 
 NPT_Result
@@ -376,7 +479,7 @@ PLT_ContentSyncService::OnResetChangeLogResponse(NPT_Result           res,
                                                  PLT_ActionReference& action,
                                                  void*                userdata)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  return StopWaiting(action, userdata);
 }
 
 NPT_Result
@@ -506,37 +609,376 @@ PLT_ContentSyncService::OnAction(PLT_ActionReference&          action,
 NPT_Result PLT_ContentSyncService::OnAddSyncData(PLT_ActionReference&          action,
                                                  const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String    strActionCaller;
+  NPT_String    strSyncID;
+  NPT_String    strSyncData;
+  PLT_SyncData  syncData;
+
+  if (NPT_FAILED(action->GetArgumentValue("ActionCaller", strActionCaller)) ||
+      NPT_FAILED(action->GetArgumentValue("SyncID", strSyncID)) ||
+      NPT_FAILED(action->GetArgumentValue("SyncData", strSyncData))) {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  NPT_XmlElementNode* syncNode;
+  if (NPT_FAILED(PLT_XmlHelper::Parse(strSyncData, syncNode)))
+  {
+    action->SetError(702, "Invalid XML");
+    return NPT_SUCCESS;
+  }
+
+  if (NPT_FAILED(syncData.FromXml(syncNode, true))) //xml parsing failed
+  {
+    action->SetError(702, "Invalid XML");
+    return NPT_SUCCESS;
+  }
+
+  if (strSyncID.IsEmpty())
+  {
+    if ((*syncData.m_syncData.GetFirstItem())->GetType()!=SYNC_RELATIONSHIP)
+    { //we dont have the syncID of the parent. So it has to be a sync relationship
+      action->SetError(402, "Invalid args");
+      return NPT_SUCCESS;
+    }
+  }
+  else
+  {
+    if ((*syncData.m_syncData.GetFirstItem())->GetType()==PARTNERSHIP)
+    { //empty sync relationships aren't allowed.
+      //that means the sync relationship already has a partnership.
+      //Theoratically a sync relationships can have one or more partnerships BUT version 1 (and that the only one I know of)
+      //doesn't allo multiple partnerships... (Although the spec allows to call 'AddSyncPartner' with a partnership... That just doesn't make any sense ;))
+      action->SetError(402, "Invalid args");
+      return NPT_SUCCESS;
+    }
+    if ((*syncData.m_syncData.GetFirstItem())->GetType()==SYNC_RELATIONSHIP)
+    { //a sync relationship is the root element, so it cannot have a parent syncID
+      action->SetError(402, "Invalid args");
+      return NPT_SUCCESS;
+    }
+  }
+
+  //If the action caller is not set, means a Control Point wants us to create a Sync Relationship with a third device.
+  // That means we need to make sure, that all required partners are online
+  PLT_DeviceData* device = GetDevice();
+  PLT_SyncActionDataList partnersToSync; //Will hold an array of all devices we have to tell about the new sync data!
+  if(strActionCaller.IsEmpty())
+  {
+    NPT_List<PLT_Partner> partners;
+    syncData.GenerateUUIDs();
+    syncData.GetPartners(partners);
+
+    if (NPT_FAILED(GetPartners(partners.GetFirstItem(), partnersToSync, device->GetUUID())))
+    {
+      action->SetError(705, "Partner not online");
+      return NPT_SUCCESS;
+    }
+  }
+
+  //Make sure our app actualy adds the sync data
+  NPT_CHECK_SEVERE(delegate->OnAddSyncData(strSyncID, syncData));
+  NPT_String strNewID = (*syncData.m_syncData.GetFirstItem())->GetID();
+
+  NPT_LOG_INFO_1("Create a new sync structure with the id: %s", strNewID);
+
+  NPT_Result result = NPT_ERROR_INTERNAL; //In case we fail now, we goto cleanup; and that part will return our 'result' var. so set it to some generic error.
+
+  PLT_SyncActionDataList::Iterator currentDevice = partnersToSync.GetFirstItem();
+
+  //When we are called without a actionCaller, we generated IDs for each new structure.
+  //Also, delegate->OnAddSyncData might have done sth... so let's create the SyncData xml again, that we pass to our partners
+  NPT_String strSyncDataResult;
+  NPT_Array<PLT_StringPair> arguments;
+  NPT_CHECK_LABEL(syncData.ToXml(strSyncDataResult, true), cleanup);
+
+  NPT_CHECK_LABEL(arguments.Add(PLT_StringPair("ActionCaller", this->GetDevice()->GetUUID())), cleanup);
+  NPT_CHECK_LABEL(arguments.Add(PLT_StringPair("SyncID", strSyncID)), cleanup);
+  NPT_CHECK_LABEL(arguments.Add(PLT_StringPair("SyncData", strSyncDataResult)), cleanup);
+
+  //Now we have to push the new syncData to all partners
+  NPT_CHECK_LABEL(InvokeAction(currentDevice, "urn:schemas-upnp-org:service:ContentSync:1", "AddSyncData", arguments, m_CtrlPoint->m_CtrlPoint), cleanup);
+
+  //UPnP spec says, we are only allowed to return, once all our partners are finished... let's wait
+  currentDevice = partnersToSync.GetFirstItem();
+  NPT_CHECK_LABEL(WaitForAllResult(currentDevice), cleanup_others);
+
+  //Set our result value!
+  NPT_CHECK_LABEL(action->SetArgumentValue("SyncDataResult", strSyncDataResult), cleanup_others);
+
+  return NPT_SUCCESS;
+cleanup_others:
+  //TODO: do the cleanup in anther thread... so we can return here!
+
+  //Atleast one device wasn't able to add the new sync structure... so let's remove it from everyone who did!
+  currentDevice  = partnersToSync.GetFirstItem();
+  while(currentDevice)
+  {
+    if (currentDevice->action->GetErrorCode()==0) //that one created the sync data, so let's revert it
+    {
+      PLT_ActionReference action;
+      if (NPT_SUCCEEDED(m_CtrlPoint->m_CtrlPoint->CreateAction(currentDevice->device.device,
+                                                               "urn:schemas-upnp-org:service:ContentSync:1",
+                                                               "RemoveSyncData",
+                                                               action)))
+      {
+        if (NPT_SUCCEEDED(action->SetArgumentValue("SyncID", strNewID)))
+          m_CtrlPoint->m_CtrlPoint->InvokeAction(action, NULL);
+      }
+    }
+    ++currentDevice;
+  }
+cleanup:
+  delegate->OnDeleteSyncData(strNewID);
+
+  return result;
 }
 
 NPT_Result PLT_ContentSyncService::OnModifySyncData(PLT_ActionReference&          action,
                                                     const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String    strActionCaller;
+  NPT_String    strSyncID;
+  NPT_String    strSyncData;
+  PLT_SyncData  syncData;
+
+  if (NPT_FAILED(action->GetArgumentValue("ActionCaller", strActionCaller)) ||
+      NPT_FAILED(action->GetArgumentValue("SyncID", strSyncID)) ||
+      NPT_FAILED(action->GetArgumentValue("SyncData", strSyncData))) {
+      NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  if (strSyncID.IsEmpty())
+  {
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  NPT_XmlElementNode* syncNode;
+  if (NPT_FAILED(PLT_XmlHelper::Parse(strSyncData, syncNode)))
+  {
+    action->SetError(702, "Invalid XML");
+    return NPT_SUCCESS;
+  }
+
+  if (NPT_FAILED(syncData.FromXml(syncNode, true))) //xml parsing failed
+  {
+    action->SetError(702, "Invalid XML");
+    return NPT_SUCCESS;
+  }
+
+  PLT_SyncStructureRef syncStructure = *syncData.m_syncData.GetFirstItem();
+  if (syncStructure->GetID() != strSyncID)
+  { //the sync id should be the id of the sync data that needs to be modified.
+    //I'm not sure if you can pass a SyncRelationship and the ID of the sub SyncPartnership... right now, just disallow this (easier)
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  PLT_SyncStructureRef localSyncStructure;
+  if (NPT_FAILED(delegate->GetSyncStructure(strSyncID, localSyncStructure)))
+  {
+    action->SetError(701, "No such sync data");
+    return NPT_SUCCESS;
+  }
+  if (localSyncStructure->GetUpdateID() >= syncStructure->GetUpdateID())
+  {
+    //our partner had a old sync structure
+    //ABORT
+    //TODO: right now the user has to wait until an exchange sync operation has finished until he can modify the sync structure again...
+    //maybe we should trigger one in here
+    return NPT_ERROR_INTERNAL;
+  }
+
+  PLT_DeviceData* device = GetDevice();
+
+  PLT_SyncActionDataList partnersToSync; //Will hold an array of all devices we have to tell about the new sync data!
+  if (strActionCaller.IsEmpty())
+  {
+    NPT_List<PLT_Partner> partners;
+    syncData.GetPartners(partners);
+
+    if (NPT_FAILED(GetPartners(partners.GetFirstItem(), partnersToSync, device->GetUUID())))
+    {
+      action->SetError(705, "Partner not online");
+      return NPT_SUCCESS;
+    }
+  }
+
+  NPT_Array<PLT_StringPair> arguments;
+  NPT_CHECK(arguments.Add(PLT_StringPair("ActionCaller", this->GetDevice()->GetUUID())));
+  NPT_CHECK(arguments.Add(PLT_StringPair("SyncID", strSyncID)));
+  NPT_CHECK(arguments.Add(PLT_StringPair("SyncData", strSyncData)));
+
+  NPT_CHECK(delegate->OnModifySyncData(strSyncID, syncData));
+
+  PLT_SyncActionDataList::Iterator currentDevice = partnersToSync.GetFirstItem();
+  NPT_CHECK(InvokeAction(currentDevice, "urn:schemas-upnp-org:service:ContentSync:1", "ModifySyncData", arguments, m_CtrlPoint->m_CtrlPoint));
+
+  currentDevice = partnersToSync.GetFirstItem();
+  return WaitForAllResult(currentDevice);
 }
 
 NPT_Result PLT_ContentSyncService::OnDeleteSyncData(PLT_ActionReference&          action,
                                                     const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String    strActionCaller;
+  NPT_String    strSyncID;
+
+  if (NPT_FAILED(action->GetArgumentValue("ActionCaller", strActionCaller)) ||
+      NPT_FAILED(action->GetArgumentValue("SyncID", strSyncID))) {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+  if (strSyncID.IsEmpty())
+  {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  PLT_DeviceData* device = GetDevice();
+  PLT_SyncData syncData;
+  if(NPT_FAILED(delegate->OnGetSyncData(strSyncID, &syncData)))
+  {
+    action->SetError(701, "No such sync data");
+    return NPT_SUCCESS;
+  }
+
+  PLT_SyncActionDataList partnersToSync;
+  if (strActionCaller.IsEmpty())
+  {
+    NPT_List<PLT_Partner> partners;
+    NPT_CHECK(syncData.GetPartners(partners));
+    //Deletions are allowed to fail on partners... so don't mind if a partner is not online
+    //Henve we don't check for failure here.
+    GetPartners(partners.GetFirstItem(), partnersToSync, device->GetUUID());
+  }
+  NPT_CHECK(delegate->OnDeleteSyncData(strSyncID));
+
+  PLT_SyncActionDataList::Iterator currentDevice = partnersToSync.GetFirstItem();
+
+  //Now we have to push the new syncData to all the partners
+  NPT_Array<PLT_StringPair> arguments;
+  NPT_CHECK(arguments.Add(PLT_StringPair("ActionCaller", this->GetDevice()->GetUUID())));
+  NPT_CHECK(arguments.Add(PLT_StringPair("SyncID", strSyncID)));
+
+  NPT_CHECK(InvokeAction(currentDevice, "urn:schemas-upnp-org:service:ContentSync:1", "DeleteSyncData", arguments, m_CtrlPoint->m_CtrlPoint));
+
+  //TODO: figure out a better way to wait for our result
+  currentDevice = partnersToSync.GetFirstItem();
+  NPT_CHECK(WaitForAllResult(currentDevice));
+
+  return NPT_SUCCESS;
 }
 
 NPT_Result PLT_ContentSyncService::OnGetSyncData(PLT_ActionReference&          action,
                                                  const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String    strSyncID;
+  if (NPT_FAILED(action->GetArgumentValue("SyncID", strSyncID))) {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  PLT_SyncData SyncData;
+  NPT_Result result = delegate->OnGetSyncData(strSyncID, &SyncData);
+
+  NPT_String strSyncData;
+  NPT_CHECK_SEVERE(SyncData.ToXml(strSyncData, !strSyncID.IsEmpty()));
+  NPT_CHECK_SEVERE(action->SetArgumentValue("SyncData", strSyncData));
+
+  return result;
 }
 
 NPT_Result PLT_ContentSyncService::CompareSyncStructures(NPT_List<PLT_SyncStructureRef>::Iterator ourRelationship,
                                                           const PLT_SyncData& remoteSyncData)
-{ 
-  return NPT_ERROR_NOT_IMPLEMENTED;
+{ //TODO: this seems should  probably go into libupnp, as it's mostly stuff for the upnp spec
+  while (ourRelationship)
+  {
+    NPT_List<PLT_SyncStructureRef>::Iterator remotePartner = remoteSyncData.m_syncData.Find(IDFinder((*ourRelationship)->GetID()));
+    if (!remotePartner)
+    { //it is not allowed to add a sync structure without notifying the partner
+      //but deleting is, so we can assume, that the partner has deleted that relationship, so we should do so as well
+      delegate->OnDeleteSyncData((*ourRelationship)->GetID());
+    }
+    else
+    {
+      if ((*ourRelationship)->GetUpdateID() < (*remotePartner)->GetUpdateID())
+      { //remote partner has a newer version of the sync relationship
+        if ((*ourRelationship)->GetType() != (*remotePartner)->GetType())
+          return NPT_ERROR_INTERNAL;
+
+        PLT_SyncData syncData;
+        syncData.m_syncData.Add(*remotePartner);
+        NPT_CHECK(delegate->OnModifySyncData((*ourRelationship)->GetID(), syncData));
+      }
+        //TODO: maybe we should check if the sync data is actually the same? Right now we have the problem, that
+        //both partners could have updated the sync structure once (they would have the same update ID but might differ)...
+        //The spec doesn't say anything about that?!? other solution would be to make sure that modifications are only done if they worked
+        //in all partners...Anyway, kodi doesn't modify change structures at the moment anyway, so this whole part is mainly for standard
+        //compliance and only rudimentary tested ;)
+
+        //check child-structures, if they need modification!
+      NPT_List<PLT_SyncStructureRef> ourChilds;
+      (*ourRelationship)->GetChilds(ourChilds);
+      if (ourChilds.GetItemCount() > 0)
+        NPT_CHECK(CompareSyncStructures(ourChilds.GetFirstItem(), remoteSyncData));
+    }
+      //if we have a newer version, than the partner will deal with it when we return our sync data as a response to this action
+      //so, we don't need do deal with that in here!
+    ++ourRelationship;
+  }
+  return NPT_SUCCESS;
 }
 
 NPT_Result PLT_ContentSyncService::OnExchangeSyncData(PLT_ActionReference&          action,
                                                       const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String    strLocalSyncData;
+  PLT_SyncData  localSyncData;
+
+  if (NPT_FAILED(action->GetArgumentValue("LocalSyncData", strLocalSyncData)))
+  {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  NPT_XmlElementNode* localSyncNode;
+  if (NPT_FAILED(PLT_XmlHelper::Parse(strLocalSyncData, localSyncNode)) || NPT_FAILED(localSyncData.FromXml(localSyncNode, false))) //xml parsing failed
+  {
+    action->SetError(702, "Invalid XML");
+    return NPT_SUCCESS;
+  }
+
+
+
+  //we have the partners sync structure, let's get our own
+  PLT_SyncData ourSyncData;
+  NPT_CHECK(delegate->OnGetSyncData("", &ourSyncData));
+
+  //compare the sync structures and remove or modify them as neccessary.
+  NPT_List<PLT_SyncStructureRef>::Iterator relationship = ourSyncData.m_syncData.GetFirstItem();
+  NPT_CHECK(CompareSyncStructures(relationship, localSyncData));
+
+  //We actually took care of everything, but let's allow the delegate to do its app specific buiseness if it wants to.
+  NPT_Result result = delegate->OnExchangeSyncData(localSyncData);
+
+  //Get the sync data again, as it might have changed
+  PLT_SyncData RemoteSyncData;
+  NPT_CHECK(delegate->OnGetSyncData("", &RemoteSyncData));
+
+  NPT_String strRemoteSyncData;
+  NPT_CHECK_SEVERE(RemoteSyncData.ToXml(strRemoteSyncData, false));
+  NPT_CHECK_SEVERE(action->SetArgumentValue("RemoteSyncData", strRemoteSyncData));
+
+  return result;
 }
 
 NPT_Result PLT_ContentSyncService::OnAddSyncPair(PLT_ActionReference&          action,
