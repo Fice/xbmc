@@ -223,6 +223,8 @@ PopulateObjectFromTag(CMusicInfoTag&         tag,
     if (!tag.GetURL().empty() && file_path)
       *file_path = tag.GetURL();
 
+    object.m_contentSyncInfo.syncable = "METADATA_ONLY"; //Allow the item to be synced (unless otherwise specified)
+
     std::vector<std::string> genres = tag.GetGenre();
     for (unsigned int index = 0; index < genres.size(); index++)
       object.m_Affiliation.genres.Add(genres.at(index).c_str());
@@ -248,7 +250,12 @@ PopulateObjectFromTag(CMusicInfoTag&         tag,
     object.m_MiscInfo.last_time = tag.GetLastPlayed().GetAsW3CDateTime().c_str();
     object.m_MiscInfo.play_count = tag.GetPlayCount();
 
-    if (resource) resource->m_Duration = tag.GetDuration();
+    if (resource)
+    {
+      resource->m_Duration = tag.GetDuration();
+      resource->m_SyncInfo.syncAllowed = "METADATA_ONLY"; //kodi does not keep track of file changes, so we would not be able to push changes
+      resource->m_SyncInfo.resModified = 0;
+    }
 
     return NPT_SUCCESS;
 }
@@ -266,6 +273,9 @@ PopulateObjectFromTag(CVideoInfoTag&         tag,
     if (!tag.m_strFileNameAndPath.empty() && file_path)
       *file_path = tag.m_strFileNameAndPath;
 
+    object.m_contentSyncInfo.syncable = "METADATA_ONLY"; //Allow the item to be synced (unless otherwise specified)
+    bool bSyncable = true;
+
     if (tag.m_iDbId != -1 ) {
         if (tag.m_type == MediaTypeMusicVideo) {
           object.m_ObjectClass.type = "object.item.videoItem.musicVideoClip";
@@ -276,6 +286,7 @@ PopulateObjectFromTag(CVideoInfoTag&         tag,
           object.m_Title = tag.m_strTitle;
           object.m_Date = CDateTime(tag.m_iYear, 1, 1, 0, 0, 0).GetAsW3CDate().c_str();
           object.m_ReferenceID = NPT_String::Format("videodb://musicvideos/titles/%i", tag.m_iDbId);
+          object.m_contentSyncInfo.syncable = "METADATA_ONLY";
         } else if (tag.m_type == MediaTypeMovie) {
           object.m_ObjectClass.type = "object.item.videoItem.movie";
           object.m_Title = tag.m_strTitle;
@@ -291,6 +302,8 @@ PopulateObjectFromTag(CVideoInfoTag&         tag,
           object.m_Recorded.episode_number = season * 100 + tag.m_iEpisode;
           object.m_Title = object.m_Recorded.series_title + " - " + object.m_Recorded.program_title;
           object.m_Date = tag.m_firstAired.GetAsW3CDate().c_str();
+          object.m_contentSyncInfo.syncable = ""; //TODO: not entirely sure... could also be "PROHIBITED"?!?
+          bSyncable = false;
           if(tag.m_iSeason != -1)
               object.m_ReferenceID = NPT_String::Format("videodb://tvshows/0/%i", tag.m_iDbId);
         }
@@ -335,7 +348,13 @@ PopulateObjectFromTag(CVideoInfoTag&         tag,
             const CStreamDetails &details = tag.m_streamDetails;
             resource->m_Resolution = NPT_String::FromInteger(details.GetVideoWidth()) + "x" + NPT_String::FromInteger(details.GetVideoHeight());
             resource->m_NbAudioChannels = details.GetAudioChannels();
+            resource->m_SyncInfo.syncAllowed = (bSyncable) ? "METADATA_ONLY" : "PROHIBITED"; //kodi does not keep track of file changes, so we would not be able to push changes
+            resource->m_SyncInfo.resModified = 0;
         }
+    }
+    if (bSyncable)
+    {
+       //TODO: object.m_contentSyncInfo.pairs = DB.GetPairs();
     }
 
     return NPT_SUCCESS;
@@ -406,6 +425,11 @@ BuildObject(CFileItem&                    item,
         // duration of zero is invalid
         if (resource.m_Duration == 0) resource.m_Duration = -1;
 
+
+
+        resource.m_SyncInfo.syncAllowed = "ALL";
+        resource.m_SyncInfo.resModified = 0; //TODO:
+
         // Set the resource file size
         resource.m_Size = item.m_dwSize;
         if(resource.m_Size == 0)
@@ -453,6 +477,9 @@ BuildObject(CFileItem&                    item,
         container->m_ObjectID = item.GetPath().c_str();
         container->m_ObjectClass.type = "object.container";
         container->m_ChildrenCount = -1;
+
+        container->m_contentSyncInfo.syncable = "METADATA_ONLY";
+        bool bSyncable = true;
 
         /* this might be overkill, but hey */
         if (item.IsMusicDb()) {
@@ -541,6 +568,8 @@ BuildObject(CFileItem&                    item,
                   break;
                 default:
                   container->m_ObjectClass.type += ".storageFolder";
+                  container->m_contentSyncInfo.syncable = "";
+                  bSyncable = false;
                   break;
             }
         } else if (item.IsPlayList() || item.IsSmartPlayList()) {
@@ -551,9 +580,16 @@ BuildObject(CFileItem&                    item,
           container->m_ObjectClass.type = "object.container.storageFolder";
         }
 
+        bool bIsVirtualPath = object->m_ObjectID.StartsWith("virtualpath://");
+      if (!bIsVirtualPath) { //we can't sync the files themselves, so it doesn't make sense to allow this path to be
+                             //syncable, as we don't have metadata anyway.
+          bSyncable = false;
+          container->m_contentSyncInfo.syncable = "";
+        }
+
         /* Get the number of children for this container */
         if (with_count && upnp_server) {
-            if (object->m_ObjectID.StartsWith("virtualpath://")) {
+            if (bIsVirtualPath) {
                 NPT_LargeSize count = 0;
                 NPT_CHECK_LABEL(NPT_File::GetSize(file_path, count), failure);
                 container->m_ChildrenCount = (NPT_Int32)count;
@@ -561,6 +597,11 @@ BuildObject(CFileItem&                    item,
                 /* this should be a standard path */
                 // TODO - get file count of this directory
             }
+        }
+
+        if (bSyncable)
+        {
+            //TODO: container->m_contentSyncInfo.syncPairs = DB.GetPairs();
         }
     }
 
