@@ -49,6 +49,10 @@ public:
     CUPnP();
     ~CUPnP();
 
+    // ctrl point
+    void StartCtrlPoint();
+    void StopCtrlPoint();
+
     // server
     bool StartServer();
     void StopServer();
