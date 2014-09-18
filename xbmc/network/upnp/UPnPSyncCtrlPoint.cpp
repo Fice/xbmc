@@ -445,6 +445,34 @@ NPT_Result CUPnPSyncCtrlPoint::OnEventNotify(PLT_Service* service, NPT_List<PLT_
 /*
 bool InvokeUpdateObject(const char* id, const char* curr_value, const char* new_value)
 {
+  CURL url(id);
+    PLT_DeviceDataReference device;
+  PLT_Service* cds;
+  PLT_ActionReference action;
+
+  CLog::Log(LOGDEBUG, "UPNP: attempting to invoke UpdateObject for %s", id);
+
+  // check this server supports UpdateObject action
+  NPT_CHECK_LABEL(FindServer(url.GetHostName().c_str(), device), failed);
+  NPT_CHECK_LABEL(device->FindServiceById("urn:upnp-org:serviceId:ContentDirectory", cds), failed);
+
+  NPT_CHECK_SEVERE(m_CtrlPoint->CreateAction(
+    device,
+    "urn:schemas-upnp-org:service:ContentDirectory:1",
+    "UpdateObject",
+    action));
+
+  NPT_CHECK_LABEL(action->SetArgumentValue("ObjectID", url.GetFileName().c_str()), failed);
+  NPT_CHECK_LABEL(action->SetArgumentValue("CurrentTagValue", curr_value), failed);
+  NPT_CHECK_LABEL(action->SetArgumentValue("NewTagValue", new_value), failed);
+
+  NPT_CHECK_LABEL(m_CtrlPoint->InvokeAction(action, NULL), failed);
+
+  CLog::Log(LOGDEBUG, "UPNP: invoked UpdateObject successfully");
+  return true;
+
+failed:
+  CLog::Log(LOGINFO, "UPNP: invoking UpdateObject failed");
   return false;
 }*/
 
