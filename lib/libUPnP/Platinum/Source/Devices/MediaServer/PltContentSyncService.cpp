@@ -447,7 +447,7 @@ PLT_ContentSyncService::OnDeleteSyncPairResponse(NPT_Result           res,
                                                  PLT_ActionReference& action,
                                                  void*                userdata)
 {
-  return StopWaiting(action, userdata);
+  return NPT_ERROR_NOT_IMPLEMENTED;
 }
 
 NPT_Result
@@ -984,19 +984,142 @@ NPT_Result PLT_ContentSyncService::OnExchangeSyncData(PLT_ActionReference&      
 NPT_Result PLT_ContentSyncService::OnAddSyncPair(PLT_ActionReference&          action,
                                                  const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String strActionCaller;
+  NPT_String strObjectID;
+  NPT_String strSyncPair;
+  PLT_SyncPair syncPair;
+
+  if (NPT_FAILED(action->GetArgumentValue("ActionCaller", strActionCaller)) ||
+      NPT_FAILED(action->GetArgumentValue("ObjectID", strObjectID)) ||
+      NPT_FAILED(action->GetArgumentValue("SyncPair", strSyncPair)))
+  {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  NPT_XmlElementNode* syncPairNode;
+  if (NPT_FAILED(PLT_XmlHelper::Parse(strSyncPair, syncPairNode)) || NPT_FAILED(syncPair.FromXml(syncPairNode)))
+  {
+    action->SetError(702, "Invalid XML");
+    return NPT_SUCCESS;
+  }
+
+  PLT_DeviceData* device = GetDevice();
+
+  PLT_SyncData syncData;
+  if (NPT_FAILED(delegate->OnGetSyncData(syncPair.m_syncRelationshipID, &syncData)) ||
+     !syncData.Contains(syncPair.m_partnershipID) ||
+     !syncData.Contains(syncPair.m_pairGroupID))
+  {
+    action->SetError(701, "No such sync data");
+    return NPT_SUCCESS;
+  }
+  if (syncData.m_syncData.GetItemCount()!=1)
+    return NPT_ERROR_INTERNAL;
+  PLT_ActiveChecker ac;
+  if (NPT_FAILED(syncData.Visit(&ac, true)))
+    return NPT_ERROR_INVALID_PARAMETERS;
+
+  PLT_SyncActionDataList partnersToSync;
+  if (strActionCaller.IsEmpty())
+  {
+    NPT_List<PLT_Partner> partners;
+    NPT_CHECK(syncData.GetPartners(partners));
+    NPT_CHECK(GetPartners(partners.GetFirstItem(), partnersToSync, device->GetUUID()));
+  }
+
+  PLT_SyncActionDataList::Iterator currentDevice = partnersToSync.GetFirstItem();
+
+  //Get the sync policy for the PairGroup
+  PLT_SyncPolicy usedPolicy;
+  (*syncData.m_syncData.GetFirstItem())->AggreagateSyncPolicy(usedPolicy);
+  PLT_SyncPolicy::Merge(usedPolicy, syncPair.m_syncPolicy, syncPair.m_syncPolicy); //Override the pair group sync policy with syncPair specific values (only where supplied)
+
+  usedPolicy.m_policyType = "Kodi";
+  if (delegate->HasSyncPair(syncData, syncPair.m_remoteObjectID))
+  { //there already is a syncpair for that object in the same sync relationship... we have to obey some rules:
+    if (usedPolicy.m_policyType.Compare("replace", false)==0)
+    {
+        //TODO: if we are not the source of the item we are not allowed to have the same item in two syncpairs
+    }
+    else if (usedPolicy.m_policyType.Compare("blend", false)==0)
+    {
+        //TODO: if we are not the priority partner we are not allowed to have the same item in two syncpairs
+    }
+    else if (usedPolicy.m_policyType.Compare("merge", false)==0)
+    {
+      //duplicates are never allowed
+      action->SetError(709, "The AddSyncpair() request failed, because the specified SyncPair argument is invalid.");
+      return NPT_SUCCESS;
+    }
+  }
+
+  NPT_String strOurObjectID;
+  NPT_CHECK(delegate->OnAddSyncPair(strObjectID, syncPair, strOurObjectID));
+
+  //Now we have to push the new syncData to all the partners
+  NPT_Array<PLT_StringPair> arguments;
+  NPT_CHECK(arguments.Add(PLT_StringPair("ActionCaller", this->GetDevice()->GetUUID())));
+  NPT_CHECK(arguments.Add(PLT_StringPair("ObjectID", strOurObjectID))); //we need to tell the partners the id, that object has on us.
+  syncPair.ToXml(strSyncPair);
+  NPT_CHECK(arguments.Add(PLT_StringPair("SyncPair", strSyncPair)));
+
+
+  NPT_CHECK(InvokeAction(currentDevice, "urn:schemas-upnp-org:service:ContentSync:1", "AddSyncPair", arguments, m_CtrlPoint->m_CtrlPoint));
+
+  //TODO: figure out a better way to wait for our result
+  currentDevice = partnersToSync.GetFirstItem();
+  NPT_CHECK(WaitForAllResult(currentDevice));
+
+  return NPT_SUCCESS;
+
 }
 
 NPT_Result PLT_ContentSyncService::OnModifySyncPair(PLT_ActionReference&          action,
                                                     const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String strActionCaller;
+  NPT_String strObjectID;
+  NPT_String strSyncPairs;
+  PLT_SyncPairs syncPairs;
+
+  if (NPT_FAILED(action->GetArgumentValue("ActionCaller", strActionCaller)) ||
+      NPT_FAILED(action->GetArgumentValue("ObjectID", strObjectID)) ||
+      NPT_FAILED(action->GetArgumentValue("SyncPair", strSyncPairs)))
+  {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  NPT_XmlElementNode* syncPairsNode;
+  if (NPT_FAILED(PLT_XmlHelper::Parse(strSyncPairs, syncPairsNode)) || NPT_FAILED(syncPairs.FromXml(syncPairsNode)))
+  {
+    action->SetError(702, "Invalid XML");
+    return NPT_SUCCESS;
+  }
+
+  return delegate->OnModifySyncPair(strObjectID, syncPairs);
 }
 
 NPT_Result PLT_ContentSyncService::OnDeleteSyncPair(PLT_ActionReference&          action,
                                                     const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String strActionCaller;
+  NPT_String strObjectID;
+  NPT_String strSyncID;
+
+  if (NPT_FAILED(action->GetArgumentValue("ActionCaller", strActionCaller)) ||
+      NPT_FAILED(action->GetArgumentValue("ObjectID", strObjectID)) ||
+      NPT_FAILED(action->GetArgumentValue("SyncID", strSyncID)))
+  {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  return delegate->OnDeleteSyncPair(strObjectID, strSyncID);
 }
 
 NPT_Result PLT_ContentSyncService::OnStartSync(PLT_ActionReference&          action,

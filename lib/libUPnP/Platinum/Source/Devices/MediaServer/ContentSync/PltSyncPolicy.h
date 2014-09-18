@@ -67,6 +67,32 @@ protected:
 class PLT_SyncPolicy
 {
 public:
+  static NPT_Result Merge(const PLT_SyncPolicy& parent, const PLT_SyncPolicy& child, PLT_SyncPolicy& result)
+  {
+    //A valid child property overrides the value of the parent policy!
+    if (!child.m_policyType.IsEmpty())
+      result.m_policyType = child.m_policyType;
+    else if (!parent.m_policyType.IsEmpty())
+      result.m_policyType = parent.m_policyType;
+
+    if (child.m_priorityPartnerID)
+      result.m_priorityPartnerID = child.m_priorityPartnerID;
+    else if (parent.m_priorityPartnerID)
+      result.m_priorityPartnerID = parent.m_priorityPartnerID;
+
+    if (child.m_delProtection.IsValid())
+      result.m_delProtection = child.m_delProtection;
+    else if (parent.m_delProtection.IsValid())
+      result.m_delProtection = parent.m_delProtection;
+
+    if (child.m_autoObjAdd.IsValid())
+      result.m_autoObjAdd = child.m_autoObjAdd;
+    else if (parent.m_autoObjAdd.IsValid())
+      result.m_delProtection = parent.m_autoObjAdd;
+
+    return NPT_SUCCESS;
+  }
+
   PLT_SyncPolicy() : m_priorityPartnerID(0) {}
 
   const NPT_String& GetPolicyType() const { return m_policyType; }
