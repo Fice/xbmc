@@ -372,6 +372,7 @@ NPT_Result CUPnPSyncCtrlPoint::OnExchangeSyncDataResponse(NPT_Result res, PLT_Ac
    //Auto add a sync relationship
    //and add sync pair with all of the common items
    }*/
+  return NPT_ERROR_NOT_IMPLEMENTED;
 }
 
 NPT_Result CUPnPSyncCtrlPoint::OnAddSyncPairResponse(NPT_Result res, PLT_ActionReference& action, void* userdata)
