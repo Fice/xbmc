@@ -32,8 +32,7 @@ class CUPnPSyncCtrlPoint : public PLT_CtrlPointListener,
 {
 public:
   CUPnPSyncCtrlPoint(NPT_Reference<PLT_CtrlPoint>& ctrlPoint, PLT_ContentSyncService* service = NULL)
-    : PLT_ContentSyncCtrlPoint(ctrlPoint),
-      m_service(service) {}
+    : PLT_ContentSyncCtrlPoint(ctrlPoint) {}
 
   //Helper functions to make invocation of content sync actions a little bit easier
   bool CreateSyncRelationship(const CURL& url);
