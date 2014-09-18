@@ -13,3 +13,7 @@ set -e
 
 # ConnectionManager
 ../../../Targets/x86-unknown-cygwin/Debug/TextToHeader.exe -v RDR_ConnectionManagerSCPD -h ConnectionManager ConnectionManagerSCPD.xml RdrConnectionManagerSCPD.cpp
+
+
+# Content Sync Service
+../../../Targets/x86-unknown-cygwin/Debug/TextToHeader.exe -v RDR_ContentSyncServiceSCPD -h ContentSyncService ContentSyncServiceSCPD.xml ContentSyncServiceSCPD.cpp
