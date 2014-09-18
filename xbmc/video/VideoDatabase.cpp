@@ -237,6 +237,7 @@ void CVideoDatabase::CreateTables()
   CLog::Log(LOGINFO, "create taglinks table");
   m_pDS->exec("CREATE TABLE taglinks (idTag integer, idMedia integer, media_type TEXT)");
 
+  CreateSyncPairTable();
   SetupChangelogTables();
 }
 
@@ -4806,7 +4807,10 @@ void CVideoDatabase::UpdateTables(int iVersion)
     m_pDS->exec("DELETE from art WHERE media_type='season' AND NOT EXISTS (SELECT 1 FROM seasons WHERE seasons.idSeason = art.media_id)");
   }
   if (iVersion < 88)
+  {
+    CreateSyncPairTable();
     SetupChangelogTables();
+  }
 }
 
 int CVideoDatabase::GetSchemaVersion() const
