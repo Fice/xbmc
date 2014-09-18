@@ -207,12 +207,137 @@ NPT_Result CUPnPSyncCtrlPoint::OnDeviceRemoved(PLT_DeviceDataReference& device)
 
 NPT_Result CUPnPSyncCtrlPoint::OnRemoveSyncDataResponse(NPT_Result res, PLT_ActionReference& action, void* userdata)
 {
-  return return NPT_ERROR_NOT_IMPLEMENTED;
+  if (action->GetErrorCode() < 100)
+    CGUIDialogKaiToast::QueueNotification("upnp sync", "Sync relation has been removed"); //TODO: localize
+  else
+    CGUIDialogKaiToast::QueueNotification("upnp sync", "Failure when trying to remove sync relationship"); //TODO: localize
+  return NPT_SUCCESS;
 }
 
 NPT_Result CUPnPSyncCtrlPoint::OnAddSyncDataResponse(NPT_Result res, PLT_ActionReference& action, void* userdata)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  if (action->GetErrorCode() < 100)
+  {
+    NPT_String actionCaller;
+    NPT_CHECK(action->GetArgumentValue("ActionCaller", actionCaller));
+    if (actionCaller.IsEmpty()) //We are the ctrl point that created the syncData
+    { //Now our job is to create a sync pair for ALL the items we and our partner have
+      CGUIDialogKaiToast::QueueNotification("upnp sync", "Sync relation has been established"); //TODO: localize
+      std::auto_ptr<CURL> url = std::auto_ptr<CURL>((CURL*)userdata);
+      
+      NPT_String    strSyncData;
+      PLT_SyncData  syncData;
+      
+      NPT_CHECK(action->GetArgumentValue("SyncDataResult", strSyncData));
+      NPT_XmlElementNode* syncNode;
+      NPT_CHECK(PLT_XmlHelper::Parse(strSyncData, syncNode));
+      NPT_CHECK(syncData.FromXml(syncNode, true));
+      
+      std::string DeviceUUID = url->GetHostName();
+      NPT_String path = url->Get().c_str();
+      PLT_DeviceDataReference device;
+      if (NPT_FAILED(CUPnP::GetInstance()->m_MediaBrowser->FindServer(DeviceUUID.c_str(), device) && !device.IsNull()))
+        return false;
+      
+      /*
+       NPT_String object_id;
+       { //Get object ID
+       //TODO: unify! This code has been copied from CUPnPDirectory to get the object id from a path
+       int next_slash = path.Find('/', 7);
+       NPT_String uuid = (next_slash == -1) ? path.SubString(7) : path.SubString(7, next_slash - 7);
+       object_id = (next_slash == -1) ? "" : path.SubString(next_slash + 1);
+       object_id.TrimRight("/");
+       if (object_id.GetLength()) {
+       object_id = CURL::Decode((char*)object_id).c_str();
+       }
+       // issue a browse request with object_id
+       // if object_id is empty use "0" for root
+       object_id = object_id.IsEmpty() ? "0" : object_id;
+       
+       }*/
+      if (syncData.m_syncData.GetItemCount()==0)
+        return NPT_ERROR_INTERNAL;
+      
+      PLT_SyncStructureRef relation = *syncData.m_syncData.GetFirstItem();
+      if(relation->GetType() != SYNC_RELATIONSHIP)
+        return NPT_ERROR_INTERNAL;
+      
+      PLT_SyncRelationship *syncRelation = (PLT_SyncRelationship*)&*relation;
+      
+      NPT_List<PLT_PartnershipRef>& partnerships = syncRelation->GetChilds();
+      if (partnerships.GetItemCount()==0)
+        return NPT_ERROR_INTERNAL;
+      PLT_PartnershipRef partnership = *partnerships.GetFirstItem();
+      
+      NPT_List<PLT_PairGroupRef>& pairGroups = partnership->GetChilds();
+      if (pairGroups.GetItemCount() == 0)
+        return NPT_ERROR_INTERNAL;
+      PLT_PairGroupRef pairGroup = *pairGroups.GetFirstItem();
+      
+      PLT_SyncPair syncPair;
+      syncPair.m_syncRelationshipID = syncRelation->GetID();
+      syncPair.m_partnershipID = partnership->GetID();
+      syncPair.m_pairGroupID = pairGroup->GetID();
+      
+        //This is a hack ^^
+        //First: we ignore, what path the user actually wanted to sync. We hardcode wich paths to sync.
+        //TODO 1: allow to  restrict what kind of content to sync (Movies/TV SHows/Music etc...) That should be easily doable.
+        //TODO 2: we sync with content from hardcoded paths.... that would probably not work with 3rd party devices.
+        //        Solution: every container/item has a avsc:syncable property (not implemented yet), so we should check wether the given
+        //        curl is a syncable container/item (abort if not, better yet abort before invoking addsyncdata). Then recusively go through all children that have the syncable flag set to true.
+        //        I tried to do this, but the Buil() function where kodi builds the MediaObject was quite confusing and i didn't know the best approach.
+        //        At first we should only send syncable==true for the same paths that are hardcoded below.
+        //TODO 3: allow other folders to be syncable. Problem: when a new item is added, we need to tell our partners.
+        //        So everytime a new Item is added, we need to check if there is a SyncPair with one of the actors of that new item,
+        //        if there is a syncPair with one of the genres, if there is a syncPair with the pg rating ....
+        //        that list gets long and it would be rather inefficient. I'm open for ideas here.
+      syncPair.m_remoteObjectID = "library://video/tvshows/titles/";
+      if (NPT_FAILED(InvokeAddSyncPair(device,
+                                       "", //TODO: empty action caller
+                                       "library://video/tvshows/titles/",
+                                       syncPair)))
+        CGUIDialogKaiToast::QueueNotification("upnp sync", "Could not create a sync pair for tv shows"); //TODO: localize
+      syncPair.m_remoteObjectID = "library://video/movies/titles/";
+      if (NPT_FAILED(InvokeAddSyncPair(device,
+                                       "", //TODO: empty action caller
+                                       "library://video/movies/titles/",
+                                       syncPair)))
+        CGUIDialogKaiToast::QueueNotification("upnp sync", "Could not create a sync pair for movies"); //TODO: localize
+      syncPair.m_remoteObjectID = "library://music/songs/titles/";
+      if (NPT_FAILED(InvokeAddSyncPair(device,
+                                       "", //TODO: empty action caller
+                                       "library://music/songs/titles/",
+                                       syncPair)))
+        CGUIDialogKaiToast::QueueNotification("upnp sync", "Could not create a sync pair for music"); //TODO: localize
+      
+      
+      /*
+       if (mediaObject->m_contentSyncInfo.syncable == true)
+       { //The content type itself can be synced...
+       bool bCanSync = false;
+       if (mediaObject->m_Resources.GetItemCount() != 0)
+       {
+       //Check if there is atleas one resurce that has syncAllowed == METADATA_ONLY or syncAllowed == ALL
+       //TODO: bCanSync = true;
+       
+       //TODO:
+       //if (check if one sync pair has a sync policy that disallowes more tha one sync pairs)
+       //bCanSync = false;
+       }
+       else
+       bCanSync = true;
+       }*/
+        //TODO: recusively go through all children
+      
+        //Todo: create sync pairs for all items!
+    }
+    
+    
+    return NPT_SUCCESS;
+  }
+  else
+    CGUIDialogKaiToast::QueueNotification("upnp sync", "Sync relation could not be established"); //TODO: localize
+  return NPT_SUCCESS;
 }
 
 NPT_Result CUPnPSyncCtrlPoint::OnGetSyncDataResponse(NPT_Result res, PLT_ActionReference& action, void* userdata)
@@ -247,12 +372,53 @@ NPT_Result CUPnPSyncCtrlPoint::OnExchangeSyncDataResponse(NPT_Result res, PLT_Ac
    //Auto add a sync relationship
    //and add sync pair with all of the common items
    }*/
-   return NPT_SUCCESS;
 }
 
 NPT_Result CUPnPSyncCtrlPoint::OnAddSyncPairResponse(NPT_Result res, PLT_ActionReference& action, void* userdata)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String actionCaller;
+  NPT_CHECK(action->GetArgumentValue("ActionCaller", actionCaller));
+  if (!actionCaller.IsEmpty())
+  {
+    NPT_String ObjectID;
+    NPT_CHECK(action->GetArgumentValue("ObjectID", ObjectID));
+    
+    if (action->GetErrorCode() >= 100)
+    {
+      CLog::Log(LOGWARNING, "%s - our partner failed to add a sync pair for object: %s", __FUNCTION__, ObjectID.GetChars());
+      return NPT_SUCCESS;
+    }
+      //Let's browse the childs and add them ;)
+    
+    
+      //Create syncpairs for all the content we have ;)
+    if (ObjectID == "library://video/tvshows/titles/")
+    {
+    }
+    else if (ObjectID == "library://video/movies/titles/")
+    {
+    }
+    else if (ObjectID == "library://video/movies/titles/")
+    {
+    }
+    else if (ObjectID == "library://music/songs/titles/")
+    {
+    }
+    
+      //create syncpairs for all the content our partner has ;)
+    NPT_String strSyncPair;
+    NPT_CHECK(action->GetArgumentValue("SyncPair", strSyncPair));
+    PLT_SyncPair syncPair;
+    NPT_XmlElementNode* syncPairsNode;
+    NPT_CHECK(PLT_XmlHelper::Parse(strSyncPair, syncPairsNode));
+    NPT_CHECK(syncPair.FromXml(syncPairsNode));
+    
+    XFILE::CUPnPDirectory dir;
+    CFileItemList items;
+    dir.GetDirectory(CURL(syncPair.m_remoteObjectID.GetChars()), items);
+    
+    
+  }
 }
 
 NPT_Result CUPnPSyncCtrlPoint::OnActionResponse(NPT_Result res, PLT_ActionReference& action, void* userdata)
