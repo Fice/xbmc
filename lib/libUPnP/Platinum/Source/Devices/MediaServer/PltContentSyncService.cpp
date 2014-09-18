@@ -479,7 +479,7 @@ PLT_ContentSyncService::OnResetChangeLogResponse(NPT_Result           res,
                                                  PLT_ActionReference& action,
                                                  void*                userdata)
 {
-  return StopWaiting(action, userdata);
+  return NPT_ERROR_NOT_IMPLEMENTED;
 }
 
 NPT_Result
@@ -1125,35 +1125,224 @@ NPT_Result PLT_ContentSyncService::OnDeleteSyncPair(PLT_ActionReference&        
 NPT_Result PLT_ContentSyncService::OnStartSync(PLT_ActionReference&          action,
                                                const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String strActionCaller;
+  NPT_String strSyncID;
+
+  if (NPT_FAILED(action->GetArgumentValue("ActionCaller", strActionCaller)) ||
+      NPT_FAILED(action->GetArgumentValue("SyncID", strSyncID)))
+  {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  if(currentSyncIDs.Find(NPT_ObjectComparator<NPT_String>(strSyncID)))
+  {
+    action->SetError(711, "The StartSync() request failed because the sync operation of the specified sync data is in-progress");
+    return NPT_SUCCESS;
+  }
+  currentSyncIDs.Add(strSyncID);
+
+  PLT_SyncStructureRef syncStructure;
+  if (NPT_FAILED(delegate->GetSyncStructure(strSyncID, syncStructure)))
+  {
+    NPT_LOG_WARNING("No such sync data");
+    action->SetError(401, "No such sync data");
+    return NPT_SUCCESS;
+  }
+  PLT_PartnerList partners;
+  NPT_CHECK(syncStructure->GetPartners(partners));
+
+  if (false) //TODO: syncStructure.IsActive()==0)
+  {
+    action->SetError(710, "The StartSync() request failed because the specified SyncID is not active");
+    return NPT_SUCCESS;
+  }
+
+  if(!delegate->CanSyncNow(strSyncID))
+  {
+    return NPT_ERROR_INTERNAL;
+  }
+
+  //Create the actions for all our partners
+  PLT_SyncActionDataList partnersToSync; //Will hold an array of all devices we have to tell about the new sync data!
+  if (strActionCaller.IsEmpty())
+  {
+    NPT_List<PLT_Partner>::Iterator i = partners.GetFirstItem();
+    while (i)
+    {
+      PLT_SyncActionUserData currentActionData;
+      if (NPT_FAILED(NPT_ContainerFind(m_ContentSyncDevices,
+                                       PLT_SyncDeviceDataFinder(i->m_strDeviceUDN), currentActionData.device)))
+      {
+        action->SetError(705, "Partner not online");
+        return NPT_SUCCESS;
+      }
+      partnersToSync.Add(currentActionData);
+      ++i;
+    }
+  }
+
+  NPT_CHECK(delegate->OnStartSync(strSyncID));
+
+  NPT_Result result = NPT_ERROR_INTERNAL;
+
+  PLT_SyncActionDataList::Iterator currentDevice = partnersToSync.GetFirstItem();
+  while (currentDevice)
+  {
+    NPT_CHECK_LABEL(m_CtrlPoint->m_CtrlPoint->CreateAction(currentDevice->device.device,
+                                                           "urn:schemas-upnp-org:service:ContentSync:1",
+                                                           "StartSync",
+                                                           currentDevice->action), cleanup_others);
+    NPT_CHECK_LABEL(currentDevice->action->SetArgumentValue("ActionCaller", this->GetDevice()->GetUUID()), cleanup_others);
+    NPT_CHECK_LABEL(currentDevice->action->SetArgumentValue("SyncID", strSyncID), cleanup_others);
+
+    PLT_CtrlPointInvokeActionTask* task;
+    NPT_CHECK_LABEL(m_CtrlPoint->m_CtrlPoint->CreateActionThread(currentDevice->action, &*currentDevice, &task), cleanup_others);
+
+    NPT_CHECK_LABEL(m_CtrlPoint->m_CtrlPoint->InvokeAction(task), cleanup_others);
+    ++currentDevice;
+  }
+
+  return NPT_SUCCESS;
+
+cleanup_others:
+    //TODO: do the cleanup in anther thread... so we can return here!
+  /*--currentDevice;
+   while(currentDevice)
+   {
+   //TODO: actually revert it
+   --currentDevice;
+   }*/
+
+
+    //TODO:delegate->OnDeleteSyncData(strSyncID);
+
+  return result;
 }
 
 NPT_Result PLT_ContentSyncService::OnAbortSync(PLT_ActionReference&          action,
                                                const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String strActionCaller;
+  NPT_String strSyncID;
+
+  if (NPT_FAILED(action->GetArgumentValue("ActionCaller", strActionCaller)) ||
+      NPT_FAILED(action->GetArgumentValue("SyncID", strSyncID)))
+  {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  if (!currentSyncIDs.Find(NPT_ObjectComparator<NPT_String>(strSyncID)))
+  { //The syncID that should be aborted, isn't active to begin with!
+    return NPT_ERROR_INTERNAL;
+  }
+
+  PLT_SyncData syncData;
+  /* TODO: if(!delegate->GetSyncData(syncData))
+  {
+    NPT_LOG_WARNING("No such sync data");
+    action->SetError(401, "No such sync data");
+    return NPT_SUCCESS;
+  }*/
+
+  NPT_CHECK(delegate->OnAbortSync(strSyncID));
+
+  currentSyncIDs.Remove(strSyncID);
+
+  return NPT_SUCCESS;
 }
 
 NPT_Result PLT_ContentSyncService::OnGetChangeLog(PLT_ActionReference&          action,
                                                   const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String strSyncID;
+  NPT_Int32  iStartingIndex;
+  NPT_Int32  iRequestedCount;
+
+  if (NPT_FAILED(action->GetArgumentValue("StartingIndex",  iStartingIndex)) ||
+      NPT_FAILED(action->GetArgumentValue("SyncID",         strSyncID)) ||
+      NPT_FAILED(action->GetArgumentValue("RequestedCount", iRequestedCount)))
+  {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  PLT_ChangeLog Result;
+  NPT_UInt32 NumberReturned;
+  NPT_UInt32 TotalMatches;
+  NPT_Result result = delegate->OnGetChangeLog(strSyncID, iStartingIndex, iRequestedCount, &Result, NumberReturned, TotalMatches);
+
+  NPT_String strResult;
+  NPT_CHECK_SEVERE(Result.ToXml(strResult));
+  NPT_CHECK_SEVERE(action->SetArgumentValue("Result", strResult));
+  NPT_CHECK_SEVERE(action->SetArgumentValue("NumberReturned", NPT_String::FromInteger(NumberReturned)));
+  NPT_CHECK_SEVERE(action->SetArgumentValue("TotalMatches", NPT_String::FromInteger(TotalMatches)));
+
+  return result;
 }
 
 NPT_Result PLT_ContentSyncService::OnResetChangeLog(PLT_ActionReference&          action,
                                                     const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String strSyncID;
+  NPT_String strObjectIDs;
+  PLT_ResetObjectList objectIDs;
+
+  if (NPT_FAILED(action->GetArgumentValue("ObjectIDs", strObjectIDs)) ||
+      NPT_FAILED(action->GetArgumentValue("SyncID", strSyncID)))
+  {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  NPT_XmlElementNode* objectIDsNode;
+  if(NPT_FAILED(PLT_XmlHelper::Parse(strObjectIDs, objectIDsNode)) || NPT_FAILED(objectIDs.FromXml(objectIDsNode)))
+  {
+    action->SetError(702, "Invalid XML");
+    return NPT_SUCCESS;
+  }
+
+  return delegate->OnResetChangeLog(strSyncID, objectIDs);
 }
 
 NPT_Result PLT_ContentSyncService::OnResetStatus(PLT_ActionReference&          action,
                                                  const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String strSyncID;
+
+  if (NPT_FAILED(action->GetArgumentValue("SyncID", strSyncID)))
+  {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  return delegate->OnResetStatus(strSyncID);
 }
 
 NPT_Result PLT_ContentSyncService::OnGetSyncStatus(PLT_ActionReference&          action,
                                                    const PLT_HttpRequestContext& context)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  NPT_String strSyncID;
+
+  if (NPT_FAILED(action->GetArgumentValue("SyncID", strSyncID)))
+  {
+    NPT_LOG_WARNING("Missing arguments");
+    action->SetError(402, "Invalid args");
+    return NPT_SUCCESS;
+  }
+
+  PLT_SyncStatus SyncStatus;
+  NPT_Result result = delegate->OnGetSyncStatus(strSyncID, &SyncStatus);
+
+  NPT_String strSyncStatus;
+  NPT_CHECK_SEVERE(SyncStatus.ToXml(strSyncStatus));
+  NPT_CHECK_SEVERE(action->SetArgumentValue("SyncStatus", strSyncStatus));
+
+  return result;
 }
