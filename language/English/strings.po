@@ -13376,6 +13376,15 @@ msgid "Could not initialise the CEC adaptor. Please check your settings."
 msgstr ""
 
 #empty strings from id 36013 to 36014
+#: upnp sync settings.
+msgctxt "#36013"
+msgid "Allow Database Synchronisation."
+msgstr ""
+
+#: upnp sync settings. help text
+msgctxt "#36014"
+msgid "Allow Database Synchronisation."
+msgstr ""
 
 #: system/peripherals.xml
 msgctxt "#36015"
