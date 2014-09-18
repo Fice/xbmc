@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-
+#include "../../../lib/libUPnP/Platinum/Source/Platinum/Platinum.h"
 #include "GUIUserMessages.h"
 #include "GUIWindowVideoNav.h"
 #include "music/windows/GUIWindowMusicNav.h"
@@ -59,6 +59,8 @@
 #include "video/VideoInfoScanner.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
 #include "pvr/recordings/PVRRecording.h"
+#include "network/upnp/UPnP.h"
+#include "network/upnp/UPnPDatabase.h"
 
 using namespace XFILE;
 using namespace VIDEODATABASEDIRECTORY;
@@ -798,6 +800,38 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
             buttons.Add(CONTEXT_BUTTON_SET_CONTENT, 20442);
           else
             buttons.Add(CONTEXT_BUTTON_SET_CONTENT, 20333);
+        }
+        if (URIUtils::IsUPnP(item->GetPath()) &&
+            CSettings::Get().GetBool("services.upnpsync"))
+        {
+            UPNP::CUPnP* upnp = UPNP::CUPnP::GetInstance();
+          upnp->StartClient();
+
+          CURL path(item->GetPath());
+          std::string uuid = path.GetHostName();
+
+          PLT_DeviceDataReference device;
+          if (NPT_SUCCEEDED(upnp->m_MediaBrowser->FindServer(uuid.c_str(), device)) && !device.IsNull())
+          {
+            const NPT_Array<PLT_Service*>& services = device->GetServices();
+
+            UPNP::CUPnPDatabase db;
+            if (db.HasSyncRelationshipWith(device->GetUUID().GetChars()))
+            {
+              buttons.Add(CONTEXT_BUTTON_MODIFY_SYNC, 21472);
+              buttons.Add(CONTEXT_BUTTON_REMOVE_UPNP_SYNC, 21471);
+            }
+            else
+            {
+              NPT_Array<PLT_Service*>::Iterator service;
+              if (NPT_SUCCEEDED(NPT_ContainerFind(services,
+                                                  PLT_ServiceTypeFinder("urn:schemas-upnp-org:service:ContentSync:1"),
+                                                  service)))
+              {
+                buttons.Add(CONTEXT_BUTTON_ADD_UPNP_SYNC, 21466);
+              }
+            }
+          }
         }
       }
 

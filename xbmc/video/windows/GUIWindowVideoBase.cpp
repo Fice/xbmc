@@ -64,6 +64,8 @@
 #include "utils/FileUtils.h"
 #include "interfaces/AnnouncementManager.h"
 #include "network/upnp/UPnP.h"
+#include "network/upnp/UPnPSyncCtrlPoint.h"
+#include "network/upnp/UPnPDatabase.h"
 #include "pvr/PVRManager.h"
 #include "pvr/recordings/PVRRecordings.h"
 #include "utils/URIUtils.h"
@@ -76,6 +78,7 @@
 #include "GUIInfoManager.h"
 #include "utils/GroupUtils.h"
 #include "filesystem/File.h"
+#include "dialogs/GUIDialogKaiToast.h"
 
 using namespace std;
 using namespace XFILE;
@@ -1356,6 +1359,61 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_SET_CONTENT:
     {
       OnAssignContent(item->HasVideoInfoTag() && !item->GetVideoInfoTag()->m_strPath.empty() ? item->GetVideoInfoTag()->m_strPath : item->GetPath());
+      return true;
+    }
+  case CONTEXT_BUTTON_ADD_UPNP_SYNC:
+    {
+      if (!CSettings::Get().GetBool("services.upnpsync"))
+        return false;
+      CURL path(item->GetPath());
+      UPNP::CUPnPSyncCtrlPoint* syncControl = UPNP::CUPnP::GetInstance()->GetSyncControl();
+      if (syncControl && syncControl->CreateSyncRelationship(path))
+      {
+        //TODO: remove this line, because the actual response is async... we need a better way to tell the user it succeeded
+        CGUIDialogKaiToast::QueueNotification("upnp sync", "worked");
+      }
+      else
+      {
+        //TODO: localize
+        CGUIDialogKaiToast::QueueNotification("upnp sync", "failed");
+      }
+      return true;
+    }
+  case CONTEXT_BUTTON_MODIFY_SYNC:
+    {
+      if (!CSettings::Get().GetBool("services.upnpsync"))
+        return false;
+      CURL path(item->GetPath());
+
+      std::string DeviceUUID = path.GetHostName();
+
+      ///TODO: remove, this is just a test context menu... we will jsut change the sync relationship title ;)
+      UPNP::CUPnPDatabase db;
+      PLT_SyncRelationshipRef syncRelationship;
+      if (!db.GetSyncRelationshipForDevice(DeviceUUID, syncRelationship)) //TODO: a more specialised version that just returns the id, for efficiency?!?
+        return false;
+      syncRelationship->SetTitle(syncRelationship->GetTitle() + " it worked");
+      syncRelationship->IncreaseUpdateID();
+
+      UPNP::CUPnPSyncCtrlPoint* syncControl = UPNP::CUPnP::GetInstance()->GetSyncControl();
+      if (!syncControl || !syncControl->ModifySyncRelationship(path, PLT_SyncRelationshipRef(syncRelationship)))
+      {
+        //TODO: localize
+        CGUIDialogKaiToast::QueueNotification("upnp sync", "Sync relation could not be modified");
+      }
+      return true;
+    }
+  case CONTEXT_BUTTON_REMOVE_UPNP_SYNC:
+    {
+      if (!CSettings::Get().GetBool("services.upnpsync"))
+        return false;
+      CURL path(item->GetPath());
+      UPNP::CUPnPSyncCtrlPoint* syncControl = UPNP::CUPnP::GetInstance()->GetSyncControl();
+      if (!syncControl || !syncControl->RemoveSyncRelationship(path))
+      {
+        //TODO: localize
+        CGUIDialogKaiToast::QueueNotification("upnp sync", "Sync relation could not be established");
+      }
       return true;
     }
   case CONTEXT_BUTTON_PLAY_PART:

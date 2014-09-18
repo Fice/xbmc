@@ -11312,7 +11312,12 @@ msgctxt "#21465"
 msgid "Above video"
 msgstr ""
 
-#empty string with id 21466
+
+#. Context menu label to create a Sync relationship between two UPnP devices
+#: video/windows/GUIWindowVideoNav.cpp
+msgctxt "#21466"
+msgid "Sync"
+msgstr ""
 
 #. Filter (media data) from float value to float value
 #: xbmc/dialogs/GUIDialogMediaFilter.cpp
@@ -11339,7 +11344,18 @@ msgctxt "#21470"
 msgid "%s [%d]"
 msgstr ""
 
-#empty strings from id 21471 to 21601
+#. Context menu label to remove an existing Sync relationship
+#: xbmc/video/windows/GUIWindowVideoNav.cpp
+msgctxt "#21471"
+msgid "Remove Sync"
+msgstr ""
+
+#. Context menu label to modify an existing Sync relationship
+#: xbmc/video/windows/GUIWindowVideoNav.cpp
+msgctxt "#21472"
+msgid "Modify Sync"
+msgstr ""
+#empty strings from id 21473 to 21601
 
 #: xbmc/Util.cpp
 msgctxt "#21602"
