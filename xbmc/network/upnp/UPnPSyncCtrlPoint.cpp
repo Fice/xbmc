@@ -420,6 +420,7 @@ NPT_Result CUPnPSyncCtrlPoint::OnAddSyncPairResponse(NPT_Result res, PLT_ActionR
     
     
   }
+  return NPT_SUCCESS;
 }
 
 NPT_Result CUPnPSyncCtrlPoint::OnActionResponse(NPT_Result res, PLT_ActionReference& action, void* userdata)
