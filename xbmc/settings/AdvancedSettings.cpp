@@ -1160,6 +1160,23 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
     XMLUtils::GetString(pDatabase, "ciphers", m_databaseEpg.ciphers);
   }
 
+  //TODO: i don't think that should ever be a MySQL db... have to treat it more like the texture db
+  pDatabase = pRootElement->FirstChildElement("upnpdatabase");
+  if (pDatabase)
+  {
+    XMLUtils::GetString(pDatabase, "type", m_databaseUPnP.type);
+    XMLUtils::GetString(pDatabase, "host", m_databaseUPnP.host);
+    XMLUtils::GetString(pDatabase, "port", m_databaseUPnP.port);
+    XMLUtils::GetString(pDatabase, "user", m_databaseUPnP.user);
+    XMLUtils::GetString(pDatabase, "pass", m_databaseUPnP.pass);
+    XMLUtils::GetString(pDatabase, "name", m_databaseUPnP.name);
+    XMLUtils::GetString(pDatabase, "key",  m_databaseUPnP.key);
+    XMLUtils::GetString(pDatabase, "cert", m_databaseUPnP.cert);
+    XMLUtils::GetString(pDatabase, "ca",   m_databaseUPnP.ca);
+    XMLUtils::GetString(pDatabase, "capath", m_databaseUPnP.capath);
+    XMLUtils::GetString(pDatabase, "ciphers", m_databaseUPnP.ciphers);
+  }
+
   pElement = pRootElement->FirstChildElement("enablemultimediakeys");
   if (pElement)
   {
