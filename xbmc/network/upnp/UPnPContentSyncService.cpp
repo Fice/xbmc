@@ -26,22 +26,110 @@
 
 namespace UPNP
 {
+ class AddSyncDataVisitor : public PLT_SyncStructureConstVisitor
+ {
+ public:
+   AddSyncDataVisitor(const NPT_String& parentID) : parentID(parentID) {}
+   virtual NPT_Result Visit(const PLT_SyncRelationship* const relationship)
+   {
+     if (!parentID.IsEmpty())
+       return NPT_ERROR_INTERNAL;
+     CUPnPDatabase db;
+     if (!db.Open())
+       return NPT_ERROR_INTERNAL;
+     if (!db.AddSyncRelationship(&*relationship))
+       return NPT_ERROR_INTERNAL;
+     return NPT_SUCCESS;
+   }
+   virtual NPT_Result Visit(const PLT_Partnership* const partnership)
+   {
+     if (parentID.IsEmpty())
+       return NPT_ERROR_INTERNAL;
+     CUPnPDatabase db;
+     if (!db.Open())
+       return NPT_ERROR_INTERNAL;
+     if (!db.AddPartnership(partnership, parentID.GetChars()))
+       return NPT_ERROR_INTERNAL;
+     return NPT_SUCCESS;
+   }
+   virtual NPT_Result Visit(const PLT_PairGroup* const pairGroup)
+   {
+     if (parentID.IsEmpty())
+       return NPT_ERROR_INTERNAL;
+     CUPnPDatabase db;
+     if (!db.Open())
+       return NPT_ERROR_INTERNAL;
+     if (!db.AddPairGroup(pairGroup, parentID.GetChars()))
+       return NPT_ERROR_INTERNAL;
+     return NPT_SUCCESS;
+   }
+ protected:
+   NPT_String parentID;
+ };
+
+ class ModifySyncDataVisitor : public PLT_SyncStructureConstVisitor
+ {
+ public:
+   virtual NPT_Result Visit(const PLT_SyncRelationship* const relationship)
+   {
+     CUPnPDatabase db;
+     if (!db.Open())
+       return NPT_ERROR_INTERNAL;
+     if (!db.ModifySyncRelationship(relationship))
+       return NPT_ERROR_INTERNAL;
+     return NPT_SUCCESS;
+   }
+   virtual NPT_Result Visit(const PLT_Partnership* const partnership)
+   {
+     CUPnPDatabase db;
+     if (!db.Open())
+       return NPT_ERROR_INTERNAL;
+     if (!db.ModifyPartnership(partnership))
+       return NPT_ERROR_INTERNAL;
+     return NPT_SUCCESS;
+   }
+   virtual NPT_Result Visit(const PLT_PairGroup* const pairGroup)
+   {
+     CUPnPDatabase db;
+     if (!db.Open())
+       return NPT_ERROR_INTERNAL;
+     if (!db.ModifyPairGroup(pairGroup))
+       return NPT_ERROR_INTERNAL;
+     return NPT_SUCCESS;
+   }
+ };
 
 NPT_Result CUPnPContentSyncService::OnAddSyncData(const NPT_String&   SyncID,
                                                   const PLT_SyncData& SyncData)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  CUPnPDatabase db;
+  if (!db.Open())
+    return NPT_ERROR_INTERNAL;
+
+  AddSyncDataVisitor visitor(SyncID);
+  NPT_CHECK(SyncData.Visit(&visitor, false));
+
+  return NPT_SUCCESS;
 }
 
 NPT_Result CUPnPContentSyncService::OnModifySyncData(const NPT_String&   SyncID,
 		                                                 const PLT_SyncData& SyncData)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED
+  ModifySyncDataVisitor visitor;
+  return (SyncData.Visit(&visitor, false)); //Hmm... I don't know if you could send a Partnership, where also the childs have changed...
+                                            //I suspect no?!? so no recursion here, but that's rather unclear
 }
 
 NPT_Result CUPnPContentSyncService::OnDeleteSyncData(const NPT_String& SyncID)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  CUPnPDatabase db;
+  if (!db.Open())
+    return NPT_ERROR_INTERNAL;
+
+  if(!db.DeleteSyncData(SyncID.GetChars()))
+    return NPT_ERROR_INTERNAL;
+
+  return NPT_SUCCESS;
 }
 
 NPT_Result CUPnPContentSyncService::GetSyncStructure(const NPT_String& SyncID, PLT_SyncStructureRef& SyncData)
