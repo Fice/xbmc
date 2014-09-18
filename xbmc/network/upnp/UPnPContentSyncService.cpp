@@ -191,6 +191,24 @@ NPT_Result CUPnPContentSyncService::OnAddSyncPair(const NPT_String&    ObjectID,
 							                       const PLT_SyncPair& SyncPair,
                                                   NPT_String& newObjectID)
 {
+  CUPnPDatabase db;
+  if(!db.Open())
+    return NPT_ERROR_INTERNAL;
+
+  if (SyncPair.m_remoteObjectID == "library://video/movies/titles" ||
+      SyncPair.m_remoteObjectID == "library://video/tvshows/titles" ||
+      SyncPair.m_remoteObjectID == "library://music/songs")
+  {
+    if(!db.AddImportFolder(ObjectID.GetChars(), SyncPair))
+      return NPT_ERROR_INTERNAL;
+    newObjectID = SyncPair.m_remoteObjectID;
+    return NPT_SUCCESS;
+  }
+  else if (false) //GetItem
+  {
+    return NPT_ERROR_INTERNAL;
+  }
+
   return NPT_ERROR_NOT_IMPLEMENTED;
 }
 
