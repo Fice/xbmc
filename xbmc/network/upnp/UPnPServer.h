@@ -97,7 +97,10 @@ public:
         }
     }
 
+    virtual NPT_Result Stop(PLT_SsdpListenTask* task);
 
+    virtual NPT_Result OnAction(PLT_ActionReference& action, const PLT_HttpRequestContext& context);
+    PLT_ContentSyncService* GetContentSyncService() { return syncService; }
 private:
     void OnScanCompleted(int type);
     void UpdateContainer(const std::string& id);
@@ -134,7 +137,11 @@ private:
 
     std::map<std::string, std::pair<bool, unsigned long> > m_UpdateIDs;
     bool m_scanning;
+
+	PLT_SyncChangeObserver *m_syncChangeStateVariable;
+
   PLT_CtrlPointReference  m_CtrlPointHolder;
+  PLT_ContentSyncService* syncService;
 public:
     // class members
     static NPT_UInt32 m_MaxReturnedItems;
