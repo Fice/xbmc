@@ -101,7 +101,39 @@ public:
     //should only return partners that are in an active syncdata structure
     virtual bool HasSyncPair(PLT_SyncData& syncData, NPT_String objectID) = 0;
 };
+
 typedef NPT_List<PLT_SyncDeviceHolder> PLT_SyncDeviceDataReferenceList;
+
+/* A nice thin interface that makes invoking the Sync Service Actions easier*/
+class PLT_ContentSyncCtrlPoint
+{
+public:
+  PLT_ContentSyncCtrlPoint(PLT_CtrlPointReference ctrlPoint) : m_CtrlPoint(ctrlPoint) {}
+
+  NPT_Result InvokeAddSyncData(PLT_DeviceDataReference& device,
+                               const NPT_String& actionCaller,
+                               const NPT_String& syncID,
+                               const PLT_SyncData& syncData,
+                               void *userdata);
+  NPT_Result InvokeModifySyncData(PLT_DeviceDataReference& device,
+                                  const NPT_String& actionCaller,
+                                  const NPT_String& syncID,
+                                  const PLT_SyncData& syncData);
+  NPT_Result InvokeDeleteSyncData(PLT_DeviceDataReference& device,
+                                  const NPT_String& actionCaller,
+                                  const NPT_String& syncID);
+  NPT_Result InvokeExchangeSyncData(PLT_DeviceDataReference& device,
+                                    const PLT_SyncData& syncData);
+  NPT_Result InvokeGetSyncData(PLT_DeviceDataReference& device,
+                               const NPT_String& syncID);
+  NPT_Result InvokeAddSyncPair(PLT_DeviceDataReference& device,
+                               const NPT_String& actionCaller,
+                               const NPT_String& objectID,
+                              const PLT_SyncPair& syncPair);
+
+  PLT_CtrlPointReference m_CtrlPoint;
+};
+typedef NPT_Reference<PLT_ContentSyncCtrlPoint> PLT_ContentSyncCtrlPointReference;
 
 /*----------------------------------------------------------------------
 |   PLT_MediaServer

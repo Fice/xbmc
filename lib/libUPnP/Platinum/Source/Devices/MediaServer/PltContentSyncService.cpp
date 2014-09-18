@@ -36,6 +36,136 @@ struct PLT_StringPair
   NPT_String right;
 };
 
+
+NPT_Result PLT_ContentSyncCtrlPoint::InvokeAddSyncData(PLT_DeviceDataReference& device,
+                                                       const NPT_String& actionCaller,
+                                                       const NPT_String& syncID,
+                                                       const PLT_SyncData& syncData,
+                                                       void *userdata)
+{
+  PLT_Service* service;
+  PLT_ActionReference action;
+  NPT_CHECK(device->FindServiceByType("urn:schemas-upnp-org:service:ContentSync:*", service));
+
+  NPT_CHECK_SEVERE(m_CtrlPoint->CreateAction(device,
+                                             "urn:schemas-upnp-org:service:ContentSync:1",
+                                             "AddSyncData",
+                                             action));
+  NPT_String strSyncData;
+  NPT_CHECK(syncData.ToXml(strSyncData, true));
+
+  NPT_CHECK(action->SetArgumentValue("SyncData", strSyncData));
+  NPT_CHECK(action->SetArgumentValue("ActionCaller", actionCaller));
+  NPT_CHECK(action->SetArgumentValue("SyncID", syncID));
+
+  return m_CtrlPoint->InvokeAction(action, userdata);
+}
+
+NPT_Result PLT_ContentSyncCtrlPoint::InvokeModifySyncData(PLT_DeviceDataReference& device,
+                                                          const NPT_String& actionCaller,
+                                                          const NPT_String& syncID,
+                                                          const PLT_SyncData& syncData)
+{
+  PLT_Service* service;
+  PLT_ActionReference action;
+  NPT_CHECK(device->FindServiceByType("urn:schemas-upnp-org:service:ContentSync:*", service));
+
+  NPT_CHECK_SEVERE(m_CtrlPoint->CreateAction(device,
+                                             "urn:schemas-upnp-org:service:ContentSync:1",
+                                             "ModifySyncData",
+                                             action));
+  NPT_String strSyncData;
+  NPT_CHECK(syncData.ToXml(strSyncData, true));
+
+  NPT_CHECK(action->SetArgumentValue("SyncData", strSyncData));
+  NPT_CHECK(action->SetArgumentValue("ActionCaller", actionCaller));
+  NPT_CHECK(action->SetArgumentValue("SyncID", syncID));
+
+  return m_CtrlPoint->InvokeAction(action, NULL);
+}
+
+NPT_Result PLT_ContentSyncCtrlPoint::InvokeDeleteSyncData(PLT_DeviceDataReference& device,
+                                                          const NPT_String& actionCaller,
+                                                          const NPT_String& syncID)
+{
+  if (syncID.IsEmpty())
+    return NPT_ERROR_INVALID_PARAMETERS;
+
+  PLT_Service* service;
+  PLT_ActionReference action;
+  NPT_CHECK(device->FindServiceByType("urn:schemas-upnp-org:service:ContentSync:*", service));
+
+  NPT_CHECK_SEVERE(m_CtrlPoint->CreateAction(device,
+                                             "urn:schemas-upnp-org:service:ContentSync:1",
+                                             "DeleteSyncData",
+                                             action));
+
+  NPT_CHECK(action->SetArgumentValue("ActionCaller", actionCaller));
+  NPT_CHECK(action->SetArgumentValue("SyncID", syncID));
+
+  return m_CtrlPoint->InvokeAction(action, NULL);
+}
+
+NPT_Result PLT_ContentSyncCtrlPoint::InvokeExchangeSyncData(PLT_DeviceDataReference& device,
+                                                            const PLT_SyncData& syncData)
+{
+  PLT_Service* service;
+  PLT_ActionReference action;
+  NPT_CHECK(device->FindServiceByType("urn:schemas-upnp-org:service:ContentSync:*", service));
+
+  NPT_CHECK_SEVERE(m_CtrlPoint->CreateAction(device,
+                                             "urn:schemas-upnp-org:service:ContentSync:1",
+                                             "ExchangeSyncData",
+                                             action));
+
+  NPT_String strSyncData;
+  NPT_CHECK(syncData.ToXml(strSyncData, false));
+
+  NPT_CHECK(action->SetArgumentValue("LocalSyncData", strSyncData));
+
+  return m_CtrlPoint->InvokeAction(action, NULL);
+}
+
+NPT_Result PLT_ContentSyncCtrlPoint::InvokeGetSyncData(PLT_DeviceDataReference& device,
+                                                       const NPT_String& syncID)
+{
+  PLT_Service* service;
+  PLT_ActionReference action;
+  NPT_CHECK(device->FindServiceByType("urn:schemas-upnp-org:service:ContentSync:*", service));
+
+  NPT_CHECK_SEVERE(m_CtrlPoint->CreateAction(device,
+                                             "urn:schemas-upnp-org:service:ContentSync:1",
+                                             "GetSyncData",
+                                             action));
+
+  NPT_CHECK(action->SetArgumentValue("SyncID", syncID));
+
+  return m_CtrlPoint->InvokeAction(action, NULL);
+}
+
+NPT_Result PLT_ContentSyncCtrlPoint::InvokeAddSyncPair(PLT_DeviceDataReference& device,
+                                                       const NPT_String& actionCaller,
+                                                       const NPT_String& objectID,
+                                                       const PLT_SyncPair& syncPair)
+{
+  PLT_Service* service;
+  PLT_ActionReference action;
+  NPT_CHECK(device->FindServiceByType("urn:schemas-upnp-org:service:ContentSync:*", service));
+
+  NPT_CHECK_SEVERE(m_CtrlPoint->CreateAction(device,
+                                             "urn:schemas-upnp-org:service:ContentSync:1",
+                                             "AddSyncPair",
+                                             action));
+
+  NPT_CHECK(action->SetArgumentValue("ActionCaller", actionCaller));
+  NPT_CHECK(action->SetArgumentValue("ObjectID", objectID));
+  NPT_String strSyncPair;
+  NPT_CHECK(syncPair.ToXml(strSyncPair));
+  NPT_CHECK(action->SetArgumentValue("SyncPair", strSyncPair));
+
+  return m_CtrlPoint->InvokeAction(action, NULL);
+}
+
 /*----------------------------------------------------------------------
 |   PLT_ContentSyncService::PLT_MediaServer
 +---------------------------------------------------------------------*/
