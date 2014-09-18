@@ -226,11 +226,15 @@ NPT_Result CUPnPContentSyncService::OnDeleteSyncPair(const NPT_String&     Objec
 
 NPT_Result CUPnPContentSyncService::OnStartSync(const NPT_String&  SyncID)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  bSyncInProgress = true;
+	return NPT_ERROR_NOT_IMPLEMENTED;
 }
 
 NPT_Result CUPnPContentSyncService::OnAbortSync(const NPT_String&  SyncID)
 {
+    //TODO:
+
+  bSyncInProgress = false;
   return NPT_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -262,7 +266,9 @@ NPT_Result CUPnPContentSyncService::OnGetSyncStatus(const NPT_String&SyncID)
 
 NPT_Result CUPnPContentSyncService::CanSyncNow(const NPT_String& SyncID)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;
+  if(!bSyncInProgress)
+    return NPT_SUCCESS;
+  return NPT_ERROR_INTERNAL;
 }
 
 }

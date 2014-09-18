@@ -64,6 +64,8 @@ public:
   //Just used for error testing... returning false will just mean: everything ok
   virtual bool HasSyncPair(PLT_SyncData& syncData, NPT_String objectID) { return false; }
 protected:
+
+  bool bSyncInProgress;
 };
 
 } /* namespace UPNP */
