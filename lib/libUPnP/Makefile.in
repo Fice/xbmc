@@ -76,6 +76,8 @@ SRCS= Neptune/Source/Core/Neptune.cpp \
       Platinum/Source/Devices/MediaServer/ConnectionManagerSCPD.cpp \
       Platinum/Source/Devices/MediaServer/ContentDirectorySCPD.cpp \
       Platinum/Source/Devices/MediaServer/ContentDirectorywSearchSCPD.cpp \
+      Platinum/Source/Devices/MediaServer/ContentSyncServiceSCPD.cpp \
+      Platinum/Source/Devices/MediaServer/PltContentSyncService.cpp \
       Platinum/Source/Devices/MediaServer/PltDidl.cpp \
       Platinum/Source/Devices/MediaServer/PltFileMediaServer.cpp \
       Platinum/Source/Devices/MediaServer/PltMediaBrowser.cpp \
@@ -83,6 +85,7 @@ SRCS= Neptune/Source/Core/Neptune.cpp \
       Platinum/Source/Devices/MediaServer/PltMediaItem.cpp \
       Platinum/Source/Devices/MediaServer/PltMediaServer.cpp \
       Platinum/Source/Devices/MediaServer/PltSyncMediaBrowser.cpp \
+      Platinum/Source/Devices/MediaServer/ContentSync/PltSyncData.cpp
 
 ifeq ($(findstring osx,$(ARCH)),osx)
 
