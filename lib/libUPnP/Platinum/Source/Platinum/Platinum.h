@@ -110,6 +110,7 @@ cross-platform logging system.
 #include "ContentSync/PltSyncPolicy.h"
 #include "ContentSync/PltSyncStatus.h"
 #include "ContentSync/PltSyncUtils.h"
+#include "ContentSync/PltSyncValueObservers.h"
 
 #include "PltXbox360.h"
 #include "PltMediaConnect.h"
