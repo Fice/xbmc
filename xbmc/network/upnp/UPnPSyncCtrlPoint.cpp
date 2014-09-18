@@ -202,7 +202,7 @@ NPT_Result CUPnPSyncCtrlPoint::OnDeviceAdded(PLT_DeviceDataReference& device)
 
 NPT_Result CUPnPSyncCtrlPoint::OnDeviceRemoved(PLT_DeviceDataReference& device)
 {
-  return NPT_ERROR_NOT_IMPLEMENTED;;
+  return NPT_SUCCESS;
 }
 
 NPT_Result CUPnPSyncCtrlPoint::OnRemoveSyncDataResponse(NPT_Result res, PLT_ActionReference& action, void* userdata)
