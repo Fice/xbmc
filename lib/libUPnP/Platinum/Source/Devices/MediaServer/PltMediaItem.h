@@ -45,6 +45,7 @@
 #include "Neptune.h"
 #include "PltHttp.h"
 #include "PltProtocolInfo.h"
+#include "ContentSync/PltSyncPair.h"
 
 /*----------------------------------------------------------------------
 |   typedefs
@@ -133,7 +134,20 @@ typedef struct {
     NPT_UInt32 last_position;
     NPT_String last_time;
     NPT_Int32  play_count;
+
 } PLT_MiscInfo;
+
+class PLT_SyncPolicy;
+
+typedef struct {
+  NPT_UInt32 resModified;
+  NPT_String syncAllowed;
+} PLT_ResContentSyncInfo;
+
+typedef struct {
+  NPT_String syncable;
+  PLT_SyncPairs pairs;
+} PLT_ContentSyncInfo;
 
 typedef struct {
     NPT_UInt64 total;
@@ -192,6 +206,9 @@ public:
     NPT_UInt32       m_NbAudioChannels;
     NPT_String       m_Resolution;
     NPT_UInt32       m_ColorDepth;
+
+    /* content sync properties*/
+    PLT_ResContentSyncInfo m_SyncInfo;
 };
 
 /*----------------------------------------------------------------------
@@ -246,6 +263,8 @@ public:
 
     /* miscellaneous info */
     PLT_MiscInfo m_MiscInfo;
+
+    PLT_ContentSyncInfo m_contentSyncInfo;
 
     /* resources related */
     NPT_Array<PLT_MediaItemResource> m_Resources;

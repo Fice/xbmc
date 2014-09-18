@@ -101,6 +101,9 @@
 #define PLT_FILTER_MASK_XBMC_ARTWORK                NPT_UINT64_C(0x0000400000000000)
 #define PLT_FILTER_MASK_XBMC_SORTTITLE              NPT_UINT64_C(0x0000800000000000)
 
+#define PLT_FILTER_MASK_RES_SYNC_ALLOWED            NPT_UINT64_C(0x0001000000000000)
+#define PLT_FILTER_MASK_RES_RES_MODIFIED            NPT_UINT64_C(0x0002000000000000)
+
 #define PLT_FILTER_FIELD_TITLE                      "dc:title"
 #define PLT_FILTER_FIELD_CREATOR                    "dc:creator"
 #define PLT_FILTER_FIELD_DATE                       "dc:date"
@@ -150,6 +153,20 @@
 #define PLT_FILTER_FIELD_XBMC_VOTES                 "xbmc:votes"
 #define PLT_FILTER_FIELD_XBMC_ARTWORK               "xbmc:artwork"
 #define PLT_FILTER_FIELD_XBMC_SORTTITLE             "xbmc:sorttitle"
+
+#define PLT_FILTER_FIELD_AVCS_SYNC_ALLOWED          "res@avcs:syncAllowed"
+#define PLT_FILTER_FIELD_AVCS_RES_MODIFIED          "res@avcs:resModified"
+#define PLT_FILTER_FIELD_SYNCABLE                   "avcs:syncable"
+#define PLT_FILTER_FIELD_SYNC_INFO                  "avcs:syncInfo"
+#define PLT_FILTER_FIELD_SYNC_PAIR                  "avcs:syncInfo::pair"
+#define PLT_FILTER_FIELD_SYNC_UPDATE_ID             "avcs:syncInfo::pair@updateID"
+#define PLT_FILTER_FIELD_SYNC_RELATIONSHIP_ID       "avcs:syncInfo::pair@syncRelationship"
+#define PLT_FILTER_FIELD_SYNC_PARTNER_ID            "avcs:syncInfo::pair@partnerID"
+#define PLT_FILTER_FIELD_SYNC_PAIR_GROUP_ID         "avcs:syncInfo::pair@pairGroupID"
+#define PLT_FILTER_FIELD_SYNC_PAIR_REMOTE_ID        "avcs:syncInfo::pair::remoteObjectID"
+#define PLT_FILTER_FIELD_SYNC_PAIR_PARENT_ID        "avcs:syncInfo::pair::parentObjectID"
+#define PLT_FILTER_FIELD_SYNC_PAIR_POLIGY           "avcs:syncInfo::pair::policy"
+#define PLT_FILTER_FIELD_SYNC_PAIR_STATUS           "avcs:syncInfo::pair::status"
 
 extern const char* didl_header;
 extern const char* didl_footer;

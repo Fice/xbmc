@@ -70,7 +70,8 @@ typedef struct PLT_CapabilitiesData {
 typedef NPT_Reference<PLT_CapabilitiesData> PLT_CapabilitiesDataReference;
 
 // explicitely specify res otherwise WMP won't return a URL!
-#define PLT_DEFAULT_FILTER  "dc:date,dc:description,upnp:longDescription,upnp:genre,res,res@duration,res@size,upnp:albumArtURI,upnp:rating,upnp:lastPlaybackPosition,upnp:lastPlaybackTime,upnp:playbackCount,upnp:originalTrackNumber,upnp:episodeNumber,upnp:programTitle,upnp:seriesTitle,upnp:album,upnp:artist,upnp:author,upnp:director,dc:publisher,searchable,childCount,dc:title,dc:creator,upnp:actor,res@resolution,upnp:episodeCount,upnp:episodeSeason,xbmc:dateadded,xbmc:rating,xbmc:votes,xbmc:artwork,xbmc:sorttitle"
+#define PLT_DEFAULT_FILTER  "dc:date,dc:description,upnp:longDescription,upnp:genre,res,res@duration,res@size,upnp:albumArtURI,upnp:rating,upnp:lastPlaybackPosition,upnp:lastPlaybackTime,upnp:playbackCount,upnp:originalTrackNumber,upnp:episodeNumber,upnp:programTitle,upnp:seriesTitle,upnp:album,upnp:artist,upnp:author,upnp:director,dc:publisher,searchable,childCount,dc:title,dc:creator,upnp:actor,res@resolution,upnp:episodeCount,upnp:episodeSeason,res@avcs:syncAllowed,res@avcs:resModified,avcs:syncable,avcs:syncInfo,avcs:syncInfo::pair@updateID,avcs:syncInfo::pair,avcs:syncInfo::pair@syncRelationshipID,avcs:syncInfo::pair@partnerID,avcs:syncInfo@pairGroupID,avcs:syncInfo::pair::remoteObjID,avcs:syncInfo::pair::parentObjID,avcs:syncInfo::pair::policy,avcs:syncInfo::pair::status,xbmc:dateadded,xbmc:rating,xbmc:votes,xbmc:artwork,xbmc:sorttitle"
+//TODO: only add sync service specific values when needed?!?
 /*----------------------------------------------------------------------
 |   PLT_MediaContainerListener
 +---------------------------------------------------------------------*/

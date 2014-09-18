@@ -172,6 +172,10 @@ PLT_Didl::ConvertFilterToMask(const NPT_String& filter)
             mask |= PLT_FILTER_MASK_XBMC_ARTWORK;
         } else if (NPT_String::CompareN(s+i, PLT_FILTER_FIELD_XBMC_SORTTITLE, len, true) == 0) {
             mask |= PLT_FILTER_MASK_XBMC_SORTTITLE;
+        } else if (NPT_String::CompareN(s+i, PLT_FILTER_FIELD_AVCS_SYNC_ALLOWED, len, true) == 0) {
+            mask |= PLT_FILTER_MASK_RES_SYNC_ALLOWED;
+        } else if (NPT_String::CompareN(s+i, PLT_FILTER_FIELD_AVCS_RES_MODIFIED, len, true) == 0) {
+            mask |= PLT_FILTER_MASK_RES_RES_MODIFIED;
         }
 
         if (next_comma < 0) {
