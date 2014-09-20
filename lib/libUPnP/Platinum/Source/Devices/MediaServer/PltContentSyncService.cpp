@@ -1153,7 +1153,7 @@ NPT_Result PLT_ContentSyncService::OnStartSync(PLT_ActionReference&          act
   PLT_PartnerList partners;
   NPT_CHECK(syncStructure->GetPartners(partners));
 
-  if (false) //TODO: syncStructure.IsActive()==0)
+  if (false /* TODO: !syncStructure->IsActive()*/)
   {
     action->SetError(710, "The StartSync() request failed because the specified SyncID is not active");
     return NPT_SUCCESS;
@@ -1164,61 +1164,31 @@ NPT_Result PLT_ContentSyncService::OnStartSync(PLT_ActionReference&          act
     return NPT_ERROR_INTERNAL;
   }
 
-  //Create the actions for all our partners
-  PLT_SyncActionDataList partnersToSync; //Will hold an array of all devices we have to tell about the new sync data!
+  PLT_DeviceData* device = GetDevice();
+
+  PLT_SyncActionDataList partnersToSync;
   if (strActionCaller.IsEmpty())
   {
-    NPT_List<PLT_Partner>::Iterator i = partners.GetFirstItem();
-    while (i)
-    {
-      PLT_SyncActionUserData currentActionData;
-      if (NPT_FAILED(NPT_ContainerFind(m_ContentSyncDevices,
-                                       PLT_SyncDeviceDataFinder(i->m_strDeviceUDN), currentActionData.device)))
-      {
-        action->SetError(705, "Partner not online");
-        return NPT_SUCCESS;
-      }
-      partnersToSync.Add(currentActionData);
-      ++i;
-    }
+    NPT_List<PLT_Partner> partners;
+    NPT_CHECK(syncStructure->GetPartners(partners));
+    NPT_CHECK(GetPartners(partners.GetFirstItem(), partnersToSync, device->GetUUID()));
   }
+  
+  PLT_SyncActionDataList::Iterator currentDevice = partnersToSync.GetFirstItem();
 
   NPT_CHECK(delegate->OnStartSync(strSyncID));
 
-  NPT_Result result = NPT_ERROR_INTERNAL;
-
-  PLT_SyncActionDataList::Iterator currentDevice = partnersToSync.GetFirstItem();
-  while (currentDevice)
-  {
-    NPT_CHECK_LABEL(m_CtrlPoint->m_CtrlPoint->CreateAction(currentDevice->device.device,
-                                                           "urn:schemas-upnp-org:service:ContentSync:1",
-                                                           "StartSync",
-                                                           currentDevice->action), cleanup_others);
-    NPT_CHECK_LABEL(currentDevice->action->SetArgumentValue("ActionCaller", this->GetDevice()->GetUUID()), cleanup_others);
-    NPT_CHECK_LABEL(currentDevice->action->SetArgumentValue("SyncID", strSyncID), cleanup_others);
-
-    PLT_CtrlPointInvokeActionTask* task;
-    NPT_CHECK_LABEL(m_CtrlPoint->m_CtrlPoint->CreateActionThread(currentDevice->action, &*currentDevice, &task), cleanup_others);
-
-    NPT_CHECK_LABEL(m_CtrlPoint->m_CtrlPoint->InvokeAction(task), cleanup_others);
-    ++currentDevice;
-  }
-
+    //Now we have to start the sync on our partners as well ;)
+  NPT_Array<PLT_StringPair> arguments;
+  NPT_CHECK(arguments.Add(PLT_StringPair("ActionCaller", this->GetDevice()->GetUUID())));
+  NPT_CHECK(arguments.Add(PLT_StringPair("SyncID", strSyncID)));
+  NPT_CHECK(InvokeAction(currentDevice, "urn:schemas-upnp-org:service:ContentSync:1", "StartSync", arguments, m_CtrlPoint->m_CtrlPoint));
+  
+    //TODO: figure out a better way to wait for our result
+  currentDevice = partnersToSync.GetFirstItem();
+  NPT_CHECK(WaitForAllResult(currentDevice));
+  
   return NPT_SUCCESS;
-
-cleanup_others:
-    //TODO: do the cleanup in anther thread... so we can return here!
-  /*--currentDevice;
-   while(currentDevice)
-   {
-   //TODO: actually revert it
-   --currentDevice;
-   }*/
-
-
-    //TODO:delegate->OnDeleteSyncData(strSyncID);
-
-  return result;
 }
 
 NPT_Result PLT_ContentSyncService::OnAbortSync(PLT_ActionReference&          action,
