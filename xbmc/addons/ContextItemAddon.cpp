@@ -49,7 +49,7 @@ IContextItem::IContextItem(const cp_extension_t *ext)
   //generate a unique ID for every context item entry
   m_id = CAddonMgr::Get().GetMsgIdForContextAddon(ID());
 
-  CStdString labelStr = CAddonMgr::Get().GetExtValue(ext->configuration, "@label");
+  const std::string labelStr = CAddonMgr::Get().GetExtValue(ext->configuration, "@label");
   if (labelStr.empty())
   {
     m_label = Name();
@@ -106,7 +106,7 @@ std::pair<unsigned int, std::string> IContextItem::ToNative()
 CContextItemAddon::CContextItemAddon(const cp_extension_t *ext)
   : IContextItem(ext)
 {
-  CStdString visible = CAddonMgr::Get().GetExtValue(ext->configuration, "@visible");
+  const std::string visible = CAddonMgr::Get().GetExtValue(ext->configuration, "@visible");
   m_VisibleId = g_infoManager.Register(visible, 0);
   if (!m_VisibleId)
     CLog::Log(LOGDEBUG, "ADDON: %s - No visibility expression given, or failed to load it: '%s'. Context item will always be visible", ID().c_str(), visible.c_str());
