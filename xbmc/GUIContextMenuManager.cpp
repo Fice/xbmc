@@ -95,9 +95,8 @@ void BaseContextMenuManager::Init()
   //Make sure we load all context items on first usage...
   VECADDONS items;
   CAddonMgr::Get().GetAddons(ADDON_CONTEXT_ITEM, items);
-  ADDON::VECADDONS::iterator end = items.end();
-  for (i = items.begin(); i != end; ++i)
-    Register(boost::static_pointer_cast<IContextItem>(*i));
+  for (VECADDONS::const_iterator it = items.begin(); it != items.end(); ++it)
+    Register(boost::static_pointer_cast<IContextItem>(*it));
 }
 
 
