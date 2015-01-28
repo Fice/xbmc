@@ -240,17 +240,16 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
 
   if (item)
   {
-    CFileItemPtr copiedItem = CFileItemPtr(new CFileItem(*item.get())); //use a copy of the item, so the python script cannot manipulate the item directly
-
-    XBMCAddon::xbmcgui::ListItem* arg = new XBMCAddon::xbmcgui::ListItem(copiedItem);
-    m_item = PythonBindings::makePythonInstance(arg,
-                                                &PythonBindings::TyXBMCAddon_xbmcgui_ListItem_Type.pythonType,
-                                                true);
-
-    if (m_item != NULL)
+    //use a copy of the item, so the python script cannot manipulate the item directly
+    CFileItemPtr copy = CFileItemPtr(new CFileItem(*item.get()));
+    XBMCAddon::xbmcgui::ListItem* arg = new XBMCAddon::xbmcgui::ListItem(copy);
+    PyObject* pyItem = PythonBindings::makePythonInstance(arg, true);
+    if (pyItem == Py_None || PySys_SetObject((char*)"listitem", pyItem) == -1)
     {
-      if (0 != PySys_SetObject((char*)"listitem", m_item))
-        CLog::Log(LOGDEBUG, "CPythonInvoker(%d, %s): setSysParameter failed!", GetId(), m_sourceFile.c_str());
+      CLog::Log(LOGERROR, "CPythonInvoker(%d, %s): Failed to set sys parameter", GetId(), m_sourceFile.c_str());
+      PyThreadState_Swap(NULL);
+      PyEval_ReleaseLock();
+      return false;
     }
   }
 

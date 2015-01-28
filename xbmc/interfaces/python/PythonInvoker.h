@@ -75,7 +75,5 @@ private:
   bool m_stop;
   CEvent m_stoppedEvent;
 
-  PyObject* m_item;
-
   static CCriticalSection s_critical;
 };
