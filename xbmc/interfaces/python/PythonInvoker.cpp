@@ -130,7 +130,9 @@ CPythonInvoker::~CPythonInvoker()
   g_pythonParser.FinalizeScript();
 }
 
-bool CPythonInvoker::Execute(const std::string &script, const std::vector<std::string> &arguments /* = std::vector<std::string>() */, const CFileItemPtr item /*= CFileItemPtr()*/)
+bool CPythonInvoker::Execute(const std::string &script,
+                             const std::vector<std::string> &arguments /* = std::vector<std::string>() */,
+                             const CFileItemPtr& item /*= CFileItemPtr()*/)
 {
   if (script.empty())
     return false;
@@ -147,7 +149,9 @@ bool CPythonInvoker::Execute(const std::string &script, const std::vector<std::s
   return ILanguageInvoker::Execute(script, arguments, item);
 }
 
-bool CPythonInvoker::execute(const std::string &script, const std::vector<std::string> &arguments, const CFileItemPtr item /*= CFileItemPtr()*/)
+bool CPythonInvoker::execute(const std::string &script,
+                             const std::vector<std::string> &arguments,
+                             const CFileItemPtr& item /*= CFileItemPtr()*/)
 {
   // copy the code/script into a local string buffer
   m_sourceFile = script;

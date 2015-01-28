@@ -47,7 +47,10 @@ public:
   bool HasLanguageInvoker(const std::string &script) const;
   ILanguageInvoker* GetLanguageInvoker(const std::string &script) const;
 
-  int Execute(const std::string &script, const ADDON::AddonPtr &addon = ADDON::AddonPtr(), const std::vector<std::string> &arguments = std::vector<std::string>(), const CFileItemPtr item = CFileItemPtr());
+  int Execute(const std::string &script,
+              const ADDON::AddonPtr &addon = ADDON::AddonPtr(),
+              const std::vector<std::string> &arguments = std::vector<std::string>(),
+              const CFileItemPtr& item = CFileItemPtr());
   bool Stop(int scriptId, bool wait = false);
   bool Stop(const std::string &scriptPath, bool wait = false);
 

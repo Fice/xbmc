@@ -35,7 +35,7 @@ public:
   virtual InvokerState GetState();
 
 protected:
-  virtual bool execute(const std::string &script, const std::vector<std::string> &arguments, const CFileItemPtr item = CFileItemPtr());
+  virtual bool execute(const std::string &script, const std::vector<std::string> &arguments, const CFileItemPtr& item = CFileItemPtr());
   virtual bool stop(bool wait);
 
   virtual void OnStartup();

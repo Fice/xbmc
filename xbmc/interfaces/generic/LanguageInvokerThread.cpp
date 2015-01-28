@@ -43,7 +43,7 @@ InvokerState CLanguageInvokerThread::GetState()
   return m_invoker->GetState();
 }
 
-bool CLanguageInvokerThread::execute(const std::string &script, const std::vector<std::string> &arguments, const CFileItemPtr item /*= CFileItemPtr()*/)
+bool CLanguageInvokerThread::execute(const std::string &script, const std::vector<std::string> &arguments, const CFileItemPtr& item /*= CFileItemPtr()*/)
 {
   if (m_invoker == NULL || script.empty())
     return false;

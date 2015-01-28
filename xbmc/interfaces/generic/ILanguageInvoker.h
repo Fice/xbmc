@@ -48,7 +48,7 @@ public:
   { }
   virtual ~ILanguageInvoker() { }
 
-  virtual bool Execute(const std::string &script, const std::vector<std::string> &arguments = std::vector<std::string>(), const CFileItemPtr item = CFileItemPtr())
+  virtual bool Execute(const std::string &script, const std::vector<std::string> &arguments = std::vector<std::string>(), const CFileItemPtr& item = CFileItemPtr())
   {
     if (m_invocationHandler)
       m_invocationHandler->OnScriptStarted(this);
@@ -68,7 +68,7 @@ public:
 protected:
   friend class CLanguageInvokerThread;
 
-  virtual bool execute(const std::string &script, const std::vector<std::string> &arguments, const CFileItemPtr item) = 0;
+  virtual bool execute(const std::string &script, const std::vector<std::string> &arguments, const CFileItemPtr& item) = 0;
   virtual bool stop(bool abort) = 0;
 
   virtual void onExecutionFailed()

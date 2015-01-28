@@ -198,7 +198,11 @@ ILanguageInvoker* CScriptInvocationManager::GetLanguageInvoker(const std::string
   return NULL;
 }
 
-int CScriptInvocationManager::Execute(const std::string &script, const ADDON::AddonPtr &addon /* = ADDON::AddonPtr() */, const std::vector<std::string> &arguments /* = std::vector<std::string>() */, const CFileItemPtr item /*= CFileItemPtr()*/)
+int CScriptInvocationManager::Execute(
+  const std::string &script,
+  const ADDON::AddonPtr &addon /* = ADDON::AddonPtr() */,
+  const std::vector<std::string> &arguments /* = std::vector<std::string>() */,
+  const CFileItemPtr& item /*= CFileItemPtr()*/)
 {
   if (script.empty() || !CFile::Exists(script, false))
     return -1;
