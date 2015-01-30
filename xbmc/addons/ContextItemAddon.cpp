@@ -74,13 +74,22 @@ IContextItem::IContextItem(const cp_extension_t *ext)
 
 bool IContextItem::OnPreInstall()
 {
-  CContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
-  return true;
+  return CContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
 }
 
 void IContextItem::OnPostInstall(bool restart, bool update)
 {
-  CContextMenuManager::Get().Register(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
+  if (restart)
+  {
+    // need to grab the local addon so we have the correct library path to run
+    AddonPtr localAddon;
+    if (CAddonMgr::Get().GetAddon(ID(), localAddon, ADDON_CONTEXT_ITEM))
+    {
+      ContextAddonPtr contextItem = boost::dynamic_pointer_cast<IContextItem>(localAddon);
+      if (contextItem)
+        CContextMenuManager::Get().Register(contextItem);
+    }
+  }
 }
 
 void IContextItem::OnPreUnInstall()
