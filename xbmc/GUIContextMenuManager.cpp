@@ -41,12 +41,28 @@ struct AddonIdCmp : binary_function<string, ValueType, bool>
   }
 };
 
-ContextMenuManager::ContextMenuManager()
+CContextMenuManager::CContextMenuManager()
   : m_iCurrentContextId(CONTEXT_BUTTON_FIRST_CONTEXT_PLUGIN)
 {
+  Init();
 }
 
-void ContextMenuManager::RegisterContextItem(ContextAddonPtr cm)
+CContextMenuManager& CContextMenuManager::Get()
+{
+  static CContextMenuManager mgr;
+  return mgr;
+}
+
+void CContextMenuManager::Init()
+{
+  //Make sure we load all context items on first usage...
+  VECADDONS items;
+  CAddonMgr::Get().GetAddons(ADDON_CONTEXT_ITEM, items);
+  for (VECADDONS::const_iterator it = items.begin(); it != items.end(); ++it)
+    Register(boost::static_pointer_cast<IContextItem>(*it));
+}
+
+void CContextMenuManager::Register(ContextAddonPtr cm)
 {
   ContextAddonIter it = find_if(m_contextAddons.begin(),
                                 m_contextAddons.end(),
@@ -58,7 +74,7 @@ void ContextMenuManager::RegisterContextItem(ContextAddonPtr cm)
     m_contextAddons[m_iCurrentContextId++] = cm;
 }
 
-bool ContextMenuManager::UnregisterContextItem(ContextAddonPtr cm)
+bool CContextMenuManager::Unregister(ContextAddonPtr cm)
 {
   ContextAddonIter it = find_if(m_contextAddons.begin(),
                                 m_contextAddons.end(),
@@ -71,7 +87,7 @@ bool ContextMenuManager::UnregisterContextItem(ContextAddonPtr cm)
   return false;
 }
 
-ContextAddonPtr ContextMenuManager::GetContextItemByID(unsigned int id)
+ContextAddonPtr CContextMenuManager::GetContextItemByID(unsigned int id)
 {
   ContextAddonIter it = m_contextAddons.find(id);
   if (it != m_contextAddons.end())
@@ -81,7 +97,7 @@ ContextAddonPtr ContextMenuManager::GetContextItemByID(unsigned int id)
   return ContextAddonPtr();
 }
 
-void ContextMenuManager::AppendVisibleContextItems(const CFileItemPtr item, CContextButtons& list, const std::string& parent)
+void CContextMenuManager::AppendVisibleContextItems(const CFileItemPtr item, CContextButtons& list, const std::string& parent)
 {
   for (ContextAddonIter it = m_contextAddons.begin(); it != m_contextAddons.end(); ++it)
   {
@@ -92,33 +108,3 @@ void ContextMenuManager::AppendVisibleContextItems(const CFileItemPtr item, CCon
   }
 }
 
-void BaseContextMenuManager::Init()
-{
-  //Make sure we load all context items on first usage...
-  VECADDONS items;
-  CAddonMgr::Get().GetAddons(ADDON_CONTEXT_ITEM, items);
-  for (VECADDONS::const_iterator it = items.begin(); it != items.end(); ++it)
-    Register(boost::static_pointer_cast<IContextItem>(*it));
-}
-
-BaseContextMenuManager *contextManager;
-
-BaseContextMenuManager& BaseContextMenuManager::Get()
-{
-  if (contextManager==NULL)
-  {
-    contextManager = new BaseContextMenuManager();
-    contextManager->Init();
-  }
-  return *contextManager;
-}
-
-void BaseContextMenuManager::Register(ContextAddonPtr contextAddon)
-{
-  RegisterContextItem(contextAddon);
-}
-
-void BaseContextMenuManager::Unregister(ADDON::ContextAddonPtr contextAddon)
-{
-  UnregisterContextItem(contextAddon);
-}

@@ -29,15 +29,17 @@
 
 class CContextButtons;
 
-class ContextMenuManager
+class CContextMenuManager
 {
 public:
-  virtual ~ContextMenuManager() {};
+  static CContextMenuManager& Get();
+
   /*! Get a context menu item by its assigned message id.
    \param unsigned int - msg id of the context item
    \return the addon or NULL
    */
   ADDON::ContextAddonPtr GetContextItemByID(const unsigned int ID);
+
   /*!
    Adds all registered context item to the list
    \param context - the current window id
@@ -53,46 +55,22 @@ public:
    \param the context item to add
    \sa UnegisterContextItem
    */
-  void RegisterContextItem(ADDON::ContextAddonPtr cm);
+  void Register(ADDON::ContextAddonPtr cm);
+
   /*!
    \brief Removes a context addon from this manager.
    \param the context item to remove
    \sa RegisterContextItem
    */
-  bool UnregisterContextItem(ADDON::ContextAddonPtr cm);
-protected:
-  ContextMenuManager();
+  bool Unregister(ADDON::ContextAddonPtr cm);
+
+private:
+  CContextMenuManager();
+  CContextMenuManager(const CContextMenuManager&);
+  CContextMenuManager const& operator=(CContextMenuManager const&);
+  virtual ~CContextMenuManager() {};
+  void Init();
 
   std::map<unsigned int, ADDON::ContextAddonPtr> m_contextAddons;
   unsigned int m_iCurrentContextId;
-};
-
-class BaseContextMenuManager : boost::noncopyable, public ContextMenuManager
-{
-public:
-  /*!
-   Returns the ContextMenuManager responsible for the root level of the context menu
-   */
-  static BaseContextMenuManager& Get();
-
-  /*!
-   \brief Unregisters the given Context Item from the ContextMenuManager where it is currently registered
-   \param the context item to unregister
-   \sa ContextMenuManager::UnregisterContextItem
-   \sa Register
-   */
-  void Unregister(ADDON::ContextAddonPtr contextAddon);
-
-  /*!
-   \brief Finds out where the given Context Item belongs to and registers it to the appropriate ContextMenuManager.
-   It checks if it belongs in the root or the core 'manage' submenu
-   NOTE: if a context item has changed, just register it again and it will overwrite the old one
-   NOTE: only 'enabled' context addons should be registered
-   \param the context item to register
-   \sa ContextMenuManager::RegisterContextItem
-   \sa Unregister
-   */
-  void Register(ADDON::ContextAddonPtr contextAddon);
-protected:
-  void Init();
 };
