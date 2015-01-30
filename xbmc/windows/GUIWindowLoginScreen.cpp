@@ -263,13 +263,9 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
   if (iItem < (int)CProfilesManager::Get().GetNumberOfProfiles())
     m_vecItems->Get(iItem)->Select(bSelect);
 
-  if (choice < CONTEXT_BUTTON_FIRST_CONTEXT_PLUGIN)
-    return true;
-
-  ADDON::ContextAddonPtr context_item = CContextMenuManager::Get().GetContextItemByID(choice);
-  if (context_item == 0)
-    return false;
-  return context_item->Execute(pItem);
+  if (choice >= CONTEXT_BUTTON_FIRST_CONTEXT_PLUGIN)
+    return CContextMenuManager::Get().Execute(choice, pItem);
+  return false;
 }
 
 CFileItemPtr CGUIWindowLoginScreen::GetCurrentListItem(int offset)

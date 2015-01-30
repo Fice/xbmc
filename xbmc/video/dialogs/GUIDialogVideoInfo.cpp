@@ -1078,9 +1078,7 @@ int CGUIDialogVideoInfo::ManageVideoItem(const CFileItemPtr &item)
         break;
 
       default:
-        const ADDON::ContextAddonPtr contextItem = CContextMenuManager::Get().GetContextItemByID(button);
-        if (contextItem)
-          result = contextItem->Execute(item);
+        result = CContextMenuManager::Get().Execute(button, item);
         break;
     }
   }
