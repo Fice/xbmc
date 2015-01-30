@@ -319,7 +319,7 @@ void CGUIWindowMusicPlaylistEditor::GetContextButtons(int itemNumber, CContextBu
   }
   buttons.Add(CONTEXT_BUTTON_LOAD, 21385);
 
-  BaseContextMenuManager::Get().AppendVisibleContextItems(item, buttons);
+  CContextMenuManager::Get().AppendVisibleContextItems(item, buttons);
 }
 
 bool CGUIWindowMusicPlaylistEditor::OnContextButton(int itemNumber, CONTEXT_BUTTON button)

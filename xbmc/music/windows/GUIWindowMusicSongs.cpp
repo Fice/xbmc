@@ -384,7 +384,7 @@ void CGUIWindowMusicSongs::GetContextButtons(int itemNumber, CContextButtons &bu
     buttons.Add(CONTEXT_BUTTON_SWITCH_MEDIA, 523);
   CGUIWindowMusicBase::GetNonContextButtons(buttons);
 
-  BaseContextMenuManager::Get().AppendVisibleContextItems(item, buttons);
+  CContextMenuManager::Get().AppendVisibleContextItems(item, buttons);
 }
 
 bool CGUIWindowMusicSongs::OnContextButton(int itemNumber, CONTEXT_BUTTON button)

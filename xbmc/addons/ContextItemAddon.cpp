@@ -76,27 +76,27 @@ IContextItem::IContextItem(const cp_extension_t *ext)
 
 bool IContextItem::OnPreInstall()
 {
-  BaseContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
+  CContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
   return true;
 }
 
 void IContextItem::OnPostInstall(bool restart, bool update)
 {
-  BaseContextMenuManager::Get().Register(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
+  CContextMenuManager::Get().Register(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
 }
 
 void IContextItem::OnPreUnInstall()
 {
-  BaseContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
+  CContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
 }
 
 void IContextItem::OnDisabled()
 {
-  BaseContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
+  CContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
 }
 void IContextItem::OnEnabled()
 {
-  BaseContextMenuManager::Get().Register(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
+  CContextMenuManager::Get().Register(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
 }
 
 std::pair<unsigned int, std::string> IContextItem::ToNative()

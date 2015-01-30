@@ -232,7 +232,7 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
   if (iItem == 0 && g_passwordManager.iMasterLockRetriesLeft == 0)
     choices.Add(3, 12334);
 
-  BaseContextMenuManager::Get().AppendVisibleContextItems(pItem, choices);
+  CContextMenuManager::Get().AppendVisibleContextItems(pItem, choices);
 
   int choice = CGUIDialogContextMenu::ShowAndGetChoice(choices);
   if (choice == 3)
@@ -266,7 +266,7 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
   if (choice < CONTEXT_BUTTON_FIRST_CONTEXT_PLUGIN)
     return true;
 
-  ADDON::ContextAddonPtr context_item = BaseContextMenuManager::Get().GetContextItemByID(choice);
+  ADDON::ContextAddonPtr context_item = CContextMenuManager::Get().GetContextItemByID(choice);
   if (context_item == 0)
     return false;
   return context_item->Execute(pItem);

@@ -180,7 +180,7 @@ void CGUIWindowAddonBrowser::GetContextButtons(int itemNumber, CContextButtons& 
       buttons.Add(CONTEXT_BUTTON_SETTINGS,24020);
   }
 
-  BaseContextMenuManager::Get().AppendVisibleContextItems(pItem, buttons);
+  CContextMenuManager::Get().AppendVisibleContextItems(pItem, buttons);
 }
 
 bool CGUIWindowAddonBrowser::OnContextButton(int itemNumber,

@@ -542,7 +542,7 @@ void CGUIWindowMusicPlayList::GetContextButtons(int itemNumber, CContextButtons 
   }
 
   if (itemNumber >= 0 && itemNumber < m_vecItems->Size())
-    BaseContextMenuManager::Get().AppendVisibleContextItems(m_vecItems->Get(itemNumber), buttons); 
+    CContextMenuManager::Get().AppendVisibleContextItems(m_vecItems->Get(itemNumber), buttons); 
 }
 
 bool CGUIWindowMusicPlayList::OnContextButton(int itemNumber, CONTEXT_BUTTON button)

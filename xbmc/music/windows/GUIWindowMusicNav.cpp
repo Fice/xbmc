@@ -573,7 +573,7 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
 
   CGUIWindowMusicBase::GetNonContextButtons(buttons);
 
-  BaseContextMenuManager::Get().AppendVisibleContextItems(item, buttons);
+  CContextMenuManager::Get().AppendVisibleContextItems(item, buttons);
 }
 
 bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)

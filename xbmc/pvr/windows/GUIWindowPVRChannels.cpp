@@ -95,7 +95,7 @@ void CGUIWindowPVRChannels::GetContextButtons(int itemNumber, CContextButtons &b
     buttons.Add(CONTEXT_BUTTON_EDIT, 16106);                                          /* "Manage" submenu */
   }
 
-  BaseContextMenuManager::Get().AppendVisibleContextItems(pItem, buttons);
+  CContextMenuManager::Get().AppendVisibleContextItems(pItem, buttons);
 }
 
 std::string CGUIWindowPVRChannels::GetDirectoryPath(void)

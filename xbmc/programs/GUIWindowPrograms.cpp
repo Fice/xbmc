@@ -119,7 +119,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   }
   CGUIMediaWindow::GetContextButtons(itemNumber, buttons);
 
-  BaseContextMenuManager::Get().AppendVisibleContextItems(item, buttons);
+  CContextMenuManager::Get().AppendVisibleContextItems(item, buttons);
 }
 
 bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
