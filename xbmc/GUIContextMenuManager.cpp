@@ -60,7 +60,7 @@ void CContextMenuManager::Init()
   VECADDONS items;
   CAddonMgr::Get().GetAddons(ADDON_CONTEXT_ITEM, items);
   for (VECADDONS::const_iterator it = items.begin(); it != items.end(); ++it)
-    Register(boost::static_pointer_cast<IContextItem>(*it));
+    Register(boost::static_pointer_cast<CContextItemAddon>(*it));
 }
 
 void CContextMenuManager::Register(ContextAddonPtr cm)

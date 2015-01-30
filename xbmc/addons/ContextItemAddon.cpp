@@ -34,14 +34,14 @@ using namespace std;
 namespace ADDON
 {
 
-IContextItem::IContextItem(const AddonProps &props)
+CContextItemAddon::CContextItemAddon(const AddonProps &props)
   : CAddon(props)
 { }
 
-IContextItem::~IContextItem()
+CContextItemAddon::~CContextItemAddon()
 { }
 
-IContextItem::IContextItem(const cp_extension_t *ext)
+CContextItemAddon::CContextItemAddon(const cp_extension_t *ext)
   : CAddon(ext)
 {
 
@@ -69,45 +69,7 @@ IContextItem::IContextItem(const cp_extension_t *ext)
   }
 
   m_parent = CAddonMgr::Get().GetExtValue(ext->configuration, "@parent");
-}
 
-bool IContextItem::OnPreInstall()
-{
-  return CContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
-}
-
-void IContextItem::OnPostInstall(bool restart, bool update)
-{
-  if (restart)
-  {
-    // need to grab the local addon so we have the correct library path to run
-    AddonPtr localAddon;
-    if (CAddonMgr::Get().GetAddon(ID(), localAddon, ADDON_CONTEXT_ITEM))
-    {
-      ContextAddonPtr contextItem = boost::dynamic_pointer_cast<IContextItem>(localAddon);
-      if (contextItem)
-        CContextMenuManager::Get().Register(contextItem);
-    }
-  }
-}
-
-void IContextItem::OnPreUnInstall()
-{
-  CContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
-}
-
-void IContextItem::OnDisabled()
-{
-  CContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
-}
-void IContextItem::OnEnabled()
-{
-  CContextMenuManager::Get().Register(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
-}
-
-CContextItemAddon::CContextItemAddon(const cp_extension_t *ext)
-  : IContextItem(ext)
-{
   string visible = CAddonMgr::Get().GetExtValue(ext->configuration, "@visible");
   if (visible.empty())
   {
@@ -117,12 +79,39 @@ CContextItemAddon::CContextItemAddon(const cp_extension_t *ext)
   m_visCondition = g_infoManager.Register(visible, 0);
 }
 
-CContextItemAddon::CContextItemAddon(const AddonProps &props)
-  : IContextItem(props)
-{ }
+bool CContextItemAddon::OnPreInstall()
+{
+  return CContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<CContextItemAddon>(shared_from_this()));
+}
 
-CContextItemAddon::~CContextItemAddon()
-{ }
+void CContextItemAddon::OnPostInstall(bool restart, bool update)
+{
+  if (restart)
+  {
+    // need to grab the local addon so we have the correct library path to run
+    AddonPtr localAddon;
+    if (CAddonMgr::Get().GetAddon(ID(), localAddon, ADDON_CONTEXT_ITEM))
+    {
+      ContextAddonPtr contextItem = boost::dynamic_pointer_cast<CContextItemAddon>(localAddon);
+      if (contextItem)
+        CContextMenuManager::Get().Register(contextItem);
+    }
+  }
+}
+
+void CContextItemAddon::OnPreUnInstall()
+{
+  CContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<CContextItemAddon>(shared_from_this()));
+}
+
+void CContextItemAddon::OnDisabled()
+{
+  CContextMenuManager::Get().Unregister(boost::dynamic_pointer_cast<CContextItemAddon>(shared_from_this()));
+}
+void CContextItemAddon::OnEnabled()
+{
+  CContextMenuManager::Get().Register(boost::dynamic_pointer_cast<CContextItemAddon>(shared_from_this()));
+}
 
 bool CContextItemAddon::IsVisible(const CFileItemPtr item) const
 {

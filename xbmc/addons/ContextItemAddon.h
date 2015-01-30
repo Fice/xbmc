@@ -34,15 +34,15 @@ namespace INFO
 
 namespace ADDON
 {
-  class IContextItem;
-  typedef boost::shared_ptr<IContextItem> ContextAddonPtr;
+  class CContextItemAddon;
+  typedef boost::shared_ptr<CContextItemAddon> ContextAddonPtr;
 
-  class IContextItem : public CAddon
+  class CContextItemAddon : public CAddon
   {
   public:
-    IContextItem(const cp_extension_t *ext);
-    IContextItem(const AddonProps &props);
-    virtual ~IContextItem();
+    CContextItemAddon(const cp_extension_t *ext);
+    CContextItemAddon(const AddonProps &props);
+    virtual ~CContextItemAddon();
 
     const std::string& GetLabel() const { return m_label; }
     /*! \brief returns the parent category of this context item
@@ -54,27 +54,17 @@ namespace ADDON
      NOTE:  defaults to true, if no visibility expression was set.
      \return true if this item should be visible
      */
-    virtual bool IsVisible(const CFileItemPtr item) const = 0;
+    bool IsVisible(const CFileItemPtr item) const;
 
     virtual bool OnPreInstall();
     virtual void OnPostInstall(bool restart, bool update);
     virtual void OnPreUnInstall();
     virtual void OnDisabled();
     virtual void OnEnabled();
-  protected:
+
+  private:
     std::string m_label;
     std::string m_parent;
-  };
-
-  class CContextItemAddon : public IContextItem
-  {
-  public:
-    CContextItemAddon(const cp_extension_t *ext);
-    CContextItemAddon(const AddonProps &props);
-    virtual ~CContextItemAddon();
-
-    bool IsVisible(const CFileItemPtr item) const;
-  protected:
     INFO::InfoPtr m_visCondition;
   };
 
