@@ -1020,7 +1020,7 @@ int CGUIDialogVideoInfo::ManageVideoItem(const CFileItemPtr &item)
 
   buttons.Add(CONTEXT_BUTTON_DELETE, 646);
 
-  manageContextAddonsMgr.AppendVisibleContextItems(item, buttons);
+  BaseContextMenuManager::Get().AppendVisibleContextItems(item, buttons, CONTEXT_MENU_GROUP_MANAGE);
 
   bool result = false;
   int button = CGUIDialogContextMenu::ShowAndGetChoice(buttons);
@@ -1078,7 +1078,7 @@ int CGUIDialogVideoInfo::ManageVideoItem(const CFileItemPtr &item)
         break;
 
       default:
-        const ADDON::ContextAddonPtr contextItem = manageContextAddonsMgr.GetContextItemByID(button);
+        const ADDON::ContextAddonPtr contextItem = BaseContextMenuManager::Get().GetContextItemByID(button);
         if (contextItem)
           result = contextItem->Execute(item);
         break;
@@ -1989,5 +1989,3 @@ bool CGUIDialogVideoInfo::OnGetFanart(const CFileItemPtr &videoItem)
 
   return true;
 }
-
-ContextMenuManager CGUIDialogVideoInfo::manageContextAddonsMgr;
