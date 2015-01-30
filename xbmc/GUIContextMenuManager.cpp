@@ -28,52 +28,67 @@
 #include "utils/log.h"
 
 using namespace ADDON;
+using namespace std;
+
+typedef map<unsigned int, ContextAddonPtr>::const_iterator ContextAddonIter;
+typedef map<unsigned int, ContextAddonPtr>::value_type ValueType;
+
+struct AddonIdCmp : binary_function<string, ValueType, bool>
+{
+  bool operator()(const std::string& id, const ValueType& elem) const
+  {
+    return id == elem.second->ID();
+  }
+};
+
+ContextMenuManager::ContextMenuManager()
+  : m_iCurrentContextId(CONTEXT_BUTTON_FIRST_CONTEXT_PLUGIN)
+{
+}
 
 void ContextMenuManager::RegisterContextItem(ContextAddonPtr cm)
 {
-  contextIter it = GetContextItemIterator(cm->GetMsgID());
-
-  if (it != m_vecContextMenus.end())
-    *it = cm; //Item might be updated, so replace!
+  ContextAddonIter it = find_if(m_contextAddons.begin(),
+                                m_contextAddons.end(),
+                                bind1st(AddonIdCmp(), cm->ID()));
+  // TODO: is this necessary?
+  if (it != m_contextAddons.end())
+    m_contextAddons[it->first] = cm;
   else
-    m_vecContextMenus.push_back(cm);
+    m_contextAddons[m_iCurrentContextId++] = cm;
 }
 
 bool ContextMenuManager::UnregisterContextItem(ContextAddonPtr cm)
 {
-  contextIter it = GetContextItemIterator(cm->GetMsgID());
-
-  if (it != m_vecContextMenus.end())
+  ContextAddonIter it = find_if(m_contextAddons.begin(),
+                                m_contextAddons.end(),
+                                bind1st(AddonIdCmp(), cm->ID()));
+  if (it != m_contextAddons.end())
   {
-    m_vecContextMenus.erase(it, m_vecContextMenus.end());
+    m_contextAddons.erase(it, m_contextAddons.end());
     return true;
   }
   return false;
 }
 
-ContextMenuManager::contextIter ContextMenuManager::GetContextItemIterator(const unsigned int ID)
+ContextAddonPtr ContextMenuManager::GetContextItemByID(unsigned int id)
 {
-  return find_if (m_vecContextMenus.begin(),
-                  m_vecContextMenus.end(),
-                  std::bind2nd(IDFinder(), ID)
-                 );
-}
-
-ContextAddonPtr ContextMenuManager::GetContextItemByID(const unsigned int ID)
-{
-  contextIter it = GetContextItemIterator(ID);
-  if (it == m_vecContextMenus.end())
-    return ContextAddonPtr();
-  return *it;
+  ContextAddonIter it = m_contextAddons.find(id);
+  if (it != m_contextAddons.end())
+  {
+    return it->second;
+  }
+  return ContextAddonPtr();
 }
 
 void ContextMenuManager::AppendVisibleContextItems(const CFileItemPtr item, CContextButtons& list, const std::string& parent)
 {
-  contextIter end = m_vecContextMenus.end();
-  for (contextIter i=m_vecContextMenus.begin(); i!=end; ++i)
+  for (ContextAddonIter it = m_contextAddons.begin(); it != m_contextAddons.end(); ++it)
   {
-    if ((*i)->GetParent() == parent)
-      (*i)->AddIfVisible(item, list);
+    if (it->second->GetParent() == parent && it->second->IsVisible(item))
+    {
+      list.push_back(make_pair(it->first, it->second->GetLabel()));
+    }
   }
 }
 
@@ -84,12 +99,6 @@ void BaseContextMenuManager::Init()
   CAddonMgr::Get().GetAddons(ADDON_CONTEXT_ITEM, items);
   for (VECADDONS::const_iterator it = items.begin(); it != items.end(); ++it)
     Register(boost::static_pointer_cast<IContextItem>(*it));
-}
-
-
-bool ContextMenuManager::IDFinder::operator()(const ContextAddonPtr& item, unsigned int id) const
-{
-  return item->GetMsgID()==id;
 }
 
 BaseContextMenuManager *contextManager;

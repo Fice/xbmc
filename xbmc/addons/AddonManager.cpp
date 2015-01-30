@@ -216,7 +216,6 @@ bool CAddonMgr::CheckUserDirs(const cp_cfg_element_t *settings)
 CAddonMgr::CAddonMgr()
 {
   m_cpluff = NULL;
-  m_iCurrentContextId = CONTEXT_BUTTON_FIRST_CONTEXT_PLUGIN;
 }
 
 CAddonMgr::~CAddonMgr()
@@ -599,17 +598,6 @@ void CAddonMgr::RemoveAddon(const std::string& ID)
     SetChanged();
     NotifyObservers(ObservableMessageAddons);
   }
-}
-
-unsigned int CAddonMgr::GetMsgIdForContextAddon(const std::string& AddonID)
-{
-  CSingleLock lock(m_critSection);
-  unsigned int& id = m_contextMsgAssign[AddonID];
-
-  if (id==0)
-    id = m_iCurrentContextId++;
-
-  return id;
 }
 
 bool CAddonMgr::DisableAddon(const std::string& ID, bool disable)

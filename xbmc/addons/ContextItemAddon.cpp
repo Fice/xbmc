@@ -45,8 +45,6 @@ IContextItem::~IContextItem()
 IContextItem::IContextItem(const cp_extension_t *ext)
   : CAddon(ext)
 {
-  //generate a unique ID for every context item entry
-  m_id = CAddonMgr::Get().GetMsgIdForContextAddon(ID());
 
   const std::string labelStr = CAddonMgr::Get().GetExtValue(ext->configuration, "@label");
   if (labelStr.empty())
@@ -99,11 +97,6 @@ void IContextItem::OnEnabled()
   CContextMenuManager::Get().Register(boost::dynamic_pointer_cast<IContextItem>(shared_from_this()));
 }
 
-std::pair<unsigned int, std::string> IContextItem::ToNative()
-{
-  return make_pair(GetMsgID(), GetLabel());
-}
-
 CContextItemAddon::CContextItemAddon(const cp_extension_t *ext)
   : IContextItem(ext)
 {
@@ -132,12 +125,6 @@ bool CContextItemAddon::IsVisible(const CFileItemPtr item) const
   if(!m_VisibleId)
     return true;
   return m_VisibleId->Get(item.get());
-}
-
-void CContextItemAddon::AddIfVisible(const CFileItemPtr item, CContextButtons &visible)
-{
-  if (IsVisible(item))
-    visible.push_back(ToNative());
 }
 
 }

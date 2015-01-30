@@ -23,8 +23,6 @@
 #include <list>
 
 
-class CContextButtons;
-
 class CFileItem;
 typedef boost::shared_ptr<CFileItem> CFileItemPtr;
 
@@ -46,14 +44,6 @@ namespace ADDON
     IContextItem(const AddonProps &props);
     virtual ~IContextItem();
 
-    /*! \brief Returns the unique ID for this context item addons.
-     This ID is unique even if you delete and recreate the same item. (Might change after restart)
-     \return the unique ID
-     */
-    unsigned int GetMsgID() const { return m_id; }
-    /*! \brief returns the label to show for this context item
-     \return the label
-     */
     const std::string& GetLabel() const { return m_label; }
     /*! \brief returns the parent category of this context item
         \return empty string if at root level or MANAGE_CATEGORY_NAME when it should be in the 'manage' submenu
@@ -65,21 +55,11 @@ namespace ADDON
      \return true if this item should be visible
      */
     virtual bool IsVisible(const CFileItemPtr item) const = 0;
-    /*! \brief Adds this element to the list, if this element is visible
-     \param item - the currently selected item
-     \param out visible - may be changed by adding this or a child element.
-     */
-    virtual void AddIfVisible(const CFileItemPtr item, CContextButtons &visible) = 0;
     /*! \brief executes the context menu item
      \param item - the currently selected item
      \return false if execution failed, aborted or isVisible() returned false
      */
     virtual bool Execute(const CFileItemPtr itemPath) = 0;
-
-    /*! \brief Converts this item into a native context button
-     \return a native context button
-     */
-    std::pair<unsigned int, std::string> ToNative();
 
     virtual bool OnPreInstall();
     virtual void OnPostInstall(bool restart, bool update);
@@ -89,7 +69,6 @@ namespace ADDON
   protected:
     std::string m_label;
     std::string m_parent;
-    unsigned int m_id;
   };
 
   class CContextItemAddon : public IContextItem
@@ -100,7 +79,6 @@ namespace ADDON
     virtual ~CContextItemAddon();
 
     bool IsVisible(const CFileItemPtr item) const;
-    virtual void AddIfVisible(const CFileItemPtr item, CContextButtons &visible);
     virtual bool Execute(const CFileItemPtr itemPath);
   protected:
     INFO::InfoPtr m_VisibleId;

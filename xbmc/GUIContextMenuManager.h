@@ -22,6 +22,7 @@
 #include <boost/shared_ptr.hpp>
 #include <list>
 #include <boost/noncopyable.hpp>
+#include "dialogs/GUIDialogContextMenu.h"
 #include "addons/ContextItemAddon.h"
 
 #define CONTEXT_MENU_GROUP_MANAGE "xbmc.manage"
@@ -60,15 +61,10 @@ public:
    */
   bool UnregisterContextItem(ADDON::ContextAddonPtr cm);
 protected:
-  struct IDFinder : std::binary_function<ADDON::ContextAddonPtr, unsigned int, bool>
-  {
-    bool operator()(const ADDON::ContextAddonPtr& item, unsigned int id) const;
-  };
+  ContextMenuManager();
 
-  typedef std::vector<ADDON::ContextAddonPtr>::iterator contextIter;
-  std::vector<ADDON::ContextAddonPtr> m_vecContextMenus;
-
-  contextIter GetContextItemIterator(const unsigned int ID);
+  std::map<unsigned int, ADDON::ContextAddonPtr> m_contextAddons;
+  unsigned int m_iCurrentContextId;
 };
 
 class BaseContextMenuManager : boost::noncopyable, public ContextMenuManager

@@ -114,8 +114,6 @@ namespace ADDON
     void FindAddons();
     void RemoveAddon(const std::string& ID);
 
-    unsigned int GetMsgIdForContextAddon(const std::string& AddonID);
-
     /* \brief Disable an addon
      Triggers the database routine and saves the current addon state to cache.
      \param ID id of the addon
@@ -220,8 +218,6 @@ namespace ADDON
     virtual ~CAddonMgr();
 
     std::map<std::string, bool> m_disabled;
-    std::map<std::string, unsigned int> m_contextMsgAssign;
-    unsigned int m_iCurrentContextId;
     static std::map<TYPE, IAddonMgrCallback*> m_managers;
     CCriticalSection m_critSection;
     CAddonDatabase m_database;
