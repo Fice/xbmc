@@ -67,11 +67,14 @@ ContextAddonPtr ContextMenuManager::GetContextItemByID(const unsigned int ID)
   return *it;
 }
 
-void ContextMenuManager::AppendVisibleContextItems(const CFileItemPtr item, CContextButtons& list)
+void ContextMenuManager::AppendVisibleContextItems(const CFileItemPtr item, CContextButtons& list, const std::string& parent)
 {
   contextIter end = m_vecContextMenus.end();
   for (contextIter i=m_vecContextMenus.begin(); i!=end; ++i)
-    (*i)->AddIfVisible(item, list);
+  {
+    if ((*i)->GetParent() == parent)
+      (*i)->AddIfVisible(item, list);
+  }
 }
 
 void BaseContextMenuManager::Init()
@@ -103,19 +106,10 @@ BaseContextMenuManager& BaseContextMenuManager::Get()
 
 void BaseContextMenuManager::Register(ContextAddonPtr contextAddon)
 {
-  std::string parent = contextAddon->GetParent();
-  if (parent.empty())
-    RegisterContextItem(contextAddon);
-  else if (parent == MANAGE_CATEGORY_NAME)
-    CGUIDialogVideoInfo::manageContextAddonsMgr.RegisterContextItem(contextAddon);
+  RegisterContextItem(contextAddon);
 }
 
 void BaseContextMenuManager::Unregister(ADDON::ContextAddonPtr contextAddon)
 {
-  //always try to unregister from main category, because thats our fallback.
   UnregisterContextItem(contextAddon);
-
-  std::string parent = contextAddon->GetParent();
-  if (parent == MANAGE_CATEGORY_NAME)
-    CGUIDialogVideoInfo::manageContextAddonsMgr.UnregisterContextItem(contextAddon);
 }

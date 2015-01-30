@@ -22,7 +22,6 @@
 #include "Addon.h"
 #include <list>
 
-#define MANAGE_CATEGORY_NAME "xbmc.manage"
 
 class CContextButtons;
 

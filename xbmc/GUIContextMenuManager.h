@@ -24,6 +24,8 @@
 #include <boost/noncopyable.hpp>
 #include "addons/ContextItemAddon.h"
 
+#define CONTEXT_MENU_GROUP_MANAGE "xbmc.manage"
+
 class CContextButtons;
 
 class ContextMenuManager
@@ -41,7 +43,7 @@ public:
    \param item - the currently selected item
    \param out visible - appends all visible menu items to this list
    */
-  void AppendVisibleContextItems(const CFileItemPtr item, CContextButtons& list);
+  void AppendVisibleContextItems(const CFileItemPtr item, CContextButtons& list, const std::string& parent = "");
 
   /*!
    \brief Adds a context item to this manager.
