@@ -55,11 +55,6 @@ namespace ADDON
      \return true if this item should be visible
      */
     virtual bool IsVisible(const CFileItemPtr item) const = 0;
-    /*! \brief executes the context menu item
-     \param item - the currently selected item
-     \return false if execution failed, aborted or isVisible() returned false
-     */
-    virtual bool Execute(const CFileItemPtr itemPath) = 0;
 
     virtual bool OnPreInstall();
     virtual void OnPostInstall(bool restart, bool update);
@@ -79,7 +74,6 @@ namespace ADDON
     virtual ~CContextItemAddon();
 
     bool IsVisible(const CFileItemPtr item) const;
-    virtual bool Execute(const CFileItemPtr itemPath);
   protected:
     INFO::InfoPtr m_VisibleId;
   };

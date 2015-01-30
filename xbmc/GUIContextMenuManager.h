@@ -40,6 +40,13 @@ public:
    */
   ADDON::ContextAddonPtr GetContextItemByID(const unsigned int ID);
 
+  /*! Executes the context menu item
+   \param id - id of the context button to execute
+   \param item - the currently selected item
+   \return false if execution failed, aborted or isVisible() returned false
+   */
+  bool Execute(unsigned int id, const CFileItemPtr& item);
+
   /*!
    Adds all registered context item to the list
    \param context - the current window id

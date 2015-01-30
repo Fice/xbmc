@@ -25,6 +25,7 @@
 #include "Util.h"
 #include "addons/IAddon.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
+#include "interfaces/generic/ScriptInvocationManager.h"
 #include "utils/log.h"
 
 using namespace ADDON;
@@ -106,5 +107,14 @@ void CContextMenuManager::AppendVisibleContextItems(const CFileItemPtr item, CCo
       list.push_back(make_pair(it->first, it->second->GetLabel()));
     }
   }
+}
+
+bool CContextMenuManager::Execute(unsigned int id, const CFileItemPtr& item)
+{
+  const ContextAddonPtr addon = GetContextItemByID(id);
+  if (!item || !addon || !addon->IsVisible(item))
+    return false;
+  return (CScriptInvocationManager::Get().Execute(
+      addon->LibPath(), addon, vector<string>(), item) != -1);
 }
 

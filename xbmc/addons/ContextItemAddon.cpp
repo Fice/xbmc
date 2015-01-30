@@ -22,7 +22,6 @@
 #include "AddonManager.h"
 #include "GUIInfoManager.h"
 #include "utils/log.h"
-#include "interfaces/generic/ScriptInvocationManager.h"
 #include "interfaces/info/InfoBool.h"
 #include "utils/StringUtils.h"
 #include "GUIContextMenuManager.h"
@@ -121,13 +120,6 @@ CContextItemAddon::CContextItemAddon(const AddonProps &props)
 
 CContextItemAddon::~CContextItemAddon()
 { }
-
-bool CContextItemAddon::Execute(const CFileItemPtr item)
-{
-  if (!IsVisible(item))
-    return false;
-  return (CScriptInvocationManager::Get().Execute(LibPath(), this->shared_from_this(), std::vector<string>(), item) != -1);
-}
 
 bool CContextItemAddon::IsVisible(const CFileItemPtr item) const
 {
