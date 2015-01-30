@@ -75,7 +75,7 @@ namespace ADDON
 
     bool IsVisible(const CFileItemPtr item) const;
   protected:
-    INFO::InfoPtr m_VisibleId;
+    INFO::InfoPtr m_visCondition;
   };
 
 }

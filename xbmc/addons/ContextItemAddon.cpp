@@ -108,10 +108,13 @@ void IContextItem::OnEnabled()
 CContextItemAddon::CContextItemAddon(const cp_extension_t *ext)
   : IContextItem(ext)
 {
-  const std::string visible = CAddonMgr::Get().GetExtValue(ext->configuration, "@visible");
-  m_VisibleId = g_infoManager.Register(visible, 0);
-  if (!m_VisibleId)
-    CLog::Log(LOGDEBUG, "ADDON: %s - No visibility expression given, or failed to load it: '%s'. Context item will always be visible", ID().c_str(), visible.c_str());
+  string visible = CAddonMgr::Get().GetExtValue(ext->configuration, "@visible");
+  if (visible.empty())
+  {
+    visible = "false";
+    CLog::Log(LOGWARNING, "ADDON: %s - No visibility expression give. Context item will not be visible.", ID().c_str());
+  }
+  m_visCondition = g_infoManager.Register(visible, 0);
 }
 
 CContextItemAddon::CContextItemAddon(const AddonProps &props)
@@ -123,9 +126,7 @@ CContextItemAddon::~CContextItemAddon()
 
 bool CContextItemAddon::IsVisible(const CFileItemPtr item) const
 {
-  if(!m_VisibleId)
-    return true;
-  return m_VisibleId->Get(item.get());
+  return m_visCondition->Get(item.get());
 }
 
 }
